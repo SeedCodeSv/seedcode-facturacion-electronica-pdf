@@ -1,0 +1,40 @@
+{
+  "name": "seedcode-facturacion-electronica-pdf",
+  "version": "1.0.0",
+  "description": "Libreria para generar PDFs de facturacion electronica",
+  "main": "dist/main.js",
+  "declaration": true,
+  "types": "dist/main.d.ts",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "tsc && copyfiles -u 1 logos/* dist/pdf/logos"
+  },
+  "keywords": [
+    "pdf",
+    "facturacion electronica",
+    "seedcode"
+  ],
+  "author": "Daniel Contreras <contrerasdannniel@gmail.com>",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^22.13.4",
+    "@types/qrcode": "^1.5.5",
+    "copyfiles": "^2.4.1",
+    "typescript": "^5.7.3"
+  },
+  "dependencies": {
+    "jspdf": "^2.5.2",
+    "jspdf-autotable": "^3.8.4",
+    "qrcode": "^1.5.4",
+    "seedcode-catalogos-mh": "^8.1.0",
+    "sharp": "^0.33.5"
+  },
+  "repository": {
+    "url": "https://github.com/SeedCodeSv/seedcode-facturacion-electronica-pdf",
+    "type": "git"
+  },
+  "bugs": {
+    "url": "https://github.com/SeedCodeSv/seedcode-facturacion-electronica-pdf/issues"
+  },
+  "homepage": "https://github.com/SeedCodeSv/seedcode-facturacion-electronica-pdf#readme"
+}

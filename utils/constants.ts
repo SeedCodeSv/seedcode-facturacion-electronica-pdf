@@ -1,0 +1,1 @@
+export const $MH_QUERY = 'https://admin.factura.gob.sv/consultaPublica'
