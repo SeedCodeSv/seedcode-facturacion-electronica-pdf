@@ -11,13 +11,12 @@ import { DteNce } from "../interfaces/dte05";
 
 export const generateSvfe05 = async (
   svfe05: DteNce,
+  logo: Uint8Array | string = "",
   contingence: boolean = false
 ) => {
   const doc = new jsPDF();
 
   let finalYFirtsPage = 0;
-
-  const { receptor, emisor, identificacion, respuestaMH } = svfe05;
 
   doc.setFontSize(6);
   secondHeader(doc, svfe05, contingence);
@@ -175,7 +174,7 @@ export const generateSvfe05 = async (
   const pageCount = doc.internal.pages.length - 1;
   for (let i = 1; i <= pageCount; i++) {
     doc.setPage(i);
-    await headerDoc(doc, svfe05);
+    await headerDoc(doc, svfe05, logo);
     const margin = 5;
     const rectWidth = doc.internal.pageSize.getWidth() - 2 * margin;
     const radius = 2;
