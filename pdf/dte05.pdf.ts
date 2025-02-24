@@ -99,6 +99,7 @@ export const generateSvfe05 = async (
     theme: "plain",
     headStyles: {
       fontSize: 7,
+      cellPadding: 1,
     },
     columnStyles: {
       0: {
@@ -121,7 +122,7 @@ export const generateSvfe05 = async (
     5,
     finalY + 2,
     doc.internal.pageSize.width - 10,
-    10,
+    12,
     2,
     2,
     "S"
@@ -141,6 +142,9 @@ export const generateSvfe05 = async (
     headStyles: {
       fontSize: 7,
     },
+    bodyStyles: {
+      fontSize: 7,
+    },
     columnStyles: {
       0: {
         cellWidth: 60,
@@ -156,7 +160,7 @@ export const generateSvfe05 = async (
     }
   ).lastAutoTable.finalY;
 
-  finalYFirtsPage = finalY;
+  finalYFirtsPage = finalY ;
 
   tableProduct(doc, svfe05, finalY);
 
