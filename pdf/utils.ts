@@ -87,11 +87,7 @@ export async function adjustImage(imageData: Uint8Array | string = "") {
       .resize(Math.round(width * 3.779527), Math.round(height * 3.779527)) // Convert mm to px
       .toBuffer();
 
-    const imageBase64 = `data:image/png;base64,${resizedBuffer.toString(
-      "base64"
-    )}`;
-
-    return { imageBase64, width, height };
+    return { imageBase64: "", width, height };
   } else {
     const desiredHeight = 20;
     const newWidth = await returnWidthImgFromBuffer(
@@ -122,7 +118,7 @@ export const headerDoc = async (
       if (data.column.index === 0 && data.row.index === 0) {
         try {
           doc.addImage(
-            `data:image/png;base64,${imageBase64}`,
+            imageBase64 === "" ? logo : `data:image/png;base64,${imageBase64}`,
             "PNG",
             data.cell.x + 2,
             data.cell.y,
