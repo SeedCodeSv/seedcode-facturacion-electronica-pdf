@@ -1,27 +1,26 @@
-import jsPDF from 'jspdf';
-import autoTable from 'jspdf-autotable';
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
 import {
   headerDoc,
   returnBoldText,
   secondHeader,
   tableHeaders,
   tableProduct,
-} from './utils';
-import { DteCcf } from '../interfaces/dte03';
+} from "./utils";
+import { DteNce } from "../interfaces/dte05";
 
-export const generateSvfe03 = async (
-  svfe03: DteCcf,
-  contingence: boolean = false,
+export const generateSvfe05 = async (
+  svfe05: DteNce,
+  contingence: boolean = false
 ) => {
   const doc = new jsPDF();
 
   let finalYFirtsPage = 0;
 
-  const { receptor, emisor, identificacion, respuestaMH } =
-    svfe03;
+  const { receptor, emisor, identificacion, respuestaMH } = svfe05;
 
   doc.setFontSize(6);
-  secondHeader(doc, svfe03, contingence)
+  secondHeader(doc, svfe05, contingence);
 
   let finalY = (doc as unknown as { lastAutoTable: { finalY: number } })
     .lastAutoTable.finalY;
@@ -42,7 +41,7 @@ export const generateSvfe03 = async (
     tableHeight,
     radius,
     radius,
-    'S',
+    "S"
   );
 
   finalY = (
@@ -51,7 +50,7 @@ export const generateSvfe03 = async (
     }
   ).lastAutoTable.finalY;
 
-  returnBoldText(doc, 'OTROS DOCUMENTOS ASOCIADOS', 100, finalY + 8, 'center');
+  returnBoldText(doc, "OTROS DOCUMENTOS ASOCIADOS", 100, finalY + 8, "center");
 
   doc.roundedRect(
     5,
@@ -60,12 +59,12 @@ export const generateSvfe03 = async (
     10,
     2,
     2,
-    'S',
+    "S"
   );
 
   autoTable(doc, {
-    head: [['Identificación del documento', 'Descripción']],
-    theme: 'plain',
+    head: [["Identificación del documento", "Descripción"]],
+    theme: "plain",
     headStyles: {
       fontSize: 7,
     },
@@ -74,7 +73,7 @@ export const generateSvfe03 = async (
         cellWidth: 60,
       },
     },
-    body: [['', '']],
+    body: [["", ""]],
     startY: finalY + 10,
   });
 
@@ -84,7 +83,7 @@ export const generateSvfe03 = async (
     }
   ).lastAutoTable.finalY;
 
-  returnBoldText(doc, 'VENTA A CUENTA DE TERCEROS', 100, finalY, 'center');
+  returnBoldText(doc, "VENTA A CUENTA DE TERCEROS", 100, finalY, "center");
 
   doc.roundedRect(
     5,
@@ -93,12 +92,12 @@ export const generateSvfe03 = async (
     10,
     2,
     2,
-    'S',
+    "S"
   );
 
   autoTable(doc, {
-    head: [['NIT', 'Nombre, denominación o razón social']],
-    theme: 'plain',
+    head: [["NIT", "Nombre, denominación o razón social"]],
+    theme: "plain",
     headStyles: {
       fontSize: 7,
     },
@@ -107,7 +106,7 @@ export const generateSvfe03 = async (
         cellWidth: 60,
       },
     },
-    body: [['', '']],
+    body: [["", ""]],
     startY: finalY + 2,
   });
 
@@ -117,7 +116,7 @@ export const generateSvfe03 = async (
     }
   ).lastAutoTable.finalY;
 
-  returnBoldText(doc, 'DOCUMENTOS RELACIONADOS', 100, finalY, 'center');
+  returnBoldText(doc, "DOCUMENTOS RELACIONADOS", 100, finalY, "center");
 
   doc.roundedRect(
     5,
@@ -126,12 +125,20 @@ export const generateSvfe03 = async (
     10,
     2,
     2,
-    'S',
+    "S"
   );
 
+  const body = svfe05.documentoRelacionado
+    ? svfe05.documentoRelacionado.map((dr) => [
+        dr.tipoDocumento,
+        dr.numeroDocumento,
+        dr.fechaEmision,
+      ])
+    : [["", "", ""]];
+
   autoTable(doc, {
-    head: [['Tipo de Documento', 'N° de Documento', 'Fecha de Documento']],
-    theme: 'plain',
+    head: [["Tipo de Documento", "N° de Documento", "Fecha de Documento"]],
+    theme: "plain",
     headStyles: {
       fontSize: 7,
     },
@@ -140,7 +147,7 @@ export const generateSvfe03 = async (
         cellWidth: 60,
       },
     },
-    body: [['', '']],
+    body: body,
     startY: finalY + 2,
   });
 
@@ -152,7 +159,7 @@ export const generateSvfe03 = async (
 
   finalYFirtsPage = finalY;
 
-  tableProduct(doc, svfe03, finalY);
+  tableProduct(doc, svfe05, finalY);
 
   finalY = (
     doc as unknown as {
@@ -168,7 +175,7 @@ export const generateSvfe03 = async (
   const pageCount = doc.internal.pages.length - 1;
   for (let i = 1; i <= pageCount; i++) {
     doc.setPage(i);
-    await headerDoc(doc, svfe03);
+    await headerDoc(doc, svfe05);
     const margin = 5;
     const rectWidth = doc.internal.pageSize.getWidth() - 2 * margin;
     const radius = 2;
@@ -182,7 +189,7 @@ export const generateSvfe03 = async (
 
     doc.setFillColor(255, 255, 255);
     doc.setDrawColor(0, 0, 0);
-    doc.setFillColor('#ced4da');
+    doc.setFillColor("#ced4da");
     doc.roundedRect(
       85,
       i > 1 ? 35 : finalYFirtsPage,
@@ -190,11 +197,11 @@ export const generateSvfe03 = async (
       i === 1
         ? rectHeight - 50
         : i === pageCount
-          ? rectHeight - 50
-          : rectHeight,
+        ? rectHeight - 50
+        : rectHeight,
       0,
       0,
-      'S',
+      "S"
     );
     doc.roundedRect(
       125,
@@ -203,11 +210,11 @@ export const generateSvfe03 = async (
       i === 1
         ? rectHeight - 50
         : i === pageCount
-          ? rectHeight - 50
-          : rectHeight,
+        ? rectHeight - 50
+        : rectHeight,
       0,
       0,
-      'S',
+      "S"
     );
     doc.roundedRect(
       165,
@@ -216,11 +223,11 @@ export const generateSvfe03 = async (
       i === 1
         ? rectHeight - 50
         : i === pageCount
-          ? rectHeight - 50
-          : rectHeight,
+        ? rectHeight - 50
+        : rectHeight,
       0,
       0,
-      'S',
+      "S"
     );
     //all
     doc.roundedRect(
@@ -230,10 +237,10 @@ export const generateSvfe03 = async (
       rectHeight - (i !== 1 ? 0 : pageCount === 1 ? 0 : 50),
       radius,
       radius,
-      'S',
+      "S"
     );
 
-    doc.setFillColor('#ced4da');
+    doc.setFillColor("#ced4da");
     doc.roundedRect(
       margin,
       i !== 1 ? 35 : finalYFirtsPage,
@@ -241,14 +248,14 @@ export const generateSvfe03 = async (
       8,
       radius,
       radius,
-      'FD',
+      "FD"
     );
     autoTable(doc, {
       startY: i !== 1 ? 35 : finalYFirtsPage,
-      theme: 'plain',
+      theme: "plain",
       head: [tableHeaders],
       columnStyles: {
-        0: { cellWidth: 15, halign: 'center', cellPadding: 2 },
+        0: { cellWidth: 15, halign: "center", cellPadding: 2 },
         1: { cellWidth: 65, cellPadding: 2 },
         2: {
           cellWidth: 20,
@@ -271,11 +278,11 @@ export const generateSvfe03 = async (
       },
       headStyles: {
         textColor: [0, 0, 0],
-        fontStyle: 'bold',
-        halign: 'center',
+        fontStyle: "bold",
+        halign: "center",
         fontSize: 5,
       },
-      body: [['', '', '', '', '', '', '']],
+      body: [["", "", "", "", "", "", ""]],
       margin: {
         right: 5,
         left: 5,
@@ -287,9 +294,9 @@ export const generateSvfe03 = async (
         5,
         rectMargin + 7,
         doc.internal.pageSize.getWidth() - 5,
-        rectMargin + 7,
+        rectMargin + 7
       );
-      footerDocument(doc, rectMargin, svfe03);
+      footerDocument(doc, rectMargin, svfe05);
       doc.line(125, rectHeight + 35, 125, rectMargin + 7);
     }
 
@@ -299,69 +306,69 @@ export const generateSvfe03 = async (
         5,
         rectMargin + 7,
         doc.internal.pageSize.getWidth() - 5,
-        rectMargin + 7,
+        rectMargin + 7
       );
-      footerDocument(doc, rectMargin, svfe03);
+      footerDocument(doc, rectMargin, svfe05);
       doc.line(
         125,
         doc.internal.pageSize.height - 48,
         125,
-        doc.internal.pageSize.height - 5,
+        doc.internal.pageSize.height - 5
       );
     }
   }
 
-  return doc.output('arraybuffer');
+  return doc.output("arraybuffer");
 };
 
-export const footerDocument = (doc: jsPDF, rectMargin: number, ccf: DteCcf) => {
+export const footerDocument = (doc: jsPDF, rectMargin: number, ccf: DteNce) => {
   const resumen = ccf.resumen;
   doc.text(`${resumen.totalLetras}`, 10, rectMargin + 4);
-  doc.text('SUMA DE VENTAS:', 120, rectMargin + 4);
-  doc.text(`$${' '} ${' '} ${resumen.totalNoSuj}`, 145, rectMargin + 4);
-  doc.text(`$${' '} ${' '} ${resumen.totalExenta}`, 165, rectMargin + 4);
-  doc.text(`$${' '} ${' '} ${resumen.totalGravada}`, 185, rectMargin + 4);
+  doc.text("SUMA DE VENTAS:", 120, rectMargin + 4);
+  doc.text(`$${" "} ${" "} ${resumen.totalNoSuj}`, 145, rectMargin + 4);
+  doc.text(`$${" "} ${" "} ${resumen.totalExenta}`, 165, rectMargin + 4);
+  doc.text(`$${" "} ${" "} ${resumen.totalGravada}`, 185, rectMargin + 4);
   doc.setFontSize(6);
-  returnBoldText(doc, 'Responsable por parte del emisor:', 10, rectMargin + 15);
+  returnBoldText(doc, "Responsable por parte del emisor:", 10, rectMargin + 15);
 
-  returnBoldText(doc, 'N° de Documento:', 10, rectMargin + 25);
-  returnBoldText(doc, 'Observaciones:', 10, rectMargin + 35);
+  returnBoldText(doc, "N° de Documento:", 10, rectMargin + 25);
+  returnBoldText(doc, "Observaciones:", 10, rectMargin + 35);
   returnBoldText(
     doc,
-    'Responsable por parte del receptor:',
+    "Responsable por parte del receptor:",
     65,
-    rectMargin + 15,
+    rectMargin + 15
   );
 
-  returnBoldText(doc, 'N° de Documento:', 65, rectMargin + 25);
+  returnBoldText(doc, "N° de Documento:", 65, rectMargin + 25);
 
-  doc.text('Suma Total de Operaciones:', 127, rectMargin + 10);
+  doc.text("Suma Total de Operaciones:", 127, rectMargin + 10);
   doc.text(
-    'Monto global Desc., Rebajas y otros a ventas no sujetas: ',
+    "Monto global Desc., Rebajas y otros a ventas no sujetas: ",
     127,
-    rectMargin + 13,
+    rectMargin + 13
   );
   doc.text(
-    'Monto global Desc., Rebajas y otros a ventas exentas:',
+    "Monto global Desc., Rebajas y otros a ventas exentas:",
     127,
-    rectMargin + 16,
+    rectMargin + 16
   );
   doc.text(
-    'Monto global Desc., Rebajas y otros a ventas gravadas:',
+    "Monto global Desc., Rebajas y otros a ventas gravadas:",
     127,
-    rectMargin + 19,
+    rectMargin + 19
   );
-  doc.text('IVA 13%: ', 127, rectMargin + 22);
-  doc.text('Sub-Total: ', 127, rectMargin + 25);
-  doc.text('IVA Percibido: ', 127, rectMargin + 28);
-  doc.text('IVA Retenido: ', 127, rectMargin + 31);
-  doc.text('Retención Renta: ', 127, rectMargin + 34);
-  doc.text('Monto Total de la Operación: ', 127, rectMargin + 37);
-  doc.text('Total Otros montos no afectos: ', 127, rectMargin + 40);
-  doc.text('Total a Pagar: ', 127, rectMargin + 43);
+  doc.text("IVA 13%: ", 127, rectMargin + 22);
+  doc.text("Sub-Total: ", 127, rectMargin + 25);
+  doc.text("IVA Percibido: ", 127, rectMargin + 28);
+  doc.text("IVA Retenido: ", 127, rectMargin + 31);
+  doc.text("Retención Renta: ", 127, rectMargin + 34);
+  doc.text("Monto Total de la Operación: ", 127, rectMargin + 37);
+  doc.text("Total Otros montos no afectos: ", 127, rectMargin + 40);
+  doc.text("Total a Pagar: ", 127, rectMargin + 43);
 
   for (let i = 0; i < 12; i++) {
-    doc.text('$', 185, rectMargin + i * 3 + 10);
+    doc.text("$", 185, rectMargin + i * 3 + 10);
   }
 
   const totals = [
@@ -374,19 +381,19 @@ export const footerDocument = (doc: jsPDF, rectMargin: number, ccf: DteCcf) => {
           .map((tr) => Number(tr.valor))
           .reduce((a, b) => a + b)
           .toFixed(2)
-      : '0.00',
+      : "0.00",
     resumen.subTotal.toFixed(2),
     resumen.ivaPerci1.toFixed(2),
     resumen.ivaRete1.toFixed(2),
     resumen.reteRenta.toFixed(2),
     resumen.montoTotalOperacion.toFixed(2),
-    '0.00',
+    "0.00",
     resumen.totalPagar.toFixed(2),
   ];
 
   totals.forEach((total, index) => {
     doc.text(total, 202.5, rectMargin + index * 3 + 10, {
-      align: 'right',
+      align: "right",
     });
   });
 };

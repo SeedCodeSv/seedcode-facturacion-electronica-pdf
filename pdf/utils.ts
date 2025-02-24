@@ -9,6 +9,7 @@ import { $MH_QUERY } from "../utils/constants";
 import { DteFe } from "../interfaces/dte01";
 import { DteCcf } from "../interfaces/dte03";
 import { DteFse } from "../interfaces/dte14";
+import { DteNce } from "../interfaces/dte05";
 
 export const formatAddress = (dep_code: string, mun_code: string) => {
   const service = new SeedcodeCatalogosMhService();
@@ -66,7 +67,10 @@ export const returnBoldText = (
   doc.setFont("helvetica", "normal");
 };
 
-export const headerDoc = async (doc: jsPDF, dte: DteFe | DteCcf | DteFse) => {
+export const headerDoc = async (
+  doc: jsPDF,
+  dte: DteFe | DteCcf | DteFse | DteNce
+) => {
   const desiredHeight = 20;
   const newWidth = await returnWidthImgFromBuffer(
     readFileSync(join(__dirname, "logos/logo.png")),
@@ -256,7 +260,11 @@ export const tableHeaders = [
   "VENTAS GRAVADAS",
 ];
 
-export const tableProduct = (doc, data: DteFe | DteCcf, finalY: number) => {
+export const tableProduct = (
+  doc,
+  data: DteFe | DteCcf | DteNce,
+  finalY: number
+) => {
   const array_object: (string | number)[][] = [];
   data.cuerpoDocumento.map((prd) => {
     const values = Object.values({
@@ -336,7 +344,7 @@ export const adjustTextInRect = (
   };
 };
 
-export const generateQR = async (dte: DteFe | DteCcf | DteFse) => {
+export const generateQR = async (dte: DteFe | DteCcf | DteFse | DteNce) => {
   try {
     const dataUrl = await QRCode.toBuffer(generateUrl(dte));
     return dataUrl;
@@ -345,7 +353,7 @@ export const generateQR = async (dte: DteFe | DteCcf | DteFse) => {
   }
 };
 
-export const generateUrl = (dte: DteFe | DteCcf | DteFse) => {
+export const generateUrl = (dte: DteFe | DteCcf | DteFse | DteNce) => {
   return (
     $MH_QUERY +
     "?ambiente=" +
@@ -357,7 +365,11 @@ export const generateUrl = (dte: DteFe | DteCcf | DteFse) => {
   );
 };
 
-export const secondHeader = (doc: jsPDF, dte: DteFe | DteCcf, contingence: boolean = false) => {
+export const secondHeader = (
+  doc: jsPDF,
+  dte: DteFe | DteCcf | DteNce,
+  contingence: boolean = false
+) => {
   const { receptor, identificacion, respuestaMH } = dte as DteFe;
 
   autoTable(doc, {
