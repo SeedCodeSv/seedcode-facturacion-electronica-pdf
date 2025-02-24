@@ -13,6 +13,7 @@ import { DteFe } from "../interfaces/dte01";
 
 export const generateSvfe01 = async (
   svfe01: DteFe,
+  logo: Uint8Array | string = "",
   contingence: boolean = false
 ) => {
   const doc = new jsPDF();
@@ -226,7 +227,7 @@ export const generateSvfe01 = async (
   const pageCount = doc.internal.pages.length - 1;
   for (let i = 1; i <= pageCount; i++) {
     doc.setPage(i);
-    await headerDoc(doc, svfe01);
+    await headerDoc(doc, svfe01, logo);
     const margin = 5;
     const rectWidth = doc.internal.pageSize.getWidth() - 2 * margin;
     const radius = 2;

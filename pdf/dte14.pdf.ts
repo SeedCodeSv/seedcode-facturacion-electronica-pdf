@@ -1,9 +1,19 @@
 import jsPDF from "jspdf";
 import { DteFse } from "../interfaces/dte14";
 import autoTable, { RowInput } from "jspdf-autotable";
-import { adjustTextInRect, formatAddress, formatCurrency, headerDoc, returnBoldText } from "./utils";
+import {
+  adjustTextInRect,
+  formatAddress,
+  formatCurrency,
+  headerDoc,
+  returnBoldText,
+} from "./utils";
 
-export const generateSvfe14 = async (dte: DteFse, contingence = false) => {
+export const generateSvfe14 = async (
+  dte: DteFse,
+  logo: Uint8Array | string = "",
+  contingence = false
+) => {
   const doc = new jsPDF();
 
   doc.setFontSize(6);
@@ -52,7 +62,6 @@ export const generateSvfe14 = async (dte: DteFse, contingence = false) => {
     },
     theme: "plain",
   });
-
 
   let finalY = (doc as unknown as { lastAutoTable: { finalY: number } })
     .lastAutoTable.finalY;
@@ -157,7 +166,7 @@ export const generateSvfe14 = async (dte: DteFse, contingence = false) => {
   const pageCount = doc.internal.pages.length - 1;
   for (let i = 1; i <= pageCount; i++) {
     doc.setPage(i);
-    await headerDoc(doc, dte);
+    await headerDoc(doc, dte, logo);
     const margin = 5;
     const rectWidth = doc.internal.pageSize.getWidth() - 2 * margin;
     const radius = 2;

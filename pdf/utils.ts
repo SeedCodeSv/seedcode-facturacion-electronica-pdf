@@ -67,18 +67,49 @@ export const returnBoldText = (
   doc.setFont("helvetica", "normal");
 };
 
+export async function adjustImage(imageData: Uint8Array | string = "") {
+  if (typeof imageData !== "string") {
+    const imageBuffer = Buffer.from(imageData);
+    const metadata = await sharp(imageBuffer).metadata();
+
+    const imgWidth = metadata.width || 1;
+    const imgHeight = metadata.height || 1;
+    const maxWidth = 45; // mm
+    const maxHeight = 20; // mm
+    let width = maxWidth;
+    let height = (imgHeight / imgWidth) * maxWidth;
+
+    if (height > maxHeight) {
+      height = maxHeight;
+      width = (imgWidth / imgHeight) * maxHeight;
+    }
+
+    const resizedBuffer = await sharp(imageBuffer)
+      .resize(Math.round(width * 3.779527), Math.round(height * 3.779527)) // Convert mm to px
+      .toBuffer();
+
+    return { imageBase64: "", width, height };
+  } else {
+    const desiredHeight = 20;
+    const newWidth = await returnWidthImgFromBuffer(
+      readFileSync(join(__dirname, "logos/logo.png")),
+      desiredHeight
+    );
+    const logo = readFileSync(join(__dirname, "logos/logo.png")).toString(
+      "base64"
+    );
+
+    return { imageBase64: logo, width: newWidth, height: desiredHeight };
+  }
+}
+
 export const headerDoc = async (
   doc: jsPDF,
-  dte: DteFe | DteCcf | DteFse | DteNce
+  dte: DteFe | DteCcf | DteFse | DteNce,
+  logo: Uint8Array | string = ""
 ) => {
-  const desiredHeight = 20;
-  const newWidth = await returnWidthImgFromBuffer(
-    readFileSync(join(__dirname, "logos/logo.png")),
-    desiredHeight
-  );
-
   const dataQR = await generateQR(dte);
-
+  const { imageBase64, width, height } = await adjustImage(logo);
   autoTable(doc, {
     startY: 5,
     showHead: false,
@@ -88,14 +119,12 @@ export const headerDoc = async (
       if (data.column.index === 0 && data.row.index === 0) {
         try {
           doc.addImage(
-            `data:image/png;base64,${readFileSync(
-              join(__dirname, "logos/logo.png")
-            ).toString("base64")}`,
+            imageBase64 === "" ? logo : `data:image/png;base64,${imageBase64}`,
             "PNG",
             data.cell.x + 2,
             data.cell.y,
-            newWidth,
-            desiredHeight,
+            width,
+            height,
             "LOGO",
             "SLOW"
           );
