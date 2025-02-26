@@ -103,6 +103,14 @@ export async function adjustImage(imageData: Uint8Array | string = "") {
   }
 }
 
+const formatName = (name: string, nameComercial: string) => {
+  if (nameComercial === name) {
+    return name;
+  } else {
+    return `${name}, ${nameComercial}`;
+  }
+};
+
 export const headerDoc = async (
   doc: jsPDF,
   dte: DteFe | DteCcf | DteFse | DteNce,
@@ -138,15 +146,17 @@ export const headerDoc = async (
         const cellWidth = data.cell.width;
 
         doc.setFontSize(7);
-        const name = doc.splitTextToSize(
-          `${dte.emisor.nombre} ${
-            dte.identificacion.tipoDte === "01" ||
-            dte.identificacion.tipoDte === "03"
-              ? "," + (dte as DteFe).emisor.nombreComercial
-              : ""
-          }`,
-          cellWidth - 4
-        );
+
+        const formattedName =
+          dte.identificacion.tipoDte === "01" ||
+          dte.identificacion.tipoDte === "03"
+            ? formatName(
+                dte.emisor.nombre,
+                (dte as DteFe).emisor.nombreComercial
+              )
+            : dte.emisor.nombre;
+
+        const name = doc.splitTextToSize(formattedName, cellWidth - 4);
         const hName = getHeightText(doc, name);
         returnBoldText(doc, name, cellX + cellWidth / 2, cellY + 5, "center");
         const actEco = doc.splitTextToSize(
