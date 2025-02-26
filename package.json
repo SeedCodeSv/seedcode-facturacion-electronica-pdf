@@ -23,8 +23,8 @@
     "typescript": "^5.7.3"
   },
   "dependencies": {
-    "jspdf": "^2.5.2",
-    "jspdf-autotable": "^3.8.4",
+    "jspdf": "^3.0.0",
+    "jspdf-autotable": "^5.0.2",
     "qrcode": "^1.5.4",
     "seedcode-catalogos-mh": "^8.1.0",
     "sharp": "^0.33.5"
