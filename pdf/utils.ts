@@ -103,18 +103,19 @@ export async function adjustImage(imageData: Uint8Array | string = "") {
   }
 }
 
-const formatName = (name: string, nameComercial: string) => {
+const formatName = (name: string, nameComercial: string, canInvertName: boolean = false) => {
   if (nameComercial === name) {
     return name;
   } else {
-    return `${name}, ${nameComercial}`;
+    return canInvertName ?  `${nameComercial}, ${name}` :`${name}, ${nameComercial}`;
   }
 };
 
 export const headerDoc = async (
   doc: jsPDF,
   dte: DteFe | DteCcf | DteFse | DteNce,
-  logo: Uint8Array | string = ""
+  logo: Uint8Array | string = "",
+  canInvertName: boolean = false
 ) => {
   const dataQR = await generateQR(dte);
   const { imageBase64, width, height } = await adjustImage(logo);
@@ -152,7 +153,8 @@ export const headerDoc = async (
           dte.identificacion.tipoDte === "03"
             ? formatName(
                 dte.emisor.nombre,
-                (dte as DteFe).emisor.nombreComercial
+                (dte as DteFe).emisor.nombreComercial,
+                canInvertName
               )
             : dte.emisor.nombre;
 

@@ -12,7 +12,8 @@ import { DteNce } from "../interfaces/dte05";
 export const generateSvfe05 = async (
   svfe05: DteNce,
   logo: Uint8Array | string = "",
-  contingence: boolean = false
+  contingence: boolean = false,
+  canInvertName: boolean = false
 ) => {
   const doc = new jsPDF();
 
@@ -178,7 +179,7 @@ export const generateSvfe05 = async (
   const pageCount = doc.internal.pages.length - 1;
   for (let i = 1; i <= pageCount; i++) {
     doc.setPage(i);
-    await headerDoc(doc, svfe05, logo);
+    await headerDoc(doc, svfe05, logo, canInvertName);
     const margin = 5;
     const rectWidth = doc.internal.pageSize.getWidth() - 2 * margin;
     const radius = 2;

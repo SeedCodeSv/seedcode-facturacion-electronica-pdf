@@ -14,7 +14,8 @@ import { DteFe } from "../interfaces/dte01";
 export const generateSvfe01 = async (
   svfe01: DteFe,
   logo: Uint8Array | string = "",
-  contingence: boolean = false
+  contingence: boolean = false,
+  canInvertName: boolean = false
 ) => {
   const doc = new jsPDF();
   let finalYFirstPage = 0;
@@ -227,7 +228,7 @@ export const generateSvfe01 = async (
   const pageCount = doc.internal.pages.length - 1;
   for (let i = 1; i <= pageCount; i++) {
     doc.setPage(i);
-    await headerDoc(doc, svfe01, logo);
+    await headerDoc(doc, svfe01, logo, canInvertName);
     const margin = 5;
     const rectWidth = doc.internal.pageSize.getWidth() - 2 * margin;
     const radius = 2;
