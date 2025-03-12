@@ -10,6 +10,7 @@ import { DteFe } from "../interfaces/dte01";
 import { DteCcf } from "../interfaces/dte03";
 import { DteFse } from "../interfaces/dte14";
 import { DteNce } from "../interfaces/dte05";
+import { DteNre } from "../interfaces/dte04";
 
 export const formatAddress = (dep_code: string, mun_code: string) => {
   const service = new SeedcodeCatalogosMhService();
@@ -113,7 +114,7 @@ const formatName = (name: string, nameComercial: string, canInvertName: boolean 
 
 export const headerDoc = async (
   doc: jsPDF,
-  dte: DteFe | DteCcf | DteFse | DteNce,
+  dte: DteFe | DteCcf | DteFse | DteNce | DteNre,
   logo: Uint8Array | string = "",
   canInvertName: boolean = false
 ) => {
@@ -385,7 +386,7 @@ export const adjustTextInRect = (
   };
 };
 
-export const generateQR = async (dte: DteFe | DteCcf | DteFse | DteNce) => {
+export const generateQR = async (dte: DteFe | DteCcf | DteFse | DteNce | DteNre) => {
   try {
     const dataUrl = await QRCode.toBuffer(generateUrl(dte));
     return dataUrl;
@@ -394,7 +395,7 @@ export const generateQR = async (dte: DteFe | DteCcf | DteFse | DteNce) => {
   }
 };
 
-export const generateUrl = (dte: DteFe | DteCcf | DteFse | DteNce) => {
+export const generateUrl = (dte: DteFe | DteCcf | DteFse | DteNce | DteNre) => {
   return (
     $MH_QUERY +
     "?ambiente=" +
@@ -408,7 +409,7 @@ export const generateUrl = (dte: DteFe | DteCcf | DteFse | DteNce) => {
 
 export const secondHeader = (
   doc: jsPDF,
-  dte: DteFe | DteCcf | DteNce,
+  dte: DteFe | DteCcf | DteNce | DteNre,
   contingence: boolean = false
 ) => {
   const { receptor, identificacion, respuestaMH } = dte as DteFe;
