@@ -273,6 +273,8 @@ export const formatNameByTypeDte = (typeDte: string) => {
       return "COMPROBANTE DE FACTURA CONSUMIDOR FINAL";
     case "03":
       return "COMPROBANTE DE CRÉDITO FISCAL";
+    case "04":
+      return "COMPROBANTE DE NOTA DE REMISIÓN";
     case "05":
       return "COMPROBANTE DE NOTA DE CRÉDITO";
     case "06":

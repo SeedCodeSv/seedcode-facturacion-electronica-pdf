@@ -52,6 +52,15 @@ export const generateSvfe04 = async (
     }
   ).lastAutoTable.finalY;
   returnBoldText(doc, "OTROS DOCUMENTOS ASOCIADOS", 100, finalY + 8, "center");
+  doc.roundedRect(
+    5,
+    finalY + 10,
+    doc.internal.pageSize.width - 10,
+    10,
+    2,
+    2,
+    "S"
+  );
   autoTable(doc, {
     head: [["Identificación del documento", "Descripción"]],
     theme: "plain",
@@ -101,16 +110,6 @@ export const generateSvfe04 = async (
     }
   ).lastAutoTable.finalY;
   returnBoldText(doc, "DOCUMENTOS RELACIONADOS", 100, finalY, "center");
-  doc.roundedRect(
-    5,
-    finalY + 10,
-    doc.internal.pageSize.width - 10,
-    10,
-    2,
-    2,
-    "S"
-  );
-
   doc.roundedRect(
     5,
     finalY + 2,
@@ -442,11 +441,11 @@ export const footerDocument = (doc: jsPDF, rectMargin: number, ccf: DteNre) => {
   );
   doc.text("IVA 13%: ", 127, rectMargin + 22);
   doc.text("Sub-Total: ", 127, rectMargin + 25);
-  doc.text("Monto Total de la Operación: ", 127, rectMargin + 37);
-  doc.text("Total Otros montos no afectos: ", 127, rectMargin + 40);
-  doc.text("Total a Pagar: ", 127, rectMargin + 43);
+  doc.text("Monto Total de la Operación: ", 127, rectMargin + 28);
+  doc.text("Total Otros montos no afectos: ", 127, rectMargin + 31);
+  doc.text("Total a Pagar: ", 127, rectMargin + 34);
 
-  for (let i = 0; i < 12; i++) {
+  for (let i = 0; i < 9; i++) {
     doc.text("$", 185, rectMargin + i * 3 + 10);
   }
 
