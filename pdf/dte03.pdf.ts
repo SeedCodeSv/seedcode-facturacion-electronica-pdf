@@ -123,7 +123,7 @@ export const generateSvfe03 = async (
     5,
     finalY + 2,
     doc.internal.pageSize.width - 10,
-    10,
+    15,
     2,
     2,
     "S"
@@ -135,6 +135,9 @@ export const generateSvfe03 = async (
     head: [["Tipo de Documento", "N° de Documento", "Fecha de Documento"]],
     theme: "plain",
     headStyles: {
+      fontSize: 7,
+    },
+    bodyStyles: {
       fontSize: 7,
     },
     columnStyles: {
@@ -155,7 +158,7 @@ export const generateSvfe03 = async (
             prd.numeroDocumento,
             prd.fechaEmision,
           ])
-        : [["", "", ""]],
+        : [["-", "-", "-"]],
     startY: finalY + 2,
   });
 
@@ -163,7 +166,7 @@ export const generateSvfe03 = async (
     doc as unknown as {
       lastAutoTable: { finalY: number };
     }
-  ).lastAutoTable.finalY;
+  ).lastAutoTable.finalY + 5;
 
   finalYFirtsPage = finalY;
 
