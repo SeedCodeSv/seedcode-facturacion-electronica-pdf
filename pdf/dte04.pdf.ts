@@ -121,6 +121,8 @@ export const generateSvfe04 = async (
     "S"
   );
 
+  const { documentoRelacionado } = svfe04 as DteNre;
+
   autoTable(doc, {
     head: [["Tipo de Documento", "N° de Documento", "Fecha de Documento"]],
     theme: "plain",
@@ -131,8 +133,21 @@ export const generateSvfe04 = async (
       0: {
         cellWidth: 60,
       },
+      1: {
+        cellWidth: "auto",
+      },
+      2: {
+        cellWidth: 60,
+      },
     },
-    body: [["", ""]],
+    body:
+      documentoRelacionado && documentoRelacionado.length > 0
+        ? documentoRelacionado.map((prd) => [
+            prd.tipoDocumento,
+            prd.numeroDocumento,
+            prd.fechaEmision,
+          ])
+        : [["", "", ""]],
     startY: finalY + 2,
   });
 

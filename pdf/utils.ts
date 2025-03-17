@@ -104,11 +104,17 @@ export async function adjustImage(imageData: Uint8Array | string = "") {
   }
 }
 
-const formatName = (name: string, nameComercial: string, canInvertName: boolean = false) => {
+const formatName = (
+  name: string,
+  nameComercial: string,
+  canInvertName: boolean = false
+) => {
   if (nameComercial === name) {
     return name;
   } else {
-    return canInvertName ?  `${nameComercial}, ${name}` :`${name}, ${nameComercial}`;
+    return canInvertName
+      ? `${nameComercial}, ${name}`
+      : `${name}, ${nameComercial}`;
   }
 };
 
@@ -388,7 +394,9 @@ export const adjustTextInRect = (
   };
 };
 
-export const generateQR = async (dte: DteFe | DteCcf | DteFse | DteNce | DteNre) => {
+export const generateQR = async (
+  dte: DteFe | DteCcf | DteFse | DteNce | DteNre
+) => {
   try {
     const dataUrl = await QRCode.toBuffer(generateUrl(dte));
     return dataUrl;
@@ -412,7 +420,7 @@ export const generateUrl = (dte: DteFe | DteCcf | DteFse | DteNce | DteNre) => {
 export const secondHeader = (
   doc: jsPDF,
   dte: DteFe | DteCcf | DteNce | DteNre,
-  selloInvalidacion = '',
+  selloInvalidacion = "",
   contingence: boolean = false
 ) => {
   const { receptor, identificacion, respuestaMH } = dte as DteFe;
@@ -455,19 +463,19 @@ export const secondHeader = (
         `CONDICIÓN DE LA OPERACIÓN: CONTADO`,
         `TIPO DE TRANSMISIÓN : ${contingence ? "Por contingencia" : "Normal"}`,
       ],
-      ...(selloInvalidacion
+      selloInvalidacion !== ""
         ? [
             {
               content: "DTE INVALIDO CORRECTAMENTE",
               styles: { textColor: "red", fontSize: 8 },
-            } as RowInput,
+            },
             {
               content: `SELLO DE ANULACIÓN : ${selloInvalidacion}`,
-              styles: { textColor: "red", fontSize: 8 },
-            } as RowInput,
+              styles: { textColor: "red", fontSize: 8, cellPadding: { right: 20 } },
+            },
           ]
-        : [])
-    ].filter(Boolean),
+        : [],
+    ].filter((row) => row.length > 0),
     columnStyles: { 0: { cellWidth: 115 }, 1: { cellWidth: 105 } },
     bodyStyles: {
       fontSize: 6.5,
