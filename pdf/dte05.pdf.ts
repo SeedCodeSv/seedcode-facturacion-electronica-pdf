@@ -12,6 +12,7 @@ import { DteNce } from "../interfaces/dte05";
 export const generateSvfe05 = async (
   svfe05: DteNce,
   logo: Uint8Array | string = "",
+  selloInvalidacion: string = "",
   contingence: boolean = false,
   canInvertName: boolean = false
 ) => {
@@ -20,7 +21,7 @@ export const generateSvfe05 = async (
   let finalYFirtsPage = 0;
 
   doc.setFontSize(6);
-  secondHeader(doc, svfe05, contingence);
+  secondHeader(doc, svfe05, selloInvalidacion, contingence);
 
   let finalY = (doc as unknown as { lastAutoTable: { finalY: number } })
     .lastAutoTable.finalY;

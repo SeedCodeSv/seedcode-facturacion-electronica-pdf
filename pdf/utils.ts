@@ -412,6 +412,7 @@ export const generateUrl = (dte: DteFe | DteCcf | DteFse | DteNce | DteNre) => {
 export const secondHeader = (
   doc: jsPDF,
   dte: DteFe | DteCcf | DteNce | DteNre,
+  selloInvalidacion = '',
   contingence: boolean = false
 ) => {
   const { receptor, identificacion, respuestaMH } = dte as DteFe;
@@ -454,7 +455,19 @@ export const secondHeader = (
         `CONDICIÓN DE LA OPERACIÓN: CONTADO`,
         `TIPO DE TRANSMISIÓN : ${contingence ? "Por contingencia" : "Normal"}`,
       ],
-    ],
+      ...(selloInvalidacion
+        ? [
+            {
+              content: "DTE INVALIDO CORRECTAMENTE",
+              styles: { textColor: "red", fontSize: 8 },
+            } as RowInput,
+            {
+              content: `SELLO DE ANULACIÓN : ${selloInvalidacion}`,
+              styles: { textColor: "red", fontSize: 8 },
+            } as RowInput,
+          ]
+        : [])
+    ].filter(Boolean),
     columnStyles: { 0: { cellWidth: 115 }, 1: { cellWidth: 105 } },
     bodyStyles: {
       fontSize: 6.5,

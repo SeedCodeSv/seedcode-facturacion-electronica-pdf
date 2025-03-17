@@ -12,6 +12,7 @@ import {
 export const generateSvfe14 = async (
   dte: DteFse,
   logo: Uint8Array | string = "",
+  selloInvalidacion: string = "",
   contingence = false
 ) => {
   const doc = new jsPDF();
@@ -54,7 +55,19 @@ export const generateSvfe14 = async (
         `CONDICIÓN DE LA OPERACIÓN: CONTADO`,
         `TIPO DE TRANSMISIÓN : ${contingence ? "Por contingencia" : "Normal"}`,
       ],
-    ],
+      ...(selloInvalidacion
+        ? [
+            {
+              content: "DTE INVALIDO CORRECTAMENTE",
+              styles: { textColor: "red", fontSize: 8 },
+            } as RowInput,
+            {
+              content: `SELLO DE ANULACIÓN : ${selloInvalidacion}`,
+              styles: { textColor: "red", fontSize: 8 },
+            } as RowInput,
+          ]
+        : []),
+    ].filter(Boolean),
     columnStyles: { 0: { cellWidth: 115 }, 1: { cellWidth: 105 } },
     bodyStyles: {
       fontSize: 6.5,

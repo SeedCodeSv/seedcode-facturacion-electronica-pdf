@@ -14,6 +14,7 @@ import { DteFe } from "../interfaces/dte01";
 export const generateSvfe01 = async (
   svfe01: DteFe,
   logo: Uint8Array | string = "",
+  selloInvalidacion: string = "",
   contingence: boolean = false,
   canInvertName: boolean = false
 ) => {
@@ -23,7 +24,7 @@ export const generateSvfe01 = async (
   const { cuerpoDocumento } = svfe01 as DteFe;
 
   doc.setFontSize(6);
-  secondHeader(doc, svfe01, contingence);
+  secondHeader(doc, svfe01, selloInvalidacion, contingence);
 
   let finalY = (doc as unknown as { lastAutoTable: { finalY: number } })
     .lastAutoTable.finalY;

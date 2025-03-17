@@ -14,6 +14,7 @@ import { readFileSync } from "fs";
 export const generateSvfe04 = async (
   svfe04: DteNre,
   logo: Uint8Array | string = "",
+  selloInvalidacion: string = "",
   contingence: boolean = false,
   canInvertName: boolean = false
 ) => {
@@ -24,7 +25,7 @@ export const generateSvfe04 = async (
   const { cuerpoDocumento } = svfe04 as DteNre;
 
   doc.setFontSize(6);
-  secondHeader(doc, svfe04, contingence);
+  secondHeader(doc, svfe04, selloInvalidacion, contingence);
   let finalY = (doc as unknown as { lastAutoTable: { finalY: number } })
     .lastAutoTable.finalY;
 

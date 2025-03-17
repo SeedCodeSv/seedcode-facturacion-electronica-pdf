@@ -12,6 +12,7 @@ import { DteCcf } from "../interfaces/dte03";
 export const generateSvfe03 = async (
   svfe03: DteCcf,
   logo: Uint8Array | string = "",
+  selloInvalidacion: string = "",
   contingence: boolean = false,
   canInvertName: boolean = false
 ) => {
@@ -20,7 +21,7 @@ export const generateSvfe03 = async (
   let finalYFirtsPage = 0;
 
   doc.setFontSize(6);
-  secondHeader(doc, svfe03, contingence);
+  secondHeader(doc, svfe03, selloInvalidacion, contingence);
 
   let finalY = (doc as unknown as { lastAutoTable: { finalY: number } })
     .lastAutoTable.finalY;
