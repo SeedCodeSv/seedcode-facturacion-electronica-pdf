@@ -457,11 +457,11 @@ export const secondHeader = (
       ],
       [
         `TEL : ${receptor.telefono ?? "-"}`,
-        `MODELO DE FACTURACIÓN : ${contingence ? "Diferido" : "Previo"}`,
+        `MODELO DE FACTURACIÓN : ${identificacion.tipoModelo === 2 ? "Diferido" : "Previo"}`,
       ],
       [
         `CONDICIÓN DE LA OPERACIÓN: CONTADO`,
-        `TIPO DE TRANSMISIÓN : ${contingence ? "Por contingencia" : "Normal"}`,
+        `TIPO DE TRANSMISIÓN : ${identificacion.tipoOperacion === 2 ? "Por contingencia" : "Normal"}`,
       ],
       selloInvalidacion !== ""
         ? [
