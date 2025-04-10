@@ -423,7 +423,7 @@ export const secondHeader = (
   selloInvalidacion = "",
   contingence: boolean = false
 ) => {
-  const { receptor, identificacion, respuestaMH } = dte as DteFe;
+  const { receptor, identificacion, respuestaMH, resumen } = dte as DteFe;
 
   autoTable(doc, {
     margin: {
@@ -460,7 +460,7 @@ export const secondHeader = (
         `MODELO DE FACTURACIÓN : ${identificacion.tipoModelo === 2 ? "Diferido" : "Previo"}`,
       ],
       [
-        `CONDICIÓN DE LA OPERACIÓN: CONTADO`,
+        `CONDICIÓN DE LA OPERACIÓN: ${resumen.condicionOperacion === 1 ? "Contado" : "Crédito"}`,
         `TIPO DE TRANSMISIÓN : ${identificacion.tipoOperacion === 2 ? "Por contingencia" : "Normal"}`,
       ],
       selloInvalidacion !== ""
