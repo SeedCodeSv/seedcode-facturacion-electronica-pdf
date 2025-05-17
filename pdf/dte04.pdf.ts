@@ -435,7 +435,7 @@ export const footerDocument = (doc: jsPDF, rectMargin: number, ccf: DteNre) => {
     rectMargin + 15
   );
   if (extencion) {
-    doc.text(extencion.docuRecibe, 65, rectMargin + 20);
+    doc.text(extencion.nombRecibe, 65, rectMargin + 20);
   }
   returnBoldText(doc, "N° de Documento:", 65, rectMargin + 25);
   if (extencion) {

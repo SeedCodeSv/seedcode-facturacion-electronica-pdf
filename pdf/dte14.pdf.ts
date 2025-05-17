@@ -326,7 +326,7 @@ export const footerDocument = (doc: jsPDF, rectMargin: number, dte: DteFse) => {
 
   doc.text("Suma Total de Operaciones:", 127, rectMargin + 10);
   doc.text("Retención renta:", 127, rectMargin + 13);
-  doc.text("IVA retenido 1%:", 127, rectMargin + 16);
+  doc.text("IVA retenido:", 127, rectMargin + 16);
   doc.text("Sub-Total:", 127, rectMargin + 19);
   doc.text("Total a Pagar:", 127, rectMargin + 22);
 
