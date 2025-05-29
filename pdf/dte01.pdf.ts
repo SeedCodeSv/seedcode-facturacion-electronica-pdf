@@ -18,7 +18,9 @@ export const generateSvfe01 = async (
   contingence: boolean = false,
   canInvertName: boolean = false
 ) => {
-  const doc = new jsPDF();
+  const doc = new jsPDF({
+    compress: true,
+  });
   let finalYFirstPage = 0;
 
   const { cuerpoDocumento } = svfe01 as DteFe;
@@ -164,11 +166,12 @@ export const generateSvfe01 = async (
     startY: finalY + 2,
   });
 
-  finalY = (
-    doc as unknown as {
-      lastAutoTable: { finalY: number };
-    }
-  ).lastAutoTable.finalY + 5;
+  finalY =
+    (
+      doc as unknown as {
+        lastAutoTable: { finalY: number };
+      }
+    ).lastAutoTable.finalY + 5;
 
   finalYFirstPage = finalY;
 
@@ -468,7 +471,9 @@ export const footerDocument = (
   }
 
   const totals = [
-    resumen.descuGravada.toFixed(2),
+    (resumen.totalNoSuj + resumen.totalExenta + resumen.totalGravada).toFixed(
+      2
+    ),
     resumen.descuNoSuj.toFixed(2),
     resumen.descuExenta.toFixed(2),
     resumen.descuGravada.toFixed(2),

@@ -256,7 +256,7 @@ export const headerDoc = async (
           "center"
         );
 
-        doc.addImage(dataQR as Buffer, "PNG", cellX + 5, cellY + 1, 23, 23);
+        doc.addImage(dataQR as Buffer, "PNG", cellX + 5, cellY + 1, 23, 23,"QR","SLOW");
       }
     },
     columnStyles: {
