@@ -85,8 +85,9 @@ export async function adjustImage(imageData: Uint8Array | string = "") {
       width = (imgWidth / imgHeight) * maxHeight;
     }
 
-    const resizedBuffer = await sharp(imageBuffer)
-      .resize(Math.round(width * 3.779527), Math.round(height * 3.779527)) // Convert mm to px
+    await sharp(imageBuffer)
+      .resize(Math.round(width * 3.779527), Math.round(height * 3.779527))
+      .jpeg({ quality: 60 })
       .toBuffer();
 
     return { imageBase64: "", width, height };
@@ -134,16 +135,29 @@ export const headerDoc = async (
     didDrawCell: (data) => {
       if (data.column.index === 0 && data.row.index === 0) {
         try {
-          doc.addImage(
-            imageBase64 === "" ? logo : `data:image/png;base64,${imageBase64}`,
-            "PNG",
-            data.cell.x + 2,
-            data.cell.y,
-            width,
-            height,
-            "LOGO",
-            "SLOW"
-          );
+          if (imageBase64 === "") {
+            doc.addImage(
+              logo,
+              "PNG",
+              data.cell.x + 2,
+              data.cell.y,
+              width,
+              height,
+              "LOGO",
+              "SLOW"
+            );
+          } else {
+            doc.addImage(
+              `data:image/jpeg;base64,${imageBase64}`,
+              "JPEG",
+              data.cell.x + 2,
+              data.cell.y,
+              width,
+              height,
+              "LOGO",
+              "SLOW"
+            );
+          }
         } catch (error) {
           doc.text("error", data.cell.x + 2, data.cell.y + 5);
         }
@@ -256,7 +270,16 @@ export const headerDoc = async (
           "center"
         );
 
-        doc.addImage(dataQR as Buffer, "PNG", cellX + 5, cellY + 1, 23, 23,"QR","SLOW");
+        doc.addImage(
+          dataQR as Buffer,
+          "PNG",
+          cellX + 5,
+          cellY + 1,
+          23,
+          23,
+          "QR",
+          "SLOW"
+        );
       }
     },
     columnStyles: {
@@ -457,11 +480,17 @@ export const secondHeader = (
       ],
       [
         `TEL : ${receptor.telefono ?? "-"}`,
-        `MODELO DE FACTURACIÓN : ${identificacion.tipoModelo === 2 ? "Diferido" : "Previo"}`,
+        `MODELO DE FACTURACIÓN : ${
+          identificacion.tipoModelo === 2 ? "Diferido" : "Previo"
+        }`,
       ],
       [
-        `CONDICIÓN DE LA OPERACIÓN: ${resumen.condicionOperacion === 1 ? "Contado" : "Crédito"}`,
-        `TIPO DE TRANSMISIÓN : ${identificacion.tipoOperacion === 2 ? "Por contingencia" : "Normal"}`,
+        `CONDICIÓN DE LA OPERACIÓN: ${
+          resumen.condicionOperacion === 1 ? "Contado" : "Crédito"
+        }`,
+        `TIPO DE TRANSMISIÓN : ${
+          identificacion.tipoOperacion === 2 ? "Por contingencia" : "Normal"
+        }`,
       ],
       selloInvalidacion !== ""
         ? [
@@ -471,7 +500,11 @@ export const secondHeader = (
             },
             {
               content: `SELLO DE ANULACIÓN : ${selloInvalidacion}`,
-              styles: { textColor: "red", fontSize: 8, cellPadding: { right: 20 } },
+              styles: {
+                textColor: "red",
+                fontSize: 8,
+                cellPadding: { right: 20 },
+              },
             },
           ]
         : [],
