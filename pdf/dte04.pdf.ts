@@ -154,11 +154,12 @@ export const generateSvfe04 = async (
     startY: finalY + 2,
   });
 
-  finalY = (
-    doc as unknown as {
-      lastAutoTable: { finalY: number };
-    }
-  ).lastAutoTable.finalY + 5;
+  finalY =
+    (
+      doc as unknown as {
+        lastAutoTable: { finalY: number };
+      }
+    ).lastAutoTable.finalY + 5;
 
   finalYFirtsPage = finalY;
 
@@ -414,32 +415,44 @@ export const footerDocument = (doc: jsPDF, rectMargin: number, ccf: DteNre) => {
   doc.text(`$${" "} ${" "} ${resumen.totalExenta}`, 165, rectMargin + 4);
   doc.text(`$${" "} ${" "} ${resumen.totalGravada}`, 185, rectMargin + 4);
   doc.setFontSize(6);
-  returnBoldText(doc, "Responsable por parte del emisor:", 10, rectMargin + 15);
-  if (extencion) {
-    doc.text(extencion.nombEntrega, 10, rectMargin + 20);
-  }
-  returnBoldText(doc, "N° de Documento:", 10, rectMargin + 25);
-  if (extencion) {
-    doc.text(extencion.docuEntrega, 10, rectMargin + 30);
-  }
-  returnBoldText(doc, "Observaciones:", 10, rectMargin + 35);
-
-  if (extencion) {
-    doc.text(extencion.observaciones, 10, rectMargin + 40);
+  returnBoldText(doc, "Responsable por parte del emisor:", 10, rectMargin + 10);
+  if (ccf.extension) {
+    if (ccf.extension.nombEntrega) {
+      doc.text(ccf.extension.nombEntrega, 10, rectMargin + 13);
+    }
   }
 
+  returnBoldText(doc, "N° de Documento:", 10, rectMargin + 18);
+  if (ccf.extension) {
+    if (ccf.extension.docuEntrega) {
+      doc.text(ccf.extension.docuEntrega, 10, rectMargin + 22);
+    }
+  }
+  returnBoldText(doc, "Observaciones:", 10, rectMargin + 27);
+  if (ccf.extension) {
+    if (ccf.extension.observaciones) {
+      const text = doc.splitTextToSize(ccf.extension.observaciones, 120);
+      doc.text(text, 10, rectMargin + 30);
+    }
+  }
   returnBoldText(
     doc,
     "Responsable por parte del receptor:",
     65,
-    rectMargin + 15
+    rectMargin + 10
   );
-  if (extencion) {
-    doc.text(extencion.nombRecibe, 65, rectMargin + 20);
+
+  if (ccf.extension) {
+    if (ccf.extension.nombRecibe) {
+      doc.text(ccf.extension.nombRecibe, 65, rectMargin + 13);
+    }
   }
-  returnBoldText(doc, "N° de Documento:", 65, rectMargin + 25);
-  if (extencion) {
-    doc.text(extencion.docuRecibe, 65, rectMargin + 30);
+
+  returnBoldText(doc, "N° de Documento:", 65, rectMargin + 18);
+  if (ccf.extension) {
+    if (ccf.extension.docuRecibe) {
+      doc.text(ccf.extension.docuRecibe, 65, rectMargin + 22);
+    }
   }
 
   doc.text("Suma Total de Operaciones:", 127, rectMargin + 10);

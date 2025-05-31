@@ -333,43 +333,44 @@ export const footerDocument = (doc: jsPDF, rectMargin: number, ccf: DteNce) => {
   doc.text(`$${" "} ${" "} ${resumen.totalNoSuj}`, 145, rectMargin + 4);
   doc.text(`$${" "} ${" "} ${resumen.totalExenta}`, 165, rectMargin + 4);
   doc.text(`$${" "} ${" "} ${resumen.totalGravada}`, 185, rectMargin + 4);
-  doc.setFontSize(6);
-  returnBoldText(doc, "Responsable por parte del emisor:", 10, rectMargin + 15);
+ doc.setFontSize(6);
+  returnBoldText(doc, "Responsable por parte del emisor:", 10, rectMargin + 10);
   if (ccf.extension) {
     if (ccf.extension.nombEntrega) {
-      doc.text(ccf.extension.nombEntrega, 10, rectMargin + 20);
+      doc.text(ccf.extension.nombEntrega, 10, rectMargin + 13);
     }
   }
 
-  returnBoldText(doc, "N° de Documento:", 10, rectMargin + 25);
+  returnBoldText(doc, "N° de Documento:", 10, rectMargin + 18);
   if (ccf.extension) {
     if (ccf.extension.docuEntrega) {
-      doc.text(ccf.extension.docuEntrega, 10, rectMargin + 30);
+      doc.text(ccf.extension.docuEntrega, 10, rectMargin + 22);
     }
   }
-  returnBoldText(doc, "Observaciones:", 10, rectMargin + 35);
+  returnBoldText(doc, "Observaciones:", 10, rectMargin + 27);
   if (ccf.extension) {
     if (ccf.extension.observaciones) {
-      doc.text(ccf.extension.observaciones, 10, rectMargin + 40);
+      const text = doc.splitTextToSize(ccf.extension.observaciones, 120);
+      doc.text(text, 10, rectMargin + 30);
     }
   }
   returnBoldText(
     doc,
     "Responsable por parte del receptor:",
     65,
-    rectMargin + 15
+    rectMargin + 10
   );
 
   if (ccf.extension) {
     if (ccf.extension.nombRecibe) {
-      doc.text(ccf.extension.nombRecibe, 65, rectMargin + 20);
+      doc.text(ccf.extension.nombRecibe, 65, rectMargin + 13);
     }
   }
 
-  returnBoldText(doc, "N° de Documento:", 65, rectMargin + 25);
+  returnBoldText(doc, "N° de Documento:", 65, rectMargin + 18);
   if (ccf.extension) {
     if (ccf.extension.docuRecibe) {
-      doc.text(ccf.extension.docuRecibe, 65, rectMargin + 30);
+      doc.text(ccf.extension.docuRecibe, 65, rectMargin + 22);
     }
   }
 
