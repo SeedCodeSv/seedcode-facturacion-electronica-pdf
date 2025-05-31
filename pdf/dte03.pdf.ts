@@ -341,9 +341,24 @@ export const footerDocument = (doc: jsPDF, rectMargin: number, ccf: DteCcf) => {
   doc.text(`$${" "} ${" "} ${resumen.totalGravada}`, 185, rectMargin + 4);
   doc.setFontSize(6);
   returnBoldText(doc, "Responsable por parte del emisor:", 10, rectMargin + 15);
+  if (ccf.extension) {
+    if (ccf.extension.nombEntrega) {
+      doc.text(ccf.extension.nombEntrega, 10, rectMargin + 20);
+    }
+  }
 
   returnBoldText(doc, "N° de Documento:", 10, rectMargin + 25);
+  if (ccf.extension) {
+    if (ccf.extension.docuEntrega) {
+      doc.text(ccf.extension.docuEntrega, 10, rectMargin + 30);
+    }
+  }
   returnBoldText(doc, "Observaciones:", 10, rectMargin + 35);
+  if (ccf.extension) {
+    if (ccf.extension.observaciones) {
+      doc.text(ccf.extension.observaciones, 10, rectMargin + 40);
+    }
+  }
   returnBoldText(
     doc,
     "Responsable por parte del receptor:",
@@ -351,7 +366,18 @@ export const footerDocument = (doc: jsPDF, rectMargin: number, ccf: DteCcf) => {
     rectMargin + 15
   );
 
+  if (ccf.extension) {
+    if (ccf.extension.nombRecibe) {
+      doc.text(ccf.extension.nombRecibe, 65, rectMargin + 20);
+    }
+  }
+
   returnBoldText(doc, "N° de Documento:", 65, rectMargin + 25);
+  if (ccf.extension) {
+    if (ccf.extension.docuRecibe) {
+      doc.text(ccf.extension.docuRecibe, 65, rectMargin + 30);
+    }
+  }
 
   doc.text("Suma Total de Operaciones:", 127, rectMargin + 10);
   doc.text(

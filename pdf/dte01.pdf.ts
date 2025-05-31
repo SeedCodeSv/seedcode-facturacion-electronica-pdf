@@ -429,9 +429,24 @@ export const footerDocument = (
   doc.text(`$${" "} ${" "} ${resumen.totalGravada}`, 185, rectMargin + 4);
   doc.setFontSize(6);
   returnBoldText(doc, "Responsable por parte del emisor:", 10, rectMargin + 15);
+  if (svfe01.extension) {
+    if (svfe01.extension.nombEntrega) {
+      doc.text(svfe01.extension.nombEntrega, 10, rectMargin + 20);
+    }
+  }
 
   returnBoldText(doc, "N° de Documento:", 10, rectMargin + 25);
+  if (svfe01.extension) {
+    if (svfe01.extension.docuEntrega) {
+      doc.text(svfe01.extension.docuEntrega, 10, rectMargin + 30);
+    }
+  }
   returnBoldText(doc, "Observaciones:", 10, rectMargin + 35);
+  if (svfe01.extension) {
+    if (svfe01.extension.observaciones) {
+      doc.text(svfe01.extension.observaciones, 10, rectMargin + 40);
+    }
+  }
   returnBoldText(
     doc,
     "Responsable por parte del receptor:",
@@ -439,7 +454,18 @@ export const footerDocument = (
     rectMargin + 15
   );
 
+  if (svfe01.extension) {
+    if (svfe01.extension.nombRecibe) {
+      doc.text(svfe01.extension.nombRecibe, 65, rectMargin + 20);
+    }
+  }
+
   returnBoldText(doc, "N° de Documento:", 65, rectMargin + 25);
+  if (svfe01.extension) {
+    if (svfe01.extension.docuRecibe) {
+      doc.text(svfe01.extension.docuRecibe, 65, rectMargin + 30);
+    }
+  }
 
   doc.text("Suma Total de Operaciones:", 127, rectMargin + 10);
   doc.text(
