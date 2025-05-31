@@ -431,7 +431,7 @@ export const footerDocument = (doc: jsPDF, rectMargin: number, ccf: DteNre) => {
   returnBoldText(doc, "Observaciones:", 10, rectMargin + 27);
   if (ccf.extension) {
     if (ccf.extension.observaciones) {
-      const text = doc.splitTextToSize(ccf.extension.observaciones, 120);
+      const text = doc.splitTextToSize(ccf.extension.observaciones, 115);
       doc.text(text, 10, rectMargin + 30);
     }
   }
