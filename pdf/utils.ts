@@ -7,7 +7,7 @@ import sharp from "sharp";
 import * as QRCode from "qrcode";
 import { $MH_QUERY } from "../utils/constants";
 import { DteFe } from "../interfaces/dte01";
-import { DteCcf } from "../interfaces/dte03";
+import { DteCcf, Receptor03 } from "../interfaces/dte03";
 import { DteFse } from "../interfaces/dte14";
 import { DteNce } from "../interfaces/dte05";
 import { DteNre } from "../interfaces/dte04";
@@ -471,7 +471,11 @@ export const secondHeader = (
         `NUMERO DE CONTROL : ${identificacion.numeroControl}`,
       ],
       [
-        `NUMERO DOCUMENTO : ${receptor.numDocumento ?? "-"}`,
+        `${identificacion.tipoDte === "03" ? "NIT : " : "NUMERO DOCUMENTO : "} ${
+          identificacion.tipoDte === "03"
+            ? (receptor as unknown as Receptor03).nit
+            : receptor.numDocumento ?? "-"
+        }`,
         `SELLO : ${respuestaMH.selloRecibido}`,
       ],
       [
