@@ -158,10 +158,10 @@ export const generateSvfe01 = async (
     body:
       documentoRelacionado && documentoRelacionado.length > 0
         ? documentoRelacionado.map((prd) => [
-            prd.tipoDocumento,
-            prd.numeroDocumento,
-            prd.fechaEmision,
-          ])
+          prd.tipoDocumento,
+          prd.numeroDocumento,
+          prd.fechaEmision,
+        ])
         : [["-", "-", "-"]],
     startY: finalY + 2,
   });
@@ -272,8 +272,8 @@ export const generateSvfe01 = async (
       i === 1
         ? rectHeight - 50
         : i === pageCount
-        ? rectHeight - 50
-        : rectHeight,
+          ? rectHeight - 50
+          : rectHeight,
       0,
       0,
       "S"
@@ -285,8 +285,8 @@ export const generateSvfe01 = async (
       i === 1
         ? rectHeight - 50
         : i === pageCount
-        ? rectHeight - 50
-        : rectHeight,
+          ? rectHeight - 50
+          : rectHeight,
       0,
       0,
       "S"
@@ -298,8 +298,8 @@ export const generateSvfe01 = async (
       i === 1
         ? rectHeight - 50
         : i === pageCount
-        ? rectHeight - 50
-        : rectHeight,
+          ? rectHeight - 50
+          : rectHeight,
       0,
       0,
       "S"
@@ -468,32 +468,29 @@ export const footerDocument = (
     }
   }
 
-  doc.text("Suma Total de Operaciones:", 127, rectMargin + 10);
-  doc.text(
-    "Monto global Desc., Rebajas y otros a ventas no sujetas: ",
-    127,
-    rectMargin + 13
-  );
-  doc.text(
-    "Monto global Desc., Rebajas y otros a ventas exentas:",
-    127,
-    rectMargin + 16
-  );
-  doc.text(
-    "Monto global Desc., Rebajas y otros a ventas gravadas:",
-    127,
-    rectMargin + 19
-  );
-  // doc.text("IVA 13%: ", 127, rectMargin + 22);
-  doc.text("Sub-Total: ", 127, rectMargin + 22);
-  // doc.text("IVA Percibido: ", 127, rectMargin + 28);
-  doc.text("IVA Retenido: ", 127, rectMargin + 25);
-  doc.text("Retención Renta: ", 127, rectMargin + 28);
-  doc.text("Monto Total de la Operación: ", 127, rectMargin + 31);
-  doc.text("Total Otros montos no afectos: ", 127, rectMargin + 34);
-  doc.text("Total a Pagar: ", 127, rectMargin + 37);
+  const iva_5_percent = resumen.tributos ? resumen.tributos.find((tr) => tr.codigo === "59").valor ?? 0 : 0;
 
-  for (let i = 0; i < 10; i++) {
+  const headers = [
+    "Suma Total de Operaciones:",
+    "Monto global Desc., Rebajas y otros a ventas no sujetas:",
+    "Monto global Desc., Rebajas y otros a ventas exentas:",
+    "Monto global Desc., Rebajas y otros a ventas gravadas:",
+    "IVA 13%:",
+    iva_5_percent > 0 ? "Turismo por alojamiento 5%:" : undefined,
+    "Sub-Total:",
+    "IVA Retenido:",
+    "Retención Renta:",
+    "Monto Total de la Operación:",
+    "Total a Pagar:",
+  ].filter(Boolean);
+
+  const initialY = rectMargin + 10
+
+  headers.forEach((header, index) => {
+    doc.text(header, 127, initialY + 3 * index);
+  });
+
+  for (let i = 0; i < 11; i++) {
     doc.text("$", 185, rectMargin + i * 3 + 10);
   }
 
@@ -504,15 +501,14 @@ export const footerDocument = (
     resumen.descuNoSuj.toFixed(2),
     resumen.descuExenta.toFixed(2),
     resumen.descuGravada.toFixed(2),
-    // resumen.tributos ? resumen.tributos.map((tr) => Number(tr.valor)).reduce((a, b) => a + b).toFixed(2) : "0.00",
+    resumen.totalIva.toFixed(2),
+    iva_5_percent > 0 ? iva_5_percent.toFixed(2) : undefined,
     resumen.subTotal.toFixed(2),
-    // resumen.ivaPerci1.toFixed(2),
     resumen.ivaRete1.toFixed(2),
     resumen.reteRenta.toFixed(2),
     resumen.montoTotalOperacion.toFixed(2),
-    "0.00",
     resumen.totalPagar.toFixed(2),
-  ];
+  ].filter(Boolean);
 
   totals.forEach((total, index) => {
     doc.text(total, 202.5, rectMargin + index * 3 + 10, {
