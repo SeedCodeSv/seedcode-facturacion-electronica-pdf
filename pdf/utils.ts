@@ -123,7 +123,8 @@ export const headerDoc = async (
   doc: jsPDF,
   dte: DteFe | DteCcf | DteFse | DteNce | DteNre,
   logo: Uint8Array | string = "",
-  canInvertName: boolean = false
+  canInvertName: boolean = false,
+  splitNameInTwoLines: boolean = false
 ) => {
   const dataQR = await generateQR(dte);
   const { imageBase64, width, height } = await adjustImage(logo);
@@ -169,19 +170,35 @@ export const headerDoc = async (
 
         doc.setFontSize(7);
 
-        const formattedName =
-          dte.identificacion.tipoDte === "01" ||
-          dte.identificacion.tipoDte === "03"
-            ? formatName(
-                dte.emisor.nombre,
-                (dte as DteFe).emisor.nombreComercial,
-                canInvertName
-              )
-            : dte.emisor.nombre;
+        let formattedName: string | string[];
 
-        const name = doc.splitTextToSize(formattedName, cellWidth - 4);
+        const tipoDte = dte.identificacion.tipoDte;
+        const nombre = dte.emisor.nombre;
+        const nombreComercial = (dte as DteFe).emisor.nombreComercial || "";
+
+        if (
+          (tipoDte === "01" || tipoDte === "03") &&
+          splitNameInTwoLines &&
+          nombreComercial
+        ) {
+          formattedName = canInvertName ? [nombreComercial, nombre] : [
+            nombre,
+            nombreComercial
+          ];
+        } else {
+          formattedName =
+            tipoDte === "01" || tipoDte === "03"
+              ? formatName(nombre, nombreComercial, canInvertName)
+              : nombre;
+        }
+
+        const name = Array.isArray(formattedName)
+          ? formattedName.flatMap((line) => doc.splitTextToSize(line, cellWidth - 4))
+          : doc.splitTextToSize(formattedName, cellWidth - 4);
+
         const hName = getHeightText(doc, name);
         returnBoldText(doc, name, cellX + cellWidth / 2, cellY + 5, "center");
+
         const actEco = doc.splitTextToSize(
           `Actividad económica: ${dte.emisor.descActividad}`,
           cellWidth - 4
@@ -195,7 +212,6 @@ export const headerDoc = async (
           "center"
         );
 
-        // Agregar dirección
         const address = doc.splitTextToSize(
           `DIRECCIÓN : ${dte.emisor.direccion.complemento} ${formatAddress(
             dte.emisor.direccion.departamento,
@@ -212,7 +228,6 @@ export const headerDoc = async (
           "center"
         );
 
-        // Agregar teléfono
         returnBoldText(
           doc,
           `TEL: ${dte.emisor.telefono}`,
@@ -220,6 +235,7 @@ export const headerDoc = async (
           cellY + hName + hActEco + hAddress + 7,
           "center"
         );
+
       }
       if (data.column.index === 2 && data.row.index === 0) {
         const cellX = data.cell.x;
@@ -460,9 +476,9 @@ export const secondHeader = (
       [
         receptor.direccion
           ? `DIRECCIÓN :  ${receptor.direccion.complemento} ${formatAddress(
-              receptor.direccion.departamento,
-              receptor.direccion.municipio
-            )}, El Salvador`
+            receptor.direccion.departamento,
+            receptor.direccion.municipio
+          )}, El Salvador`
           : "No establecida",
         `CÓDIGO GENERACIÓN : ${identificacion.codigoGeneracion}`,
       ],
@@ -471,10 +487,9 @@ export const secondHeader = (
         `NUMERO DE CONTROL : ${identificacion.numeroControl}`,
       ],
       [
-        `${identificacion.tipoDte === "03" ? "NIT : " : "NUMERO DOCUMENTO : "} ${
-          identificacion.tipoDte === "03"
-            ? (receptor as unknown as Receptor03).nit
-            : receptor.numDocumento ?? "-"
+        `${identificacion.tipoDte === "03" ? "NIT : " : "NUMERO DOCUMENTO : "} ${identificacion.tipoDte === "03"
+          ? (receptor as unknown as Receptor03).nit
+          : receptor.numDocumento ?? "-"
         }`,
         `SELLO : ${respuestaMH.selloRecibido}`,
       ],
@@ -484,33 +499,30 @@ export const secondHeader = (
       ],
       [
         `TEL : ${receptor.telefono ?? "-"}`,
-        `MODELO DE FACTURACIÓN : ${
-          identificacion.tipoModelo === 2 ? "Diferido" : "Previo"
+        `MODELO DE FACTURACIÓN : ${identificacion.tipoModelo === 2 ? "Diferido" : "Previo"
         }`,
       ],
       [
-        `CONDICIÓN DE LA OPERACIÓN: ${
-          resumen.condicionOperacion === 1 ? "Contado" : "Crédito"
+        `CONDICIÓN DE LA OPERACIÓN: ${resumen.condicionOperacion === 1 ? "Contado" : "Crédito"
         }`,
-        `TIPO DE TRANSMISIÓN : ${
-          identificacion.tipoOperacion === 2 ? "Por contingencia" : "Normal"
+        `TIPO DE TRANSMISIÓN : ${identificacion.tipoOperacion === 2 ? "Por contingencia" : "Normal"
         }`,
       ],
       selloInvalidacion !== ""
         ? [
-            {
-              content: "DTE INVALIDO CORRECTAMENTE",
-              styles: { textColor: "red", fontSize: 8 },
+          {
+            content: "DTE INVALIDO CORRECTAMENTE",
+            styles: { textColor: "red", fontSize: 8 },
+          },
+          {
+            content: `SELLO DE ANULACIÓN : ${selloInvalidacion}`,
+            styles: {
+              textColor: "red",
+              fontSize: 8,
+              cellPadding: { right: 20 },
             },
-            {
-              content: `SELLO DE ANULACIÓN : ${selloInvalidacion}`,
-              styles: {
-                textColor: "red",
-                fontSize: 8,
-                cellPadding: { right: 20 },
-              },
-            },
-          ]
+          },
+        ]
         : [],
     ].filter((row) => row.length > 0),
     columnStyles: { 0: { cellWidth: 115 }, 1: { cellWidth: 105 } },

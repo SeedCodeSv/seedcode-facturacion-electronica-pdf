@@ -16,7 +16,8 @@ export const generateSvfe01 = async (
   logo: Uint8Array | string = "",
   selloInvalidacion: string = "",
   contingence: boolean = false,
-  canInvertName: boolean = false
+  canInvertName: boolean = false,
+  splitNameInTwoLines: boolean = false
 ) => {
   const doc = new jsPDF({
     compress: true,
@@ -250,7 +251,7 @@ export const generateSvfe01 = async (
   const pageCount = doc.internal.pages.length - 1;
   for (let i = 1; i <= pageCount; i++) {
     doc.setPage(i);
-    await headerDoc(doc, svfe01, logo, canInvertName);
+    await headerDoc(doc, svfe01, logo, canInvertName,splitNameInTwoLines);
     const margin = 5;
     const rectWidth = doc.internal.pageSize.getWidth() - 2 * margin;
     const radius = 2;
