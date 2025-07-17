@@ -3,7 +3,6 @@ import { nunitoSemibold } from "./fonts/nunito-semibold";
 import { nunitoBold } from "./fonts/nunito";
 import autoTable from "jspdf-autotable";
 import { Icons } from "./icons/icon";
-import { DteFe } from "../../interfaces/dte01";
 import {
   adjustImage,
   formatAddress,
@@ -12,7 +11,8 @@ import {
   getHeightText,
   adjustImageWatermark,
 } from "../utils";
-import { formatDocumentType, formatNameTypeDocument } from "./utils";
+import { formatDocumentType } from "./utils";
+import { DteCcf } from "../../main";
 
 interface Props {
   borderColor: string;
@@ -20,7 +20,7 @@ interface Props {
   fillColor2: string;
   darkTextColor: string;
   lightTextColor: string;
-  svfe01: DteFe;
+  svfe01: DteCcf;
   logoWidth: number;
   logoHeight: number;
   logo: Uint8Array | string;
@@ -34,6 +34,7 @@ interface Props {
     phone: string;
   };
 }
+
 /**
  * Function to generate svfe01 template 2
  *
@@ -44,7 +45,7 @@ interface Props {
  * @param {string} param0.fillColor2
  * @param {string} param0.darkTextColor
  * @param {string} param0.lightTextColor
- * @param {DteFe} param0.svfe01
+ * @param {DteCcf} param0.svfe01
  * @param {number} param0.logoWidth
  * @param {number} param0.logoHeight
  * @param {{ instagram: string; facebook: string; tiktok: string; whatsapp: string; phone: string; }} param0.socialMedia
@@ -52,7 +53,7 @@ interface Props {
  * @param {*} [param0.watermark=""]
  * @returns {unknown}
  */
-export const generateSvfe01_2 = async ({
+export const generateSvfe03_2 = async ({
   borderColor,
   fillColor,
   fillColor2,
@@ -372,6 +373,12 @@ export const generateSvfe01_2 = async ({
               (cuerpo) => cuerpo.descripcion === "PROPINA"
             )?.noGravado ?? 0;
 
+          const totalIva =
+            resumen.tributos && resumen.tributos.length > 0
+              ? resumen.tributos.find((tributo) => tributo.codigo === "20")
+                  ?.valor || 0
+              : 0;
+
           const noAfectos = resumen.totalExenta + resumen.totalNoSuj;
           doc.text(
             formatCurrency(resumen.subTotal),
@@ -381,11 +388,7 @@ export const generateSvfe01_2 = async ({
           let textYTotals = data.cell.y + 22;
           doc.text(formatCurrency(tourism), data.cell.x + 230, textYTotals);
           textYTotals += 12;
-          doc.text(
-            formatCurrency(resumen.totalIva),
-            data.cell.x + 230,
-            textYTotals
-          );
+          doc.text(formatCurrency(totalIva), data.cell.x + 230, textYTotals);
           textYTotals += 12;
           doc.text(
             formatCurrency(resumen.subTotalVentas),
@@ -683,7 +686,7 @@ export const generateSvfe01_2 = async ({
               { align: "center" }
             );
             doc.addImage(
-              QR,
+              QR as Buffer,
               "PNG",
               data.cell.x + 5,
               data.cell.y + 40,
@@ -779,6 +782,8 @@ export const generateSvfe01_2 = async ({
         }
       ).lastAutoTable.finalY;
 
+      const payCondition = resumen.pagos[0].codigo ?? "01";
+
       autoTable(doc, {
         head: [[""]],
         showHead: true,
@@ -818,9 +823,9 @@ export const generateSvfe01_2 = async ({
               doc.text(svfe01.receptor.nombre, paddingX + 100, lastY + 3);
               lastY += 30;
               const actEco = doc.splitTextToSize("Actividad Economica: ", 100);
-              doc.text("-", paddingX + 100, lastY);
+              doc.text(svfe01.receptor.descActividad, paddingX + 100, lastY);
               doc.text(actEco, paddingX, lastY);
-              lastY += 35;
+              lastY += 40;
               doc.text("Dirección: ", paddingX, lastY);
               const address = doc.splitTextToSize(
                 doc.splitTextToSize(
@@ -838,36 +843,18 @@ export const generateSvfe01_2 = async ({
               );
               doc.text(address, paddingX + 100, lastY);
               lastY += 40;
-              doc.text(
-                doc.splitTextToSize("Tipo de documento: ", 100),
-                paddingX,
-                lastY - 10
-              );
-              doc.text(
-                svfe01.receptor.tipoDocumento
-                  ? formatNameTypeDocument(svfe01.receptor.tipoDocumento)
-                  : "-",
-                paddingX + 100,
-                lastY
-              );
-              lastY += 30;
-              doc.text(
-                doc.splitTextToSize("Numero de documento: ", 100),
-                paddingX,
-                lastY - 5
-              );
-              doc.text(
-                svfe01.receptor.numDocumento ?? "-",
-                paddingX + 100,
-                lastY
-              );
-              lastY += 35;
+              doc.text("NIT: ", paddingX, lastY);
+              doc.text(svfe01.receptor.nit, paddingX + 100, lastY);
+              lastY += 25;
+              doc.text("NRC: ", paddingX, lastY);
+              doc.text(svfe01.receptor.nrc, paddingX + 100, lastY);
+              lastY += 25;
               doc.text("Correo: ", paddingX, lastY);
               doc.text(svfe01.receptor.correo, paddingX + 100, lastY);
               lastY += 25;
-              const nomCom = doc.splitTextToSize("NRC: ", 80);
+              const nomCom = doc.splitTextToSize("Nombre comercial: ", 80);
               doc.text(nomCom, paddingX, lastY);
-              doc.text(svfe01.receptor.nrc ?? "-", paddingX + 100, lastY);
+              doc.text(svfe01.receptor.nombreComercial, paddingX + 100, lastY);
 
               doc.setFillColor(fillColor2);
               doc.rect(data.cell.x + 60, data.cell.y + 243, 130, 17, "F");
@@ -878,7 +865,11 @@ export const generateSvfe01_2 = async ({
                 data.cell.y + 255
               );
               doc.setTextColor(darkTextColor);
-              doc.text("Contado", data.cell.x + 200, data.cell.y + 255);
+              doc.text(
+                payCondition === "01" ? "Contado" : "Credito",
+                data.cell.x + 200,
+                data.cell.y + 255
+              );
             }
           }
         },

@@ -68,15 +68,13 @@ export const returnBoldText = (
   doc.setFont("helvetica", "normal");
 };
 
-export async function adjustImage(imageData: Uint8Array | string = "") {
+export async function adjustImage(imageData: Uint8Array | string = "", maxWidth: number = 45, maxHeight: number = 20) {
   if (typeof imageData !== "string") {
     const imageBuffer = Buffer.from(imageData);
     const metadata = await sharp(imageBuffer).metadata();
 
     const imgWidth = metadata.width || 1;
     const imgHeight = metadata.height || 1;
-    const maxWidth = 45; // mm
-    const maxHeight = 20; // mm
     let width = maxWidth;
     let height = (imgHeight / imgWidth) * maxWidth;
 
@@ -87,10 +85,12 @@ export async function adjustImage(imageData: Uint8Array | string = "") {
 
     await sharp(imageBuffer)
       .resize(Math.round(width * 3.779527), Math.round(height * 3.779527))
-      .jpeg({ quality: 60 })
+      .png({ quality: 60 })
       .toBuffer();
 
-    return { imageBase64: "", width, height };
+    const imageBase64 = uint8ArrayToBase64(imageBuffer);
+
+    return { imageBase64: imageBase64, width, height };
   } else {
     const desiredHeight = 20;
     const newWidth = await returnWidthImgFromBuffer(
@@ -103,6 +103,47 @@ export async function adjustImage(imageData: Uint8Array | string = "") {
 
     return { imageBase64: logo, width: newWidth, height: desiredHeight };
   }
+}
+
+export const adjustImageWatermark = async (imageData: Uint8Array | string = "", maxWidth: number = 45, maxHeight: number = 20) => {
+  if (typeof imageData !== "string") {
+    const imageBuffer = Buffer.from(imageData);
+    const metadata = await sharp(imageBuffer).metadata();
+
+    const imgWidth = metadata.width || 1;
+    const imgHeight = metadata.height || 1;
+    let width = maxWidth;
+    let height = (imgHeight / imgWidth) * maxWidth;
+
+    if (height > maxHeight) {
+      height = maxHeight;
+      width = (imgWidth / imgHeight) * maxHeight;
+    }
+
+    const data = await sharp(imageBuffer)
+      .resize(Math.round(width * 3.779527), Math.round(height * 3.779527))
+      .png({ quality: 60 })
+      .toBuffer()
+    const imageBase64 = uint8ArrayToBase64(data);
+
+
+    return { imageBase64, width, height };
+  } else {
+    const desiredHeight = 20;
+    const newWidth = await returnWidthImgFromBuffer(
+      readFileSync(join(__dirname, "logos/logo.png")),
+      desiredHeight
+    );
+    const logo = readFileSync(join(__dirname, "logos/logo.png")).toString(
+      "base64"
+    );
+
+    return { imageBase64: logo, width: newWidth, height: desiredHeight };
+  }
+}
+
+function uint8ArrayToBase64(uint8Array: Uint8Array): string {
+  return Buffer.from(uint8Array).toString("base64");
 }
 
 const formatName = (
@@ -127,6 +168,7 @@ export const headerDoc = async (
   splitNameInTwoLines: boolean = false
 ) => {
   const dataQR = await generateQR(dte);
+  
   const { imageBase64, width, height } = await adjustImage(logo);
   autoTable(doc, {
     startY: 5,
@@ -455,6 +497,24 @@ export const generateUrl = (dte: DteFe | DteCcf | DteFse | DteNce | DteNre) => {
     dte.identificacion.fecEmi
   );
 };
+
+export const generateQRWithColor = async (
+  dte: DteFe | DteCcf | DteFse | DteNce | DteNre,
+  color: string
+) => {
+  try {
+    const dataUrl = await QRCode.toBuffer(generateUrl(dte), {
+      color: {
+        dark: color,
+        light: "#ffffff"
+      }
+    });
+    return dataUrl;
+  } catch (err) {
+    return "";
+  }
+}
+
 
 export const secondHeader = (
   doc: jsPDF,
