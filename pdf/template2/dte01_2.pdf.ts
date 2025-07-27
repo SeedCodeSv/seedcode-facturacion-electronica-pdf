@@ -20,6 +20,7 @@ interface Props {
   fillColor2: string;
   darkTextColor: string;
   lightTextColor: string;
+  tertiaryColor: string;
   svfe01: DteFe;
   logoWidth: number;
   logoHeight: number;
@@ -58,6 +59,7 @@ export const generateSvfe01_2 = async ({
   fillColor2,
   darkTextColor,
   lightTextColor,
+  tertiaryColor,
   svfe01,
   logoWidth,
   logoHeight,
@@ -172,7 +174,7 @@ export const generateSvfe01_2 = async ({
 
   const icons = new Icons();
 
-  icons.changeFillColor(darkTextColor);
+  icons.changeFillColor(tertiaryColor);
 
   const PHONE = await icons.returnBase64Icon("PHONE");
   const INSTAGRAM = await icons.returnBase64Icon("INSTAGRAM");
@@ -239,6 +241,8 @@ export const generateSvfe01_2 = async ({
             data.cell.y + 195
           );
 
+          doc.setTextColor(tertiaryColor)
+
           doc.addImage(
             INSTAGRAM,
             "PNG",
@@ -284,6 +288,7 @@ export const generateSvfe01_2 = async ({
             14
           );
           doc.text(socialMedia.phone, data.cell.x + 654, data.cell.y + 228);
+          doc.setTextColor(darkTextColor)
         }
         if (data.column.index === 1) {
           doc.setFont("Nunito", "normal");
@@ -551,7 +556,7 @@ export const generateSvfe01_2 = async ({
       );
       doc.setFontSize(10);
       doc.text(
-        formatCurrency(resumen.totalGravada),
+        formatCurrency(resumen.totalNoSuj),
         595,
         doc.internal.pageSize.height - 285,
         {
@@ -565,7 +570,7 @@ export const generateSvfe01_2 = async ({
         doc.internal.pageSize.height - 278
       );
       doc.text(
-        formatCurrency(resumen.totalNoSuj),
+        formatCurrency(resumen.totalExenta),
         670,
         doc.internal.pageSize.height - 285,
         {
@@ -579,7 +584,7 @@ export const generateSvfe01_2 = async ({
         doc.internal.pageSize.height - 278
       );
       doc.text(
-        formatCurrency(resumen.totalExenta),
+        formatCurrency(resumen.totalGravada),
         750,
         doc.internal.pageSize.height - 285,
         {
@@ -622,7 +627,7 @@ export const generateSvfe01_2 = async ({
             doc.text(svfe01.emisor.nombreComercial, data.cell.x + 10, lastY);
             lastY += 15;
             doc.setFontSize(10);
-
+            doc.setTextColor(tertiaryColor);
             doc.text("N.I.T: ", data.cell.x + 10, lastY);
             doc.setFont("Nunito", "normal");
             doc.text(svfe01.emisor.nit, data.cell.x + 40, lastY);
@@ -630,6 +635,7 @@ export const generateSvfe01_2 = async ({
             doc.text("N.R.C: ", data.cell.x + 150, lastY);
             doc.setFont("Nunito", "normal");
             doc.text(svfe01.emisor.nrc, data.cell.x + 180, lastY);
+            doc.setTextColor(darkTextColor);
             doc.setFont("Nunito", "bold");
             lastY += 15;
             doc.setFontSize(8);
@@ -667,7 +673,7 @@ export const generateSvfe01_2 = async ({
 
             doc.setFont("Nunito", "bold");
             doc.setFontSize(15);
-            doc.setTextColor(darkTextColor);
+            doc.setTextColor(tertiaryColor)
             doc.text(
               "Documento Tributario Electrónico",
               data.cell.x + 200,
@@ -682,6 +688,7 @@ export const generateSvfe01_2 = async ({
               data.cell.y + 32,
               { align: "center" }
             );
+            doc.setTextColor(darkTextColor);
             doc.addImage(
               QR,
               "PNG",

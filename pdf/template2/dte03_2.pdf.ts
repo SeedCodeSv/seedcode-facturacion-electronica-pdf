@@ -20,6 +20,7 @@ interface Props {
   fillColor2: string;
   darkTextColor: string;
   lightTextColor: string;
+  tertiaryColor: string;
   svfe01: DteCcf;
   logoWidth: number;
   logoHeight: number;
