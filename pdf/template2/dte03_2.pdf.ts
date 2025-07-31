@@ -60,6 +60,7 @@ export const generateSvfe03_2 = async ({
   fillColor2,
   darkTextColor,
   lightTextColor,
+  tertiaryColor,
   svfe01,
   logoWidth,
   logoHeight,
@@ -174,7 +175,7 @@ export const generateSvfe03_2 = async ({
 
   const icons = new Icons();
 
-  icons.changeFillColor(darkTextColor);
+  icons.changeFillColor(tertiaryColor);
 
   const PHONE = await icons.returnBase64Icon("PHONE");
   const INSTAGRAM = await icons.returnBase64Icon("INSTAGRAM");
@@ -241,6 +242,7 @@ export const generateSvfe03_2 = async ({
             data.cell.y + 195
           );
 
+          doc.setTextColor(tertiaryColor)
           doc.addImage(
             INSTAGRAM,
             "PNG",
@@ -286,6 +288,7 @@ export const generateSvfe03_2 = async ({
             14
           );
           doc.text(socialMedia.phone, data.cell.x + 654, data.cell.y + 228);
+          doc.setTextColor(darkTextColor);
         }
         if (data.column.index === 1) {
           doc.setFont("Nunito", "normal");
@@ -377,7 +380,7 @@ export const generateSvfe03_2 = async ({
           const totalIva =
             resumen.tributos && resumen.tributos.length > 0
               ? resumen.tributos.find((tributo) => tributo.codigo === "20")
-                  ?.valor || 0
+                ?.valor || 0
               : 0;
 
           const noAfectos = resumen.totalExenta + resumen.totalNoSuj;
@@ -494,8 +497,8 @@ export const generateSvfe03_2 = async ({
           ? 600
           : 350
         : i === doc.internal.pages.length - 1
-        ? 609
-        : doc.internal.pageSize.height - 200,
+          ? 609
+          : doc.internal.pageSize.height - 200,
       15,
       15,
       "S"
@@ -626,7 +629,7 @@ export const generateSvfe03_2 = async ({
             doc.text(svfe01.emisor.nombreComercial, data.cell.x + 10, lastY);
             lastY += 15;
             doc.setFontSize(10);
-
+            doc.setTextColor(tertiaryColor);
             doc.text("N.I.T: ", data.cell.x + 10, lastY);
             doc.setFont("Nunito", "normal");
             doc.text(svfe01.emisor.nit, data.cell.x + 40, lastY);
@@ -634,6 +637,7 @@ export const generateSvfe03_2 = async ({
             doc.text("N.R.C: ", data.cell.x + 150, lastY);
             doc.setFont("Nunito", "normal");
             doc.text(svfe01.emisor.nrc, data.cell.x + 180, lastY);
+            doc.setTextColor(darkTextColor);
             doc.setFont("Nunito", "bold");
             lastY += 15;
             doc.setFontSize(8);
@@ -644,8 +648,8 @@ export const generateSvfe03_2 = async ({
                 svfe01.emisor.direccion.departamento,
                 svfe01.emisor.direccion.municipio
               ) +
-                " " +
-                svfe01.emisor.direccion.complemento,
+              " " +
+              svfe01.emisor.direccion.complemento,
               380
             );
 
@@ -832,11 +836,11 @@ export const generateSvfe03_2 = async ({
                 doc.splitTextToSize(
                   svfe01.receptor.direccion
                     ? formatAddress(
-                        svfe01.receptor.direccion.departamento,
-                        svfe01.receptor.direccion.municipio
-                      ) +
-                        ", " +
-                        svfe01.receptor.direccion.complemento
+                      svfe01.receptor.direccion.departamento,
+                      svfe01.receptor.direccion.municipio
+                    ) +
+                    ", " +
+                    svfe01.receptor.direccion.complemento
                     : "",
                   300
                 ),
