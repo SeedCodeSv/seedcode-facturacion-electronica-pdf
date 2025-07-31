@@ -558,7 +558,7 @@ export const generateSvfe03_2 = async ({
       );
       doc.setFontSize(10);
       doc.text(
-        formatCurrency(resumen.totalGravada),
+        formatCurrency(resumen.totalNoSuj),
         595,
         doc.internal.pageSize.height - 285,
         {
@@ -572,7 +572,7 @@ export const generateSvfe03_2 = async ({
         doc.internal.pageSize.height - 278
       );
       doc.text(
-        formatCurrency(resumen.totalNoSuj),
+        formatCurrency(resumen.totalExenta),
         670,
         doc.internal.pageSize.height - 285,
         {
@@ -586,7 +586,7 @@ export const generateSvfe03_2 = async ({
         doc.internal.pageSize.height - 278
       );
       doc.text(
-        formatCurrency(resumen.totalExenta),
+        formatCurrency(resumen.totalGravada),
         750,
         doc.internal.pageSize.height - 285,
         {
