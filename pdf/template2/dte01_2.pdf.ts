@@ -33,6 +33,7 @@ interface Props {
     tiktok: string;
     whatsapp: string;
     phone: string;
+    website: string;
   };
 }
 /**
@@ -658,7 +659,7 @@ export const generateSvfe01_2 = async ({
             doc.text(address, data.cell.x + 10, lastY);
             lastY += textH + 2;
             doc.text(svfe01.emisor.correo, data.cell.x + 10, lastY);
-            doc.text("www.mirasurf.com", data.cell.x + 150, lastY);
+            doc.text(socialMedia.website, data.cell.x + 150, lastY);
           }
           if (data.column.index === 1) {
             doc.setLineWidth(1.2);
