@@ -221,27 +221,29 @@ export const generateSvfe01_2 = async ({
           doc.setFontSize(9);
 
           doc.text(
-            `Nombre entrega: ${extension ? extension.nombEntrega : ""}`,
+            `Nombre entrega: ${extension ? extension.nombEntrega ?? "" : ""}`,
             data.cell.x + 10,
             data.cell.y + 179
           );
           doc.text(
-            `Documento entrega: ${extension ? extension.docuEntrega : ""}`,
+            `Documento entrega: ${
+              extension ? extension.docuEntrega ?? "" : ""
+            }`,
             data.cell.x + 10,
             data.cell.y + 195
           );
           doc.text(
-            `Nombre recibe: ${extension ? extension.nombRecibe : ""}`,
+            `Nombre recibe: ${extension ? extension.nombRecibe ?? "" : ""}`,
             data.cell.x + 450,
             data.cell.y + 179
           );
           doc.text(
-            `Documento recibe: ${extension ? extension.docuRecibe : ""}`,
+            `Documento recibe: ${extension ? extension.docuRecibe ?? "" : ""}`,
             data.cell.x + 450,
             data.cell.y + 195
           );
 
-          doc.setTextColor(tertiaryColor)
+          doc.setTextColor(tertiaryColor);
 
           doc.addImage(
             INSTAGRAM,
@@ -288,7 +290,7 @@ export const generateSvfe01_2 = async ({
             14
           );
           doc.text(socialMedia.phone, data.cell.x + 654, data.cell.y + 228);
-          doc.setTextColor(darkTextColor)
+          doc.setTextColor(darkTextColor);
         }
         if (data.column.index === 1) {
           doc.setFont("Nunito", "normal");
@@ -342,7 +344,7 @@ export const generateSvfe01_2 = async ({
             align: "right",
           });
           textY += 12;
-          doc.text("Propina 10%:", data.cell.x + 215, textY, {
+          doc.text("Servicio 10%:", data.cell.x + 215, textY, {
             align: "right",
           });
           textY += 12;
@@ -673,7 +675,7 @@ export const generateSvfe01_2 = async ({
 
             doc.setFont("Nunito", "bold");
             doc.setFontSize(15);
-            doc.setTextColor(tertiaryColor)
+            doc.setTextColor(tertiaryColor);
             doc.text(
               "Documento Tributario Electrónico",
               data.cell.x + 200,

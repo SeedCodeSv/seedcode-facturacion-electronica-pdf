@@ -68,7 +68,7 @@ export const returnBoldText = (
   doc.setFont("helvetica", "normal");
 };
 
-export async function adjustImage(imageData: Uint8Array | string = "", maxWidth: number = 45, maxHeight: number = 20) {
+export async function adjustImage(imageData: Uint8Array | string = "", maxWidth: number = 60, maxHeight: number = 35) {
   if (typeof imageData !== "string") {
     const imageBuffer = Buffer.from(imageData);
     const metadata = await sharp(imageBuffer).metadata();

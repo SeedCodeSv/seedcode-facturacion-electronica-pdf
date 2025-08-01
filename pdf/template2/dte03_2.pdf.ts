@@ -342,7 +342,7 @@ export const generateSvfe03_2 = async ({
             align: "right",
           });
           textY += 12;
-          doc.text("Propina 10%:", data.cell.x + 215, textY, {
+          doc.text("Servicio 10%:", data.cell.x + 215, textY, {
             align: "right",
           });
           textY += 12;
