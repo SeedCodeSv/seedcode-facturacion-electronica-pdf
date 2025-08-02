@@ -627,7 +627,7 @@ export const generateSvfe01_2 = async ({
 
             let lastY = 110;
             doc.setFontSize(15);
-            doc.text(svfe01.emisor.nombreComercial, data.cell.x + 10, lastY);
+            doc.text(svfe01.emisor.nombre, data.cell.x + 10, lastY);
             lastY += 15;
             doc.setFontSize(10);
             doc.setTextColor(tertiaryColor);
@@ -842,7 +842,7 @@ export const generateSvfe01_2 = async ({
                         ", " +
                         svfe01.receptor.direccion.complemento
                     : "",
-                  300
+                  600
                 ),
                 700
               );
