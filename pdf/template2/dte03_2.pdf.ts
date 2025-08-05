@@ -68,6 +68,7 @@ export const generateSvfe03_2 = async ({
   socialMedia,
   logo = "",
   watermark = "",
+  selloInvalidacion = ""
 }: Props) => {
   const doc = new jsPDF({
     orientation: "portrait",
@@ -524,6 +525,49 @@ export const generateSvfe03_2 = async ({
     doc.line(633, i === 1 ? 420 : 170, 633, lineHeight);
     doc.line(713, i === 1 ? 420 : 170, 713, lineHeight);
 
+    if (selloInvalidacion !== "") {
+      doc.saveGraphicsState();
+      doc.setGState(doc.GState({ opacity: 1 }));
+      doc.setTextColor("red");
+      doc.setFontSize(16);
+
+      const pageWidth = doc.internal.pageSize.width;
+      const pageHeight = doc.internal.pageSize.height;
+
+      const rectWidth = 600;
+      const rectHeight = 20;
+
+      const centerX = pageWidth / 2;
+      const offsetY = isFirstPage
+        ? hasMultiplePages
+          ? pageHeight / 2 + 200
+          : pageHeight / 2 + 150
+        : pageHeight / 2;
+
+      doc.setFillColor("#ffffff");
+
+      doc.roundedRect(
+        centerX - rectWidth / 2,
+        offsetY,
+        rectWidth,
+        rectHeight,
+        3,
+        3,
+        "F"
+      );
+
+      doc.text(
+        "Documento invalidado: " + selloInvalidacion,
+        centerX,
+        offsetY + 14,
+        {
+          align: "center",
+        }
+      );
+
+      doc.restoreGraphicsState();
+    }
+
     if (isLastPage) {
       doc.setFillColor(fillColor2);
 
@@ -626,7 +670,7 @@ export const generateSvfe03_2 = async ({
             doc.setTextColor(darkTextColor);
 
             let lastY = 110;
-            doc.setFontSize(15);
+            doc.setFontSize(13);
             doc.text(svfe01.emisor.nombre, data.cell.x + 10, lastY);
             lastY += 15;
             doc.setFontSize(10);
