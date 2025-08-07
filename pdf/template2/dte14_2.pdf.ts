@@ -292,16 +292,20 @@ export const generateSvfe14_2 = async ({
           doc.setFillColor(fillColor);
           doc.rect(data.cell.x + 220, data.cell.y + 20, 150, 80, "F");
 
-          doc.text("$20.00", data.cell.x + 230, data.cell.y + 35);
+          doc.text(
+            String(resumen.subTotal),
+            data.cell.x + 230,
+            data.cell.y + 35
+          );
 
           let textYTotals = data.cell.y + 50;
-          doc.text("$20.00", data.cell.x + 230, textYTotals);
+          doc.text(String(resumen.totalCompra), data.cell.x + 230, textYTotals);
           textYTotals += 15;
-          doc.text("$1.80", data.cell.x + 230, textYTotals);
+          doc.text(String(resumen.ivaRete1), data.cell.x + 230, textYTotals);
           textYTotals += 15;
-          doc.text("$22.00", data.cell.x + 230, textYTotals);
+          doc.text(String(resumen.reteRenta), data.cell.x + 230, textYTotals);
           textYTotals += 15;
-          doc.text("$22.00", data.cell.x + 230, textYTotals);
+          doc.text(String(resumen.totalPagar), data.cell.x + 230, textYTotals);
         }
       }
     },
@@ -465,9 +469,14 @@ export const generateSvfe14_2 = async ({
         700,
         doc.internal.pageSize.height - 175
       );
-      doc.text("$1100.00", 750, doc.internal.pageSize.height - 185, {
-        align: "center",
-      });
+      doc.text(
+        String(resumen.totalCompra),
+        750,
+        doc.internal.pageSize.height - 185,
+        {
+          align: "center",
+        }
+      );
     }
 
     const QR = await generateQRWithColor(svfe14, darkTextColor);
