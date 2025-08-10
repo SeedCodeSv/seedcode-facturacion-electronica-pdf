@@ -101,10 +101,11 @@ export const generateSvfe03_2 = async ({
     .map((item) => [
       item.cantidad,
       item.descripcion,
-      item.precioUni,
-      item.ventaNoSuj,
-      item.ventaExenta,
-      item.ventaGravada,
+      formatCurrency(+item.precioUni),
+      formatCurrency(+item.montoDescu),
+      formatCurrency(+item.ventaNoSuj),
+      formatCurrency(+item.ventaExenta),
+      formatCurrency(+item.ventaGravada),
     ]);
 
   autoTable(doc, {
@@ -113,6 +114,7 @@ export const generateSvfe03_2 = async ({
         "Cantidad",
         "Descripción",
         "Precio unitario",
+        "Desc.\n items",
         "Ventas no sujetas",
         "Ventas exentas",
         "Ventas gravadas",
@@ -143,12 +145,13 @@ export const generateSvfe03_2 = async ({
       fontSize: 9,
     },
     columnStyles: {
-      0: { cellWidth: 75, halign: "center", valign: "middle" },
-      1: { cellWidth: 380 },
+      0: { cellWidth: 70, halign: "center", valign: "middle" },
+      1: { cellWidth: 350 },
       2: { cellWidth: 70, halign: "center", valign: "middle" },
-      3: { cellWidth: 80, halign: "center", valign: "middle" },
-      4: { cellWidth: 75, halign: "center", valign: "middle" },
-      5: { cellWidth: 80, halign: "center", valign: "middle" },
+      3: { cellWidth: 70, halign: "center", valign: "middle" },
+      4: { cellWidth: 70, halign: "center", valign: "middle" },
+      5: { cellWidth: 70, halign: "center", valign: "middle" },
+      6: { cellWidth: 70, halign: "center", valign: "middle" },
     },
     didDrawPage: (data) => {
       doc.setLineWidth(1.2);
@@ -518,12 +521,12 @@ export const generateSvfe03_2 = async ({
       lineHeight = doc.internal.pageSize.height - 30;
     }
 
-    doc.line(100, i === 1 ? 420 : 170, 100, lineHeight);
-    doc.line(487, i === 1 ? 420 : 170, 487, lineHeight);
-    doc.line(553, i === 1 ? 420 : 170, 553, lineHeight);
-
-    doc.line(633, i === 1 ? 420 : 170, 633, lineHeight);
-    doc.line(713, i === 1 ? 420 : 170, 713, lineHeight);
+    doc.line(95, i === 1 ? 420 : 160, 95, lineHeight);
+    doc.line(445, i === 1 ? 420 : 170, 445, lineHeight);
+    doc.line(515, i === 1 ? 420 : 170, 515, lineHeight);
+    doc.line(585, i === 1 ? 420 : 170, 585, lineHeight);
+    doc.line(655, i === 1 ? 420 : 170, 655, lineHeight);
+    doc.line(725, i === 1 ? 420 : 170, 725, lineHeight);
 
     if (selloInvalidacion !== "") {
       doc.saveGraphicsState();
@@ -591,54 +594,69 @@ export const generateSvfe03_2 = async ({
       );
       doc.setFontSize(11);
       doc.setTextColor(lightTextColor);
-      doc.text("Suma de ventas:", 460, doc.internal.pageSize.height - 285, {
+      doc.text("Suma de ventas:", 420, doc.internal.pageSize.height - 285, {
         align: "left",
       });
       doc.setDrawColor(lightTextColor);
       doc.line(
-        553,
+        515,
         doc.internal.pageSize.height - 298,
-        553,
+        515,
         doc.internal.pageSize.height - 278
       );
       doc.setFontSize(10);
       doc.text(
-        formatCurrency(resumen.totalNoSuj),
-        595,
+        formatCurrency(resumen.totalDescu),
+        550,
         doc.internal.pageSize.height - 285,
         {
           align: "center",
         }
       );
       doc.line(
-        633,
+        585,
         doc.internal.pageSize.height - 298,
-        633,
+        585,
+        doc.internal.pageSize.height - 278
+      );
+      doc.text(
+        formatCurrency(resumen.totalNoSuj),
+        620,
+        doc.internal.pageSize.height - 285,
+        {
+          align: "center",
+        }
+      );
+      doc.line(
+        655,
+        doc.internal.pageSize.height - 298,
+        655,
         doc.internal.pageSize.height - 278
       );
       doc.text(
         formatCurrency(resumen.totalExenta),
-        670,
+        690,
         doc.internal.pageSize.height - 285,
         {
           align: "center",
         }
       );
       doc.line(
-        713,
+        725,
         doc.internal.pageSize.height - 298,
-        713,
+        725,
         doc.internal.pageSize.height - 278
       );
       doc.text(
         formatCurrency(resumen.totalGravada),
-        750,
+        760,
         doc.internal.pageSize.height - 285,
         {
           align: "center",
         }
       );
     }
+
 
     const QR = await generateQRWithColor(svfe01, darkTextColor);
 
