@@ -154,10 +154,10 @@ export const generateSvfe03 = async (
     body:
       documentoRelacionado && documentoRelacionado.length > 0
         ? documentoRelacionado.map((prd) => [
-            prd.tipoDocumento,
-            prd.numeroDocumento,
-            prd.fechaEmision,
-          ])
+          prd.tipoDocumento,
+          prd.numeroDocumento,
+          prd.fechaEmision,
+        ])
         : [["-", "-", "-"]],
     startY: finalY + 2,
   });
@@ -209,8 +209,8 @@ export const generateSvfe03 = async (
       i === 1
         ? rectHeight - 50
         : i === pageCount
-        ? rectHeight - 50
-        : rectHeight,
+          ? rectHeight - 50
+          : rectHeight,
       0,
       0,
       "S"
@@ -222,8 +222,8 @@ export const generateSvfe03 = async (
       i === 1
         ? rectHeight - 50
         : i === pageCount
-        ? rectHeight - 50
-        : rectHeight,
+          ? rectHeight - 50
+          : rectHeight,
       0,
       0,
       "S"
@@ -235,8 +235,8 @@ export const generateSvfe03 = async (
       i === 1
         ? rectHeight - 50
         : i === pageCount
-        ? rectHeight - 50
-        : rectHeight,
+          ? rectHeight - 50
+          : rectHeight,
       0,
       0,
       "S"
@@ -334,6 +334,12 @@ export const generateSvfe03 = async (
 };
 
 export const footerDocument = (doc: jsPDF, rectMargin: number, ccf: DteCcf) => {
+  let propina =
+    ccf.cuerpoDocumento.find(
+      (cuerpo) => cuerpo.descripcion === "PROPINA"
+    )?.noGravado ?? 0;
+
+
   const resumen = ccf.resumen;
   doc.text(`${resumen.totalLetras}`, 10, rectMargin + 4);
   doc.text("SUMA DE VENTAS:", 120, rectMargin + 4);
@@ -356,10 +362,10 @@ export const footerDocument = (doc: jsPDF, rectMargin: number, ccf: DteCcf) => {
   }
   returnBoldText(doc, "Observaciones:", 10, rectMargin + 27);
   // if (ccf.extension) {
-    if (ccf?.extension?.observaciones) {
-      const text = doc.splitTextToSize(ccf?.extension?.observaciones, 115);
-      doc.text(text, 10, rectMargin + 30);
-    }
+  if (ccf?.extension?.observaciones) {
+    const text = doc.splitTextToSize(ccf?.extension?.observaciones, 115);
+    doc.text(text, 10, rectMargin + 30);
+  }
   // }
   returnBoldText(
     doc,
@@ -402,6 +408,7 @@ export const footerDocument = (doc: jsPDF, rectMargin: number, ccf: DteCcf) => {
   doc.text("IVA Percibido: ", 127, rectMargin + 28);
   doc.text("IVA Retenido: ", 127, rectMargin + 31);
   doc.text("Retención Renta: ", 127, rectMargin + 34);
+  doc.text("Servicio del 10%: ", 127, rectMargin + 34);
   doc.text("Monto Total de la Operación: ", 127, rectMargin + 37);
   doc.text("Total Otros montos no afectos: ", 127, rectMargin + 40);
   doc.text("Total a Pagar: ", 127, rectMargin + 43);
@@ -417,15 +424,16 @@ export const footerDocument = (doc: jsPDF, rectMargin: number, ccf: DteCcf) => {
     resumen.descuGravada.toFixed(2),
     resumen.tributos
       ? resumen.tributos
-          .map((tr) => Number(tr.valor))
-          .reduce((a, b) => a + b)
-          .toFixed(2)
+        .map((tr) => Number(tr.valor))
+        .reduce((a, b) => a + b)
+        .toFixed(2)
       : "0.00",
     resumen.subTotal.toFixed(2),
     resumen.ivaPerci1.toFixed(2),
     resumen.ivaRete1.toFixed(2),
     resumen.reteRenta.toFixed(2),
     resumen.montoTotalOperacion.toFixed(2),
+    propina.toFixed(2),
     "0.00",
     resumen.totalPagar.toFixed(2),
   ];

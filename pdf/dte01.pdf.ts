@@ -24,6 +24,7 @@ export const generateSvfe01 = async (
   });
   let finalYFirstPage = 0;
 
+
   const { cuerpoDocumento } = svfe01 as DteFe;
 
   doc.setFontSize(6);
@@ -159,10 +160,10 @@ export const generateSvfe01 = async (
     body:
       documentoRelacionado && documentoRelacionado.length > 0
         ? documentoRelacionado.map((prd) => [
-            prd.tipoDocumento,
-            prd.numeroDocumento,
-            prd.fechaEmision,
-          ])
+          prd.tipoDocumento,
+          prd.numeroDocumento,
+          prd.fechaEmision,
+        ])
         : [["-", "-", "-"]],
     startY: finalY + 2,
   });
@@ -177,7 +178,8 @@ export const generateSvfe01 = async (
   finalYFirstPage = finalY;
 
   const array_object: unknown[] = [];
-  cuerpoDocumento.map((prd) => {
+  cuerpoDocumento.filter((item)=> item.descripcion !== "PROPINA" )
+  .map((prd) => {
     array_object.push(
       Object.values({
         qty: prd.cantidad,
@@ -251,7 +253,7 @@ export const generateSvfe01 = async (
   const pageCount = doc.internal.pages.length - 1;
   for (let i = 1; i <= pageCount; i++) {
     doc.setPage(i);
-    await headerDoc(doc, svfe01, logo, canInvertName,splitNameInTwoLines);
+    await headerDoc(doc, svfe01, logo, canInvertName, splitNameInTwoLines);
     const margin = 5;
     const rectWidth = doc.internal.pageSize.getWidth() - 2 * margin;
     const radius = 2;
@@ -273,8 +275,8 @@ export const generateSvfe01 = async (
       i === 1
         ? rectHeight - 50
         : i === pageCount
-        ? rectHeight - 50
-        : rectHeight,
+          ? rectHeight - 50
+          : rectHeight,
       0,
       0,
       "S"
@@ -286,8 +288,8 @@ export const generateSvfe01 = async (
       i === 1
         ? rectHeight - 50
         : i === pageCount
-        ? rectHeight - 50
-        : rectHeight,
+          ? rectHeight - 50
+          : rectHeight,
       0,
       0,
       "S"
@@ -299,8 +301,8 @@ export const generateSvfe01 = async (
       i === 1
         ? rectHeight - 50
         : i === pageCount
-        ? rectHeight - 50
-        : rectHeight,
+          ? rectHeight - 50
+          : rectHeight,
       0,
       0,
       "S"
@@ -422,6 +424,9 @@ export const footerDocument = (
   rectMargin: number,
   svfe01: DteFe
 ) => {
+  let propina =
+    svfe01.cuerpoDocumento.find((cuerpo) => cuerpo.descripcion === 'PROPINA')?.noGravado ?? 0
+
   const { resumen } = svfe01 as DteFe;
   doc.text(`${resumen.totalLetras}`, 10, rectMargin + 4);
   doc.text("SUMA DE VENTAS:", 120, rectMargin + 4);
@@ -444,10 +449,10 @@ export const footerDocument = (
   }
   returnBoldText(doc, "Observaciones:", 10, rectMargin + 27);
   // if (svfe01.extension) {
-    if (svfe01?.extension?.observaciones) {
-      const text = doc.splitTextToSize(svfe01?.extension?.observaciones, 115);
-      doc.text(text, 10, rectMargin + 30);
-    }
+  if (svfe01?.extension?.observaciones) {
+    const text = doc.splitTextToSize(svfe01?.extension?.observaciones, 115);
+    doc.text(text, 10, rectMargin + 30);
+  }
   // }
   returnBoldText(
     doc,
@@ -491,6 +496,7 @@ export const footerDocument = (
   doc.text("IVA Retenido: ", 127, rectMargin + 25);
   doc.text("Retención Renta: ", 127, rectMargin + 28);
   doc.text("Monto Total de la Operación: ", 127, rectMargin + 31);
+  doc.text("Servicio al 10%: ", 127, rectMargin + 31);
   doc.text("Total Otros montos no afectos: ", 127, rectMargin + 34);
   doc.text("Total a Pagar: ", 127, rectMargin + 37);
 
@@ -511,6 +517,7 @@ export const footerDocument = (
     resumen.ivaRete1.toFixed(2),
     resumen.reteRenta.toFixed(2),
     resumen.montoTotalOperacion.toFixed(2),
+    propina?.toFixed(2),
     "0.00",
     resumen.totalPagar.toFixed(2),
   ];
