@@ -443,12 +443,12 @@ export const footerDocument = (
     }
   }
   returnBoldText(doc, "Observaciones:", 10, rectMargin + 27);
-  if (svfe01.extension) {
+  // if (svfe01.extension) {
     if (svfe01.extension.observaciones) {
       const text = doc.splitTextToSize(svfe01.extension.observaciones, 115);
       doc.text(text, 10, rectMargin + 30);
     }
-  }
+  // }
   returnBoldText(
     doc,
     "Responsable por parte del receptor:",

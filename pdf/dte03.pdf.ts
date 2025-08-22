@@ -355,12 +355,12 @@ export const footerDocument = (doc: jsPDF, rectMargin: number, ccf: DteCcf) => {
     }
   }
   returnBoldText(doc, "Observaciones:", 10, rectMargin + 27);
-  if (ccf.extension) {
+  // if (ccf.extension) {
     if (ccf.extension.observaciones) {
       const text = doc.splitTextToSize(ccf.extension.observaciones, 115);
       doc.text(text, 10, rectMargin + 30);
     }
-  }
+  // }
   returnBoldText(
     doc,
     "Responsable por parte del receptor:",
