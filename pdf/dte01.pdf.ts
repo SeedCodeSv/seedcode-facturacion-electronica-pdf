@@ -496,7 +496,7 @@ export const footerDocument = (
   doc.text("IVA Retenido: ", 127, rectMargin + 25);
   doc.text("Retención Renta: ", 127, rectMargin + 28);
   doc.text("Monto Total de la Operación: ", 127, rectMargin + 31);
-  doc.text("Servicio al 10%: ", 127, rectMargin + 34);
+  doc.text("Total no Gravado: ", 127, rectMargin + 34);
   doc.text("Total Otros montos no afectos: ", 127, rectMargin + 37);
   doc.text("Total a Pagar: ", 127, rectMargin + 40);
 

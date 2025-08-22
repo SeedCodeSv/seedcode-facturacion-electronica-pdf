@@ -408,12 +408,12 @@ export const footerDocument = (doc: jsPDF, rectMargin: number, ccf: DteCcf) => {
   doc.text("IVA Percibido: ", 127, rectMargin + 28);
   doc.text("IVA Retenido: ", 127, rectMargin + 31);
   doc.text("Retención Renta: ", 127, rectMargin + 34);
-  doc.text("Servicio del 10%: ", 127, rectMargin + 37);
+  doc.text("Total no gravado: ", 127, rectMargin + 37);
   doc.text("Monto Total de la Operación: ", 127, rectMargin + 40);
   doc.text("Total Otros montos no afectos: ", 127, rectMargin + 43);
   doc.text("Total a Pagar: ", 127, rectMargin + 46);
 
-  for (let i = 0; i < 12; i++) {
+  for (let i = 0; i < 13; i++) {
     doc.text("$", 185, rectMargin + i * 3 + 10);
   }
 
