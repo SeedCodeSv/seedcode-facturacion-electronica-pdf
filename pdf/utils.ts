@@ -168,7 +168,7 @@ export const headerDoc = async (
   splitNameInTwoLines: boolean = false
 ) => {
   const dataQR = await generateQR(dte);
-  
+
   const { imageBase64, width, height } = await adjustImage(logo);
   autoTable(doc, {
     startY: 5,
@@ -397,7 +397,7 @@ export const tableProduct = (
   finalY: number
 ) => {
   const array_object: (string | number)[][] = [];
-  data.cuerpoDocumento.map((prd) => {
+  data.cuerpoDocumento.filter((cuerpo) => cuerpo.descripcion !== "PROPINA").map((prd) => {
     const values = Object.values({
       qty: prd.cantidad,
       desc: prd.descripcion,
