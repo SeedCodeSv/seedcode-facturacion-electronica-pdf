@@ -212,21 +212,25 @@ export const generateSvfe01 = async (
       2: {
         cellWidth: 20,
         cellPadding: 2,
+        halign: "right",
       },
       3: {
         cellWidth: 20,
         cellPadding: 2,
+        halign: "right",
       },
       4: {
         cellWidth: 20,
         cellPadding: 2,
+        halign: "right",
       },
       5: {
         cellWidth: 20,
         cellPadding: 2,
+        halign: "right",
       },
-      6: { cellWidth: 20, cellPadding: 2 },
-      7: { cellPadding: 2 },
+      6: { cellWidth: 20, cellPadding: 2, halign: "right" },
+      7: { cellPadding: 2, halign: "right" },
     },
     headStyles: {
       textColor: [0, 0, 0],
@@ -428,18 +432,19 @@ export const footerDocument = (
     svfe01.cuerpoDocumento.find((cuerpo) => cuerpo.descripcion === 'PROPINA')?.noGravado ?? 0
 
   const { resumen } = svfe01 as DteFe;
+  
   doc.text(`${resumen.totalLetras}`, 10, rectMargin + 4);
   doc.text("SUMA DE VENTAS:", 120, rectMargin + 4);
-  doc.text(`$${" "} ${" "} ${resumen.totalNoSuj}`, 145, rectMargin + 4);
-  doc.text(`$${" "} ${" "} ${resumen.totalExenta}`, 165, rectMargin + 4);
-  doc.text(`$${" "} ${" "} ${resumen.totalGravada}`, 185, rectMargin + 4);
+  doc.text(`$${" "} ${" "} ${resumen.totalNoSuj}`, 155, rectMargin + 4);
+  doc.text(`$${" "} ${" "} ${resumen.totalExenta}`, 175, rectMargin + 4);
+  doc.text(`$${" "} ${" "} ${resumen.totalGravada}`, 195, rectMargin + 4);
   doc.setFontSize(6);
   returnBoldText(doc, "Responsable por parte del emisor:", 10, rectMargin + 10);
   if (svfe01.extension) {
     if (svfe01.extension.nombEntrega) {
       doc.text(svfe01.extension.nombEntrega, 10, rectMargin + 13);
     }
-  }
+  } 
 
   returnBoldText(doc, "N° de Documento:", 10, rectMargin + 18);
   if (svfe01.extension) {
