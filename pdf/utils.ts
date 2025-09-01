@@ -105,6 +105,42 @@ export async function adjustImage(imageData: Uint8Array | string = "", maxWidth:
   }
 }
 
+export async function adjustImageByHeight(
+  imageData: Uint8Array | string = "",
+  maxHeight: number = 35
+) {
+  if (typeof imageData !== "string") {
+    const imageBuffer = Buffer.from(imageData);
+    const metadata = await sharp(imageBuffer).metadata();
+
+    const imgWidth = metadata.width || 1;
+    const imgHeight = metadata.height || 1;
+    const height = maxHeight;
+    const width = (imgWidth / imgHeight) * maxHeight;
+
+    const resizedBuffer = await sharp(imageBuffer)
+      .resize(Math.round(width * 3.779527), Math.round(height * 3.779527))
+      .png({ quality: 60 })
+      .toBuffer();
+
+    const imageBase64 = uint8ArrayToBase64(resizedBuffer);
+
+    return { imageBase64, width, height };
+  } else {
+    const desiredHeight = maxHeight;
+    const newWidth = await returnWidthImgFromBuffer(
+      readFileSync(join(__dirname, "logos/logo.png")),
+      desiredHeight
+    );
+    const logo = readFileSync(join(__dirname, "logos/logo.png")).toString(
+      "base64"
+    );
+
+    return { imageBase64: logo, width: newWidth, height: desiredHeight };
+  }
+}
+
+
 export const adjustImageWatermark = async (imageData: Uint8Array | string = "", maxWidth: number = 45, maxHeight: number = 20) => {
   if (typeof imageData !== "string") {
     const imageBuffer = Buffer.from(imageData);
@@ -169,7 +205,7 @@ export const headerDoc = async (
 ) => {
   const dataQR = await generateQR(dte);
 
-  const { imageBase64, width, height } = await adjustImage(logo);
+  const { imageBase64, width, height } = await adjustImageByHeight(logo,20);
   autoTable(doc, {
     startY: 5,
     showHead: false,
