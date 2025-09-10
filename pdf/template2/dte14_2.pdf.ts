@@ -28,6 +28,7 @@ interface Props {
   selloInvalidacion: string;
   watermark: Uint8Array | string;
   socialMedia: {
+    ignore: boolean;
     instagram: string;
     facebook: string;
     tiktok: string;
@@ -212,51 +213,45 @@ export const generateSvfe14_2 = async ({
 
           doc.setTextColor(tertiaryColor);
 
-          doc.addImage(
-            INSTAGRAM,
-            "PNG",
-            data.cell.x + 10,
-            data.cell.y + 105,
-            14,
-            14
-          );
-          doc.text(socialMedia.instagram, data.cell.x + 30, data.cell.y + 115);
-          doc.addImage(
-            FACEBOOK,
-            "PNG",
-            data.cell.x + 159.2,
-            data.cell.y + 105,
-            14,
-            14
-          );
-          doc.text(socialMedia.facebook, data.cell.x + 180, data.cell.y + 115);
-          doc.addImage(
-            TIKTOK,
-            "PNG",
-            data.cell.x + 318.4,
-            data.cell.y + 105,
-            14,
-            14
-          );
-          doc.text(socialMedia.tiktok, data.cell.x + 339, data.cell.y + 115);
-          doc.addImage(
-            WHATSAPP,
-            "PNG",
-            data.cell.x + 474.6,
-            data.cell.y + 105,
-            14,
-            14
-          );
-          doc.text(socialMedia.whatsapp, data.cell.x + 495, data.cell.y + 115);
-          doc.addImage(
-            PHONE,
-            "PNG",
-            data.cell.x + 633.8,
-            data.cell.y + 105,
-            14,
-            14
-          );
-          doc.text(socialMedia.phone, data.cell.x + 654, data.cell.y + 115);
+          if (socialMedia.ignore === false) {
+            const items = [
+              { icon: INSTAGRAM, text: socialMedia.instagram },
+              { icon: FACEBOOK, text: socialMedia.facebook },
+              { icon: TIKTOK, text: socialMedia.tiktok },
+              { icon: WHATSAPP, text: socialMedia.whatsapp },
+              { icon: PHONE, text: socialMedia.phone },
+            ];
+
+            // Filtrar solo los que tienen texto
+            const validItems = items.filter(
+              (i) => i.text && i.text.trim() !== ""
+            );
+
+            // Medidas
+            const iconWidth = 14;
+            const spacing = 160; // espacio horizontal entre columnas (ajústalo)
+            const baseYIcon = data.cell.y + 218;
+            const baseYText = data.cell.y + 228;
+
+            // Calcular ancho total para centrar
+            const totalWidth = (validItems.length - 1) * spacing;
+            const startX =
+              data.cell.x + /* ancho de la celda */ (700 - totalWidth) / 2;
+
+            validItems.forEach((item, index) => {
+              const x = startX + index * spacing;
+
+              doc.addImage(
+                item.icon,
+                "PNG",
+                x,
+                baseYIcon,
+                iconWidth,
+                iconWidth
+              );
+              doc.text(item.text, x + 20, baseYText);
+            });
+          }
           doc.setTextColor(darkTextColor);
         }
         if (data.column.index === 1) {
