@@ -302,7 +302,10 @@ export const generateSvfe03_2 = async ({
           doc.setFontSize(8);
           doc.setTextColor(darkTextColor);
 
-          if (custom.typeResume === "detailed") {
+          if (
+            custom.typeResume === "simple" ||
+            custom.typeResume === "detailed"
+          ) {
             doc.text(
               "Suma total de operación:",
               data.cell.x + 215,
@@ -347,10 +350,6 @@ export const generateSvfe03_2 = async ({
               align: "right",
             });
             textY += 12;
-            doc.text("ADVALOREM:", data.cell.x + 215, textY, {
-              align: "right",
-            });
-            textY += 12;
             doc.text("Servicio 10%:", data.cell.x + 215, textY, {
               align: "right",
             });
@@ -369,64 +368,64 @@ export const generateSvfe03_2 = async ({
             });
           }
 
-          if (custom.typeResume === "simple") {
-            doc.text(
-              "Suma total de operación:",
-              data.cell.x + 215,
-              data.cell.y + 10,
-              {
-                align: "right",
-              }
-            );
+          // if (custom.typeResume === "simple") {
+          //   doc.text(
+          //     "Suma total de operación:",
+          //     data.cell.x + 215,
+          //     data.cell.y + 10,
+          //     {
+          //       align: "right",
+          //     }
+          //   );
 
-            let textY = data.cell.y + 22;
+          //   let textY = data.cell.y + 22;
 
-            doc.text("Sub-total:", data.cell.x + 215, textY, {
-              align: "right",
-            });
-            textY += 12;
-            doc.text(
-              "Impuesto al Valor Agregado 13%:",
-              data.cell.x + 215,
-              textY,
-              {
-                align: "right",
-              }
-            );
-            textY += 12;
-            doc.text("(+) IVA Percepción 1%:", data.cell.x + 215, textY, {
-              align: "right",
-            });
-            textY += 12;
-            doc.text("(-) IVA Retención 1%:", data.cell.x + 215, textY, {
-              align: "right",
-            });
-            textY += 12;
-            doc.text("Retención renta:", data.cell.x + 215, textY, {
-              align: "right",
-            });
-            textY += 12;
-            doc.text("Total operación:", data.cell.x + 215, textY, {
-              align: "right",
-            });
-            textY += 12;
-            doc.text("Servicio 10%:", data.cell.x + 215, textY, {
-              align: "right",
-            });
-            textY += 12;
-            doc.text(
-              "Total otros montos no afectos:",
-              data.cell.x + 215,
-              textY,
-              {
-                align: "right",
-              }
-            );
-            textY += 12;
-            doc.text("TOTAL A PAGAR:", data.cell.x + 215, textY, {
-              align: "right",
-            });
-          }
+          //   doc.text("Sub-total:", data.cell.x + 215, textY, {
+          //     align: "right",
+          //   });
+          //   textY += 12;
+          //   doc.text(
+          //     "Impuesto al Valor Agregado 13%:",
+          //     data.cell.x + 215,
+          //     textY,
+          //     {
+          //       align: "right",
+          //     }
+          //   );
+          //   textY += 12;
+          //   doc.text("(+) IVA Percepción 1%:", data.cell.x + 215, textY, {
+          //     align: "right",
+          //   });
+          //   textY += 12;
+          //   doc.text("(-) IVA Retención 1%:", data.cell.x + 215, textY, {
+          //     align: "right",
+          //   });
+          //   textY += 12;
+          //   doc.text("Retención renta:", data.cell.x + 215, textY, {
+          //     align: "right",
+          //   });
+          //   textY += 12;
+          //   doc.text("Total operación:", data.cell.x + 215, textY, {
+          //     align: "right",
+          //   });
+          //   textY += 12;
+          //   doc.text("Servicio 10%:", data.cell.x + 215, textY, {
+          //     align: "right",
+          //   });
+          //   textY += 12;
+          //   doc.text(
+          //     "Total otros montos no afectos:",
+          //     data.cell.x + 215,
+          //     textY,
+          //     {
+          //       align: "right",
+          //     }
+          //   );
+          //   textY += 12;
+          //   doc.text("TOTAL A PAGAR:", data.cell.x + 215, textY, {
+          //     align: "right",
+          //   });
+          // }
 
           if (custom.typeResume === "custom") {
             doc.text(
@@ -510,25 +509,20 @@ export const generateSvfe03_2 = async ({
             });
           }
 
-          const heightRect = custom.typeResume === "simple" ? 125 : 150;
+          const heightRect = custom.typeResume === "simple" ? 140 : 150;
 
           doc.setFillColor(fillColor);
           doc.rect(data.cell.x + 220, data.cell.y, 150, heightRect, "F");
 
-          if (custom.typeResume === "detailed") {
+          if (
+            custom.typeResume === "detailed" ||
+            custom.typeResume === "simple"
+          ) {
             let tourism = 0;
 
             if (resumen.tributos && resumen.tributos.length > 0) {
               tourism =
                 resumen.tributos.find((tributo) => tributo.codigo === "59")
-                  ?.valor || 0;
-            }
-
-            let valorem = 0;
-
-            if (resumen.tributos && resumen.tributos.length > 0) {
-              valorem =
-                resumen.tributos.find((tributo) => tributo.codigo === "C5")
                   ?.valor || 0;
             }
             let propina =
@@ -583,8 +577,6 @@ export const generateSvfe03_2 = async ({
               textYTotals
             );
             textYTotals += 12;
-            doc.text(formatCurrency(valorem), data.cell.x + 230, textYTotals);
-            textYTotals += 12;
             doc.text(formatCurrency(propina), data.cell.x + 230, textYTotals);
             textYTotals += 12;
             doc.text(formatCurrency(noAfectos), data.cell.x + 230, textYTotals);
@@ -595,68 +587,68 @@ export const generateSvfe03_2 = async ({
               textYTotals
             );
           }
-          if (custom.typeResume === "simple") {
-            let propina =
-              svfe01.cuerpoDocumento.find(
-                (cuerpo) => cuerpo.descripcion === "PROPINA"
-              )?.noGravado ?? 0;
+          // if (custom.typeResume === "simple") {
+          //   let propina =
+          //     svfe01.cuerpoDocumento.find(
+          //       (cuerpo) => cuerpo.descripcion === "PROPINA"
+          //     )?.noGravado ?? 0;
 
-            const noAfectos = resumen.totalExenta + resumen.totalNoSuj;
-            doc.text(
-              formatCurrency(resumen.subTotal),
-              data.cell.x + 230,
-              data.cell.y + 10
-            );
+          //   const noAfectos = resumen.totalExenta + resumen.totalNoSuj;
+          //   doc.text(
+          //     formatCurrency(resumen.subTotal),
+          //     data.cell.x + 230,
+          //     data.cell.y + 10
+          //   );
 
-            const totalIva =
-              resumen.tributos && resumen.tributos.length > 0
-                ? resumen.tributos.find((tributo) => tributo.codigo === "20")
-                    ?.valor || 0
-                : 0;
+          //   const totalIva =
+          //     resumen.tributos && resumen.tributos.length > 0
+          //       ? resumen.tributos.find((tributo) => tributo.codigo === "20")
+          //           ?.valor || 0
+          //       : 0;
 
-            let textYTotals = data.cell.y + 22;
-            doc.text(formatCurrency(totalIva), data.cell.x + 230, textYTotals);
-            textYTotals += 12;
-            doc.text(
-              formatCurrency(resumen.subTotalVentas),
-              data.cell.x + 230,
-              textYTotals
-            );
-            textYTotals += 12;
-            doc.text(
-              formatCurrency(resumen.ivaPerci1 ?? 0),
-              data.cell.x + 230,
-              textYTotals
-            );
-            textYTotals += 12;
-            doc.text(
-              formatCurrency(resumen.ivaRete1 ?? 0),
-              data.cell.x + 230,
-              textYTotals
-            );
-            textYTotals += 12;
-            doc.text(
-              formatCurrency(resumen.reteRenta),
-              data.cell.x + 230,
-              textYTotals
-            );
-            textYTotals += 12;
-            doc.text(
-              formatCurrency(resumen.montoTotalOperacion),
-              data.cell.x + 230,
-              textYTotals
-            );
-            textYTotals += 12;
-            doc.text(formatCurrency(propina), data.cell.x + 230, textYTotals);
-            textYTotals += 12;
-            doc.text(formatCurrency(noAfectos), data.cell.x + 230, textYTotals);
-            textYTotals += 12;
-            doc.text(
-              formatCurrency(resumen.totalPagar),
-              data.cell.x + 230,
-              textYTotals
-            );
-          }
+          //   let textYTotals = data.cell.y + 22;
+          //   doc.text(formatCurrency(totalIva), data.cell.x + 230, textYTotals);
+          //   textYTotals += 12;
+          //   doc.text(
+          //     formatCurrency(resumen.subTotalVentas),
+          //     data.cell.x + 230,
+          //     textYTotals
+          //   );
+          //   textYTotals += 12;
+          //   doc.text(
+          //     formatCurrency(resumen.ivaPerci1 ?? 0),
+          //     data.cell.x + 230,
+          //     textYTotals
+          //   );
+          //   textYTotals += 12;
+          //   doc.text(
+          //     formatCurrency(resumen.ivaRete1 ?? 0),
+          //     data.cell.x + 230,
+          //     textYTotals
+          //   );
+          //   textYTotals += 12;
+          //   doc.text(
+          //     formatCurrency(resumen.reteRenta),
+          //     data.cell.x + 230,
+          //     textYTotals
+          //   );
+          //   textYTotals += 12;
+          //   doc.text(
+          //     formatCurrency(resumen.montoTotalOperacion),
+          //     data.cell.x + 230,
+          //     textYTotals
+          //   );
+          //   textYTotals += 12;
+          //   doc.text(formatCurrency(propina), data.cell.x + 230, textYTotals);
+          //   textYTotals += 12;
+          //   doc.text(formatCurrency(noAfectos), data.cell.x + 230, textYTotals);
+          //   textYTotals += 12;
+          //   doc.text(
+          //     formatCurrency(resumen.totalPagar),
+          //     data.cell.x + 230,
+          //     textYTotals
+          //   );
+          // }
           if (custom.typeResume === "custom") {
             const noAfectos = resumen.totalExenta + resumen.totalNoSuj;
 

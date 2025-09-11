@@ -296,8 +296,8 @@ export const generateSvfe01_2 = async ({
           }
         }
         if (data.column.index === 1) {
-          doc.setFont("Nunito", "normal");
-          doc.setFontSize(8);
+          doc.setFont("Nunito", "bold");
+          doc.setFontSize(10);
           doc.setTextColor(darkTextColor);
 
           if (custom.typeResume === "detailed") {
@@ -377,41 +377,32 @@ export const generateSvfe01_2 = async ({
               }
             );
 
-            let textY = data.cell.y + 22;
+            let textY = data.cell.y + 25;
 
             doc.text("Sub-total:", data.cell.x + 215, textY, {
               align: "right",
             });
-            textY += 12;
-            doc.text(
-              "Impuesto al Valor Agregado 13%:",
-              data.cell.x + 215,
-              textY,
-              {
-                align: "right",
-              }
-            );
-            textY += 12;
+            textY += 15;
             doc.text("(+) IVA Percepción 1%:", data.cell.x + 215, textY, {
               align: "right",
             });
-            textY += 12;
+            textY += 15;
             doc.text("(-) IVA Retención 1%:", data.cell.x + 215, textY, {
               align: "right",
             });
-            textY += 12;
+            textY += 15;
             doc.text("Retención renta:", data.cell.x + 215, textY, {
               align: "right",
             });
-            textY += 12;
+            textY += 15;
             doc.text("Total operación:", data.cell.x + 215, textY, {
               align: "right",
             });
-            textY += 12;
+            textY += 15;
             doc.text("Servicio 10%:", data.cell.x + 215, textY, {
               align: "right",
             });
-            textY += 12;
+            textY += 15;
             doc.text(
               "Total otros montos no afectos:",
               data.cell.x + 215,
@@ -420,7 +411,7 @@ export const generateSvfe01_2 = async ({
                 align: "right",
               }
             );
-            textY += 12;
+            textY += 15;
             doc.text("TOTAL A PAGAR:", data.cell.x + 215, textY, {
               align: "right",
             });
@@ -508,7 +499,7 @@ export const generateSvfe01_2 = async ({
             });
           }
 
-          const heightRect = custom.typeResume === "simple" ? 125 : 150;
+          const heightRect = custom.typeResume === "simple" ? 140 : 150;
 
           doc.setFillColor(fillColor);
           doc.rect(data.cell.x + 220, data.cell.y, 150, heightRect, "F");
@@ -603,47 +594,41 @@ export const generateSvfe01_2 = async ({
               data.cell.x + 230,
               data.cell.y + 10
             );
-            let textYTotals = data.cell.y + 22;
-            doc.text(
-              formatCurrency(resumen.totalIva),
-              data.cell.x + 230,
-              textYTotals
-            );
-            textYTotals += 12;
+            let textYTotals = data.cell.y + 25;
             doc.text(
               formatCurrency(resumen.subTotalVentas),
               data.cell.x + 230,
               textYTotals
             );
-            textYTotals += 12;
+            textYTotals += 15;
             doc.text(
               formatCurrency(resumen.ivaPerci1 ?? 0),
               data.cell.x + 230,
               textYTotals
             );
-            textYTotals += 12;
+            textYTotals += 15;
             doc.text(
               formatCurrency(resumen.ivaRete1 ?? 0),
               data.cell.x + 230,
               textYTotals
             );
-            textYTotals += 12;
+            textYTotals += 15;
             doc.text(
               formatCurrency(resumen.reteRenta),
               data.cell.x + 230,
               textYTotals
             );
-            textYTotals += 12;
+            textYTotals += 15;
             doc.text(
               formatCurrency(resumen.montoTotalOperacion),
               data.cell.x + 230,
               textYTotals
             );
-            textYTotals += 12;
+            textYTotals += 15;
             doc.text(formatCurrency(propina), data.cell.x + 230, textYTotals);
-            textYTotals += 12;
+            textYTotals += 15;
             doc.text(formatCurrency(noAfectos), data.cell.x + 230, textYTotals);
-            textYTotals += 12;
+            textYTotals += 15;
             doc.text(
               formatCurrency(resumen.totalPagar),
               data.cell.x + 230,
@@ -720,6 +705,8 @@ export const generateSvfe01_2 = async ({
               textYTotals
             );
           }
+
+          doc.setFontSize(8);
         }
       }
     },
