@@ -238,8 +238,7 @@ export const generateSvfe03_2 = async ({
             data.cell.y + 179
           );
           doc.text(
-            `Documento entrega: ${
-              extension ? extension.docuEntrega ?? "-" : ""
+            `Documento entrega: ${extension ? extension.docuEntrega ?? "-" : ""
             }`,
             data.cell.x + 10,
             data.cell.y + 195
@@ -303,7 +302,6 @@ export const generateSvfe03_2 = async ({
           doc.setTextColor(darkTextColor);
 
           if (
-            custom.typeResume === "simple" ||
             custom.typeResume === "detailed"
           ) {
             doc.text(
@@ -368,64 +366,65 @@ export const generateSvfe03_2 = async ({
             });
           }
 
-          // if (custom.typeResume === "simple") {
-          //   doc.text(
-          //     "Suma total de operación:",
-          //     data.cell.x + 215,
-          //     data.cell.y + 10,
-          //     {
-          //       align: "right",
-          //     }
-          //   );
+          if (
+            custom.typeResume === "simple"
+          ) {
+            doc.text(
+              "Suma total de operación:",
+              data.cell.x + 215,
+              data.cell.y + 10,
+              {
+                align: "right",
+              }
+            );
 
-          //   let textY = data.cell.y + 22;
-
-          //   doc.text("Sub-total:", data.cell.x + 215, textY, {
-          //     align: "right",
-          //   });
-          //   textY += 12;
-          //   doc.text(
-          //     "Impuesto al Valor Agregado 13%:",
-          //     data.cell.x + 215,
-          //     textY,
-          //     {
-          //       align: "right",
-          //     }
-          //   );
-          //   textY += 12;
-          //   doc.text("(+) IVA Percepción 1%:", data.cell.x + 215, textY, {
-          //     align: "right",
-          //   });
-          //   textY += 12;
-          //   doc.text("(-) IVA Retención 1%:", data.cell.x + 215, textY, {
-          //     align: "right",
-          //   });
-          //   textY += 12;
-          //   doc.text("Retención renta:", data.cell.x + 215, textY, {
-          //     align: "right",
-          //   });
-          //   textY += 12;
-          //   doc.text("Total operación:", data.cell.x + 215, textY, {
-          //     align: "right",
-          //   });
-          //   textY += 12;
-          //   doc.text("Servicio 10%:", data.cell.x + 215, textY, {
-          //     align: "right",
-          //   });
-          //   textY += 12;
-          //   doc.text(
-          //     "Total otros montos no afectos:",
-          //     data.cell.x + 215,
-          //     textY,
-          //     {
-          //       align: "right",
-          //     }
-          //   );
-          //   textY += 12;
-          //   doc.text("TOTAL A PAGAR:", data.cell.x + 215, textY, {
-          //     align: "right",
-          //   });
-          // }
+            let textY = data.cell.y + 22;
+            doc.text(
+              "Impuesto al Valor Agregado 13%:",
+              data.cell.x + 215,
+              textY,
+              {
+                align: "right",
+              }
+            );
+            textY += 12;
+            doc.text("Sub-total:", data.cell.x + 215, textY, {
+              align: "right",
+            });
+            textY += 12;
+            doc.text("(+) IVA Percepción 1%:", data.cell.x + 215, textY, {
+              align: "right",
+            });
+            textY += 12;
+            doc.text("(-) IVA Retención 1%:", data.cell.x + 215, textY, {
+              align: "right",
+            });
+            textY += 12;
+            doc.text("Retención renta:", data.cell.x + 215, textY, {
+              align: "right",
+            });
+            textY += 12;
+            doc.text("Total operación:", data.cell.x + 215, textY, {
+              align: "right",
+            });
+            textY += 12;
+            doc.text("Servicio 10%:", data.cell.x + 215, textY, {
+              align: "right",
+            });
+            textY += 12;
+            doc.text(
+              "Total otros montos no afectos:",
+              data.cell.x + 215,
+              textY,
+              {
+                align: "right",
+              }
+            );
+            textY += 12;
+            doc.text("TOTAL A PAGAR:", data.cell.x + 215, textY, {
+              align: "right",
+            });
+          }
 
           if (custom.typeResume === "custom") {
             doc.text(
@@ -509,14 +508,13 @@ export const generateSvfe03_2 = async ({
             });
           }
 
-          const heightRect = custom.typeResume === "simple" ? 140 : 150;
+          const heightRect = custom.typeResume === "custom" ? 150 : custom.typeResume === "detailed" ? 140 : 130;
 
           doc.setFillColor(fillColor);
           doc.rect(data.cell.x + 220, data.cell.y, 150, heightRect, "F");
 
           if (
-            custom.typeResume === "detailed" ||
-            custom.typeResume === "simple"
+            custom.typeResume === "detailed"
           ) {
             let tourism = 0;
 
@@ -533,7 +531,7 @@ export const generateSvfe03_2 = async ({
             const totalIva =
               resumen.tributos && resumen.tributos.length > 0
                 ? resumen.tributos.find((tributo) => tributo.codigo === "20")
-                    ?.valor || 0
+                  ?.valor || 0
                 : 0;
 
             const noAfectos = resumen.totalExenta + resumen.totalNoSuj;
@@ -587,75 +585,78 @@ export const generateSvfe03_2 = async ({
               textYTotals
             );
           }
-          // if (custom.typeResume === "simple") {
-          //   let propina =
-          //     svfe01.cuerpoDocumento.find(
-          //       (cuerpo) => cuerpo.descripcion === "PROPINA"
-          //     )?.noGravado ?? 0;
 
-          //   const noAfectos = resumen.totalExenta + resumen.totalNoSuj;
-          //   doc.text(
-          //     formatCurrency(resumen.subTotal),
-          //     data.cell.x + 230,
-          //     data.cell.y + 10
-          //   );
+          if (
+            custom.typeResume === "simple"
+          ) {
+            let propina =
+              svfe01.cuerpoDocumento.find(
+                (cuerpo) => cuerpo.descripcion === "PROPINA"
+              )?.noGravado ?? 0;
 
-          //   const totalIva =
-          //     resumen.tributos && resumen.tributos.length > 0
-          //       ? resumen.tributos.find((tributo) => tributo.codigo === "20")
-          //           ?.valor || 0
-          //       : 0;
+            const totalIva =
+              resumen.tributos && resumen.tributos.length > 0
+                ? resumen.tributos.find((tributo) => tributo.codigo === "20")
+                  ?.valor || 0
+                : 0;
 
-          //   let textYTotals = data.cell.y + 22;
-          //   doc.text(formatCurrency(totalIva), data.cell.x + 230, textYTotals);
-          //   textYTotals += 12;
-          //   doc.text(
-          //     formatCurrency(resumen.subTotalVentas),
-          //     data.cell.x + 230,
-          //     textYTotals
-          //   );
-          //   textYTotals += 12;
-          //   doc.text(
-          //     formatCurrency(resumen.ivaPerci1 ?? 0),
-          //     data.cell.x + 230,
-          //     textYTotals
-          //   );
-          //   textYTotals += 12;
-          //   doc.text(
-          //     formatCurrency(resumen.ivaRete1 ?? 0),
-          //     data.cell.x + 230,
-          //     textYTotals
-          //   );
-          //   textYTotals += 12;
-          //   doc.text(
-          //     formatCurrency(resumen.reteRenta),
-          //     data.cell.x + 230,
-          //     textYTotals
-          //   );
-          //   textYTotals += 12;
-          //   doc.text(
-          //     formatCurrency(resumen.montoTotalOperacion),
-          //     data.cell.x + 230,
-          //     textYTotals
-          //   );
-          //   textYTotals += 12;
-          //   doc.text(formatCurrency(propina), data.cell.x + 230, textYTotals);
-          //   textYTotals += 12;
-          //   doc.text(formatCurrency(noAfectos), data.cell.x + 230, textYTotals);
-          //   textYTotals += 12;
-          //   doc.text(
-          //     formatCurrency(resumen.totalPagar),
-          //     data.cell.x + 230,
-          //     textYTotals
-          //   );
-          // }
+            const noAfectos = resumen.totalExenta + resumen.totalNoSuj;
+            doc.text(
+              formatCurrency(resumen.subTotal),
+              data.cell.x + 230,
+              data.cell.y + 10
+            );
+            let textYTotals = data.cell.y + 22;
+            doc.text(formatCurrency(totalIva), data.cell.x + 230, textYTotals);
+            textYTotals += 12;
+            doc.text(
+              formatCurrency(resumen.subTotalVentas),
+              data.cell.x + 230,
+              textYTotals
+            );
+            textYTotals += 12;
+            doc.text(
+              formatCurrency(resumen.ivaPerci1 ?? 0),
+              data.cell.x + 230,
+              textYTotals
+            );
+            textYTotals += 12;
+            doc.text(
+              formatCurrency(resumen.ivaRete1 ?? 0),
+              data.cell.x + 230,
+              textYTotals
+            );
+            textYTotals += 12;
+            doc.text(
+              formatCurrency(resumen.reteRenta),
+              data.cell.x + 230,
+              textYTotals
+            );
+            textYTotals += 12;
+            doc.text(
+              formatCurrency(resumen.montoTotalOperacion),
+              data.cell.x + 230,
+              textYTotals
+            );
+            textYTotals += 12;
+            doc.text(formatCurrency(propina), data.cell.x + 230, textYTotals);
+            textYTotals += 12;
+            doc.text(formatCurrency(noAfectos), data.cell.x + 230, textYTotals);
+            textYTotals += 12;
+            doc.text(
+              formatCurrency(resumen.totalPagar),
+              data.cell.x + 230,
+              textYTotals
+            );
+          }
+
           if (custom.typeResume === "custom") {
             const noAfectos = resumen.totalExenta + resumen.totalNoSuj;
 
             const totalIva =
               resumen.tributos && resumen.tributos.length > 0
                 ? resumen.tributos.find((tributo) => tributo.codigo === "20")
-                    ?.valor || 0
+                  ?.valor || 0
                 : 0;
 
             doc.text(
@@ -788,8 +789,8 @@ export const generateSvfe03_2 = async ({
           ? 600
           : 350
         : i === doc.internal.pages.length - 1
-        ? 609
-        : doc.internal.pageSize.height - 200,
+          ? 609
+          : doc.internal.pageSize.height - 200,
       15,
       15,
       "S"
@@ -996,8 +997,8 @@ export const generateSvfe03_2 = async ({
                 svfe01.emisor.direccion.departamento,
                 svfe01.emisor.direccion.municipio
               ) +
-                " " +
-                svfe01.emisor.direccion.complemento,
+              " " +
+              svfe01.emisor.direccion.complemento,
               380
             );
 
@@ -1184,11 +1185,11 @@ export const generateSvfe03_2 = async ({
                 doc.splitTextToSize(
                   svfe01.receptor.direccion
                     ? formatAddress(
-                        svfe01.receptor.direccion.departamento,
-                        svfe01.receptor.direccion.municipio
-                      ) +
-                        ", " +
-                        svfe01.receptor.direccion.complemento
+                      svfe01.receptor.direccion.departamento,
+                      svfe01.receptor.direccion.municipio
+                    ) +
+                    ", " +
+                    svfe01.receptor.direccion.complemento
                     : "",
                   600
                 ),
