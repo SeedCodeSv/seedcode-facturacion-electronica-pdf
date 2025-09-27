@@ -97,12 +97,24 @@ export const generateSvfe14_2 = async ({
     ).lastAutoTable?.finalY ?? 0;
 
   const exclude = ["PROPINA", "PROPINA EXTRA"];
-  const data = svfe14.cuerpoDocumento.filter(item => !exclude.includes(item.descripcion)).map((item) => [
-      item.cantidad,
-      item.descripcion,
-      item.precioUni,
-      item.compra,
-    ]);
+  let data = svfe14.cuerpoDocumento.filter(item => !exclude.includes(item.descripcion)).map((item) => [
+    item.cantidad,
+    item.descripcion,
+    item.precioUni,
+    item.compra,
+  ]);
+
+  if (data.length === 0) {
+    data = [[
+      "",
+      "        ",
+      "",
+      "",
+      "",
+      "",
+      ""
+    ]];
+  }
 
   autoTable(doc, {
     head: [["Cantidad", "Descripción", "Precio unitario", "Total compra"]],

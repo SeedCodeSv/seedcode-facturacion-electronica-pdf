@@ -102,7 +102,7 @@ export const generateSvfe03_2 = async ({
     ).lastAutoTable?.finalY ?? 0;
 
   const exclude = ["PROPINA", "PROPINA EXTRA"];
-  const data = svfe01.cuerpoDocumento.filter(item => !exclude.includes(item.descripcion)).map((item) => [
+  let data = svfe01.cuerpoDocumento.filter(item => !exclude.includes(item.descripcion)).map((item) => [
     item.cantidad,
     item.descripcion,
     formatCurrency(+item.precioUni),
@@ -111,6 +111,18 @@ export const generateSvfe03_2 = async ({
     formatCurrency(+item.ventaExenta),
     formatCurrency(+item.ventaGravada),
   ]);
+
+  if (data.length === 0) {
+    data = [[
+      "",  
+      "        ",
+      "", 
+      "", 
+      "", 
+      "", 
+      ""
+    ]];
+  }
 
   autoTable(doc, {
     head: [
@@ -551,7 +563,7 @@ export const generateSvfe03_2 = async ({
             doc.text(
               formatCurrency(resumen.subTotal),
               data.cell.x + 230,
-               data.cell.y + 3
+              data.cell.y + 3
             );
             let textYTotals = data.cell.y + 15;
             doc.text(formatCurrency(tourism), data.cell.x + 230, textYTotals);
@@ -609,7 +621,7 @@ export const generateSvfe03_2 = async ({
                 (cuerpo) => cuerpo.descripcion === "PROPINA"
               )?.noGravado ?? 0;
 
-               let extraPropina =
+            let extraPropina =
               svfe01.cuerpoDocumento.find(
                 (cuerpo) => cuerpo.descripcion === "PROPINA EXTRA"
               )?.noGravado ?? 0;
@@ -660,7 +672,7 @@ export const generateSvfe03_2 = async ({
             );
             textYTotals += 12;
             doc.text(formatCurrency(propina), data.cell.x + 230, textYTotals);
-             textYTotals += 12;
+            textYTotals += 12;
             doc.text(formatCurrency(extraPropina), data.cell.x + 230, textYTotals);
             textYTotals += 12;
             doc.text(formatCurrency(noAfectos), data.cell.x + 230, textYTotals);
