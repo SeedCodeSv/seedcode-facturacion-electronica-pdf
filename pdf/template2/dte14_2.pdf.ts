@@ -96,9 +96,8 @@ export const generateSvfe14_2 = async ({
       }
     ).lastAutoTable?.finalY ?? 0;
 
-  const data = svfe14.cuerpoDocumento
-    .filter((item) => item.descripcion !== "PROPINA")
-    .map((item) => [
+  const exclude = ["PROPINA", "PROPINA EXTRA"];
+  const data = svfe14.cuerpoDocumento.filter(item => !exclude.includes(item.descripcion)).map((item) => [
       item.cantidad,
       item.descripcion,
       item.precioUni,
@@ -363,8 +362,8 @@ export const generateSvfe14_2 = async ({
           ? 600
           : 450
         : i === doc.internal.pages.length - 1
-        ? 700
-        : doc.internal.pageSize.height - 200,
+          ? 700
+          : doc.internal.pageSize.height - 200,
       15,
       15,
       "S"
@@ -527,8 +526,8 @@ export const generateSvfe14_2 = async ({
                 svfe14.emisor.direccion.departamento,
                 svfe14.emisor.direccion.municipio
               ) +
-                " " +
-                svfe14.emisor.direccion.complemento,
+              " " +
+              svfe14.emisor.direccion.complemento,
               380
             );
 
@@ -714,11 +713,11 @@ export const generateSvfe14_2 = async ({
                 doc.splitTextToSize(
                   svfe14.sujetoExcluido.direccion
                     ? formatAddress(
-                        svfe14.sujetoExcluido.direccion.departamento,
-                        svfe14.sujetoExcluido.direccion.municipio
-                      ) +
-                        ", " +
-                        svfe14.sujetoExcluido.direccion.complemento
+                      svfe14.sujetoExcluido.direccion.departamento,
+                      svfe14.sujetoExcluido.direccion.municipio
+                    ) +
+                    ", " +
+                    svfe14.sujetoExcluido.direccion.complemento
                     : "",
                   600
                 ),
