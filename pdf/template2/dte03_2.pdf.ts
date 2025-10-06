@@ -116,13 +116,13 @@ export const generateSvfe03_2 = async ({
 
   if (data.length === 0) {
     data = [[
+      "", 
+      "       ", 
       "",
-      "        ",
-      "",
-      "",
-      "",
-      "",
-      ""
+       "",
+        "", 
+        "",
+         ""
     ]];
   }
 

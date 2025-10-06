@@ -114,16 +114,16 @@ export const generateSvfe01_2 = async ({
   ]);
 
   if (data.length === 0) {
-    data = [[
+  data = [[
+    "", 
+    "       ", 
+    "",
+     "",
+      "", 
       "",
-      "        ",
-      "",
-      "",
-      "",
-      "",
-      ""
-    ]];
-  }
+       ""
+  ]];
+}
 
   autoTable(doc, {
     head: [
