@@ -39,6 +39,7 @@ interface Props {
   custom: {
     typeResume: "simple" | "detailed" | "custom";
   };
+  showDescActivity?: boolean
 }
 /**
  * Function to generate svfe01 template 2
@@ -73,6 +74,7 @@ export const generateSvfe01_2 = async ({
   logo = "",
   watermark = "",
   selloInvalidacion = "",
+  showDescActivity = false
 }: Props) => {
   const doc = new jsPDF({
     orientation: "portrait",
@@ -111,14 +113,14 @@ export const generateSvfe01_2 = async ({
     formatCurrency(+item.ventaGravada),
   ]);
 
-   if (data.length === 0) {
+  if (data.length === 0) {
     data = [[
-      "",  
+      "",
       "        ",
-      "", 
-      "", 
-      "", 
-      "", 
+      "",
+      "",
+      "",
+      "",
       ""
     ]];
   }
@@ -504,7 +506,7 @@ export const generateSvfe01_2 = async ({
           }
 
           const heightRect = custom.typeResume === "simple" ? 150 : 160;
-          const startY = custom.typeResume === 'detailed' ? data.cell.y - 7 : data.cell.y 
+          const startY = custom.typeResume === 'detailed' ? data.cell.y - 7 : data.cell.y
 
           doc.setFillColor(fillColor);
           doc.rect(data.cell.x + 220, startY, 150, heightRect, "F");
@@ -1058,6 +1060,11 @@ export const generateSvfe01_2 = async ({
             lastY += 15;
             doc.setFontSize(8);
             doc.setFont("Nunito", "normal");
+            if (showDescActivity) {
+              doc.text(`Actividad económica: ${svfe01.emisor.descActividad}`, data.cell.x + 10, lastY);
+              lastY += 10;
+            }
+
 
             const address = doc.splitTextToSize(
               formatAddress(

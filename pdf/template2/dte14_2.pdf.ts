@@ -36,6 +36,8 @@ interface Props {
     phone: string;
     website: string;
   };
+  showDescActivity?: boolean
+
 }
 /**
  * Function to generate svfe14 template 2
@@ -69,6 +71,7 @@ export const generateSvfe14_2 = async ({
   logo = "",
   watermark = "",
   selloInvalidacion = "",
+  showDescActivity = false
 }: Props) => {
   const doc = new jsPDF({
     orientation: "portrait",
@@ -532,6 +535,10 @@ export const generateSvfe14_2 = async ({
             lastY += 15;
             doc.setFontSize(8);
             doc.setFont("Nunito", "normal");
+            if (showDescActivity) {
+              doc.text(`Actividad económica: ${svfe14.emisor.descActividad}`, data.cell.x + 10, lastY);
+              lastY += 10;
+            }
 
             const address = doc.splitTextToSize(
               formatAddress(

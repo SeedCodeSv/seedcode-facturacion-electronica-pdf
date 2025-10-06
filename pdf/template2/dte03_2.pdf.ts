@@ -39,6 +39,7 @@ interface Props {
   custom: {
     typeResume: "simple" | "detailed" | "custom";
   };
+  showDescActivity?: boolean
 }
 
 /**
@@ -74,6 +75,7 @@ export const generateSvfe03_2 = async ({
   watermark = "",
   selloInvalidacion = "",
   custom,
+  showDescActivity = false
 }: Props) => {
   const doc = new jsPDF({
     orientation: "portrait",
@@ -114,12 +116,12 @@ export const generateSvfe03_2 = async ({
 
   if (data.length === 0) {
     data = [[
-      "",  
+      "",
       "        ",
-      "", 
-      "", 
-      "", 
-      "", 
+      "",
+      "",
+      "",
+      "",
       ""
     ]];
   }
@@ -1007,8 +1009,8 @@ export const generateSvfe03_2 = async ({
             doc.setFont("Nunito", "bold");
             doc.setTextColor(darkTextColor);
 
-            let lastY = 110;
-            doc.setFontSize(13);
+            let lastY = 108;
+            doc.setFontSize(12.5);
             doc.text(svfe01.emisor.nombre, data.cell.x + 10, lastY);
             lastY += 15;
             doc.setFontSize(10);
@@ -1025,6 +1027,10 @@ export const generateSvfe03_2 = async ({
             lastY += 15;
             doc.setFontSize(8);
             doc.setFont("Nunito", "normal");
+            if (showDescActivity) {
+              doc.text(`Actividad económica: ${svfe01.emisor.descActividad}`, data.cell.x + 10, lastY);
+              lastY += 10;
+            }
 
             const address = doc.splitTextToSize(
               formatAddress(
@@ -1037,7 +1043,6 @@ export const generateSvfe03_2 = async ({
             );
 
             const textH = getHeightText(doc, address);
-
             doc.text(address, data.cell.x + 10, lastY);
             lastY += textH + 2;
             doc.text(svfe01.emisor.correo, data.cell.x + 10, lastY);
