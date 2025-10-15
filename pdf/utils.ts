@@ -201,11 +201,12 @@ export const headerDoc = async (
   dte: DteFe | DteCcf | DteFse | DteNce | DteNre,
   logo: Uint8Array | string = "",
   canInvertName: boolean = false,
-  splitNameInTwoLines: boolean = false
+  splitNameInTwoLines: boolean = false,
+  shortName: boolean = false
 ) => {
   const dataQR = await generateQR(dte);
 
-  const { imageBase64, width, height } = await adjustImageByHeight(logo,20);
+  const { imageBase64, width, height } = await adjustImageByHeight(logo, 20);
   autoTable(doc, {
     startY: 5,
     showHead: false,
@@ -343,8 +344,8 @@ export const headerDoc = async (
         );
 
         const docName = doc.splitTextToSize(
-          formatNameByTypeDte(dte.identificacion.tipoDte),
-          30
+          formatNameByTypeDte(dte.identificacion.tipoDte, shortName),
+          shortName? 20 : 30
         );
         doc.setFontSize(5);
         returnBoldText(doc, docName, cellX + 50, cellY + 9, "center");
@@ -390,10 +391,10 @@ export const getHeightText = (doc: jsPDF, text: string) => {
   return dimensions.h;
 };
 
-export const formatNameByTypeDte = (typeDte: string) => {
+export const formatNameByTypeDte = (typeDte: string, short: boolean) => {
   switch (typeDte) {
     case "01":
-      return "COMPROBANTE DE FACTURA CONSUMIDOR FINAL";
+      return short ? "Factura Consumidor Final" : "COMPROBANTE DE FACTURA CONSUMIDOR FINAL";
     case "03":
       return "COMPROBANTE DE CRÉDITO FISCAL";
     case "04":

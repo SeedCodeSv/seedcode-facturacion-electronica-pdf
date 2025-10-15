@@ -17,13 +17,14 @@ export const generateSvfe01 = async (
   selloInvalidacion: string = "",
   contingence: boolean = false,
   canInvertName: boolean = false,
-  splitNameInTwoLines: boolean = false
+  splitNameInTwoLines: boolean = false,
+  shortName: boolean = false,
+  showIva: boolean = true
 ) => {
   const doc = new jsPDF({
     compress: true,
   });
   let finalYFirstPage = 0;
-
 
   const { cuerpoDocumento } = svfe01 as DteFe;
 
@@ -257,7 +258,7 @@ export const generateSvfe01 = async (
   const pageCount = doc.internal.pages.length - 1;
   for (let i = 1; i <= pageCount; i++) {
     doc.setPage(i);
-    await headerDoc(doc, svfe01, logo, canInvertName, splitNameInTwoLines);
+    await headerDoc(doc, svfe01, logo, canInvertName, splitNameInTwoLines, shortName);
     const margin = 5;
     const rectWidth = doc.internal.pageSize.getWidth() - 2 * margin;
     const radius = 2;
