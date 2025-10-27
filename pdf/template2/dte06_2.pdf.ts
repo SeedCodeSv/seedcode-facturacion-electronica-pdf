@@ -12,7 +12,7 @@ import {
   adjustImageWatermark,
 } from "../utils";
 import { formatDocumentType } from "./utils";
-import { DteCcf } from "../../main";
+import { DteNce } from "../../main";
 
 interface Props {
   borderColor: string;
@@ -21,7 +21,7 @@ interface Props {
   darkTextColor: string;
   lightTextColor: string;
   tertiaryColor: string;
-  svfe06: DteCcf;
+  svfe06: DteNce;
   logoWidth: number;
   logoHeight: number;
   logo: Uint8Array | string;
