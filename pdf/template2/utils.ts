@@ -21,6 +21,10 @@ export const formatDocumentType = (type: string) => {
             return "COMPROBANTE DE CRÉDITO FISCAL"
         case "04":
             return "COMPROBANTE DE NOTA DE REMISIÓN"
+        case "05":
+            return "COMPROBANTE DE NOTA DE CRÉDITO";
+        case "06":
+            return "COMPROBANTE DE NOTA DE DÉBITO";
         case "14":
             return "COMPROBANTE DE SUJETO EXCLUIDO"
         default:
