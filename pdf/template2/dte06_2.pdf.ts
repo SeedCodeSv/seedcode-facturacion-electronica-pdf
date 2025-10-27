@@ -116,13 +116,13 @@ export const generateSvfe06_2 = async ({
 
   if (data.length === 0) {
     data = [[
-      "", 
-      "       ", 
       "",
-       "",
-        "", 
-        "",
-         ""
+      "       ",
+      "",
+      "",
+      "",
+      "",
+      ""
     ]];
   }
 
@@ -1175,7 +1175,7 @@ export const generateSvfe06_2 = async ({
         }
       ).lastAutoTable.finalY;
 
-      const payCondition = resumen.pagos[0].codigo ?? "01";
+      const payCondition = resumen.pagos?.[0]?.codigo ?? "01";
 
       autoTable(doc, {
         head: [[""]],

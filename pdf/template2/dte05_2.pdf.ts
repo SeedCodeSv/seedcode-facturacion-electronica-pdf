@@ -12,7 +12,7 @@ import {
   adjustImageWatermark,
 } from "../utils";
 import { formatDocumentType } from "./utils";
-import {  DteNce } from "../../main";
+import { DteNce } from "../../main";
 
 interface Props {
   borderColor: string;
@@ -116,13 +116,13 @@ export const generateSvfe05_2 = async ({
 
   if (data.length === 0) {
     data = [[
-      "", 
-      "       ", 
       "",
-       "",
-        "", 
-        "",
-         ""
+      "       ",
+      "",
+      "",
+      "",
+      "",
+      ""
     ]];
   }
 
@@ -1175,7 +1175,7 @@ export const generateSvfe05_2 = async ({
         }
       ).lastAutoTable.finalY;
 
-      const payCondition = resumen.pagos[0].codigo ?? "01";
+      const payCondition = resumen.pagos?.[0]?.codigo ?? "01";
 
       autoTable(doc, {
         head: [[""]],
