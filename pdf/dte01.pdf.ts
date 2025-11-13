@@ -487,38 +487,43 @@ export const footerDocument = (
   }
 
   doc.text("Suma Total de Operaciones:", 127, rectMargin + 10);
-  rectMargin = rectMargin + 3
+  let marginY = 0;
+  marginY = rectMargin + 3
   doc.text(
     "Monto global Desc., Rebajas y otros a ventas no sujetas: ",
     127,
-    rectMargin
+    marginY
   );
-  rectMargin = rectMargin + 3
+  marginY = marginY + 3
   doc.text(
     "Monto global Desc., Rebajas y otros a ventas exentas:",
     127,
-    rectMargin
+    marginY
   );
-  rectMargin = rectMargin + 3
+  marginY = marginY + 3
   doc.text(
     "Monto global Desc., Rebajas y otros a ventas gravadas:",
     127,
-    rectMargin
+    marginY
   );
-  rectMargin = rectMargin + 3
-  doc.text("Sub-Total: ", 127, rectMargin);
-  rectMargin = rectMargin + 3
-  doc.text("IVA Retenido: ", 127, rectMargin);
-  rectMargin = rectMargin + 3
-  doc.text("Retención Renta: ", 127, rectMargin);
-  rectMargin = rectMargin + 3
-  doc.text("Monto Total de la Operación: ", 127, rectMargin);
-  rectMargin = rectMargin + 3
-  doc.text("Total no Gravado: ", 127, rectMargin);
-  rectMargin = rectMargin + 3
-  doc.text("Total Otros montos no afectos: ", 127, rectMargin);
-  rectMargin = rectMargin + 3
-  doc.text("Total a Pagar: ", 127, rectMargin);
+  marginY = marginY + 3
+  doc.text("Sub-Total: ", 127, marginY);
+  marginY = marginY + 3
+  doc.text("IVA Retenido: ", 127, marginY);
+  marginY = marginY + 3
+  doc.text("Retención Renta: ", 127, marginY);
+  marginY = marginY + 3
+  doc.text("Monto Total de la Operación: ", 127, marginY);
+  marginY = marginY + 3
+  if(tourism > 0){
+    doc.text("Turismo: por alojamiento (5%):", 127, marginY);
+    marginY = marginY + 3
+  }
+  doc.text("Total no Gravado: ", 127, marginY);
+  marginY = marginY + 3
+  doc.text("Total Otros montos no afectos: ", 127, marginY);
+  marginY = marginY + 3
+  doc.text("Total a Pagar: ", 127, marginY);
 
   for (let i = 0; i < 10; i++) {
     doc.text("$", 185, rectMargin + i * 3 + 10);
