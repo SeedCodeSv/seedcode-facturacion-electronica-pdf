@@ -525,7 +525,7 @@ export const footerDocument = (
   marginY = marginY + 3
   doc.text("Total a Pagar: ", 127, marginY);
 
-  for (let i = 0; i < 10; i++) {
+  for (let i = 0; i < (tourism > 0 ? 12 : 11); i++) {
     doc.text("$", 185, rectMargin + i * 3 + 10);
   }
 
@@ -536,12 +536,11 @@ export const footerDocument = (
     resumen.descuNoSuj.toFixed(2),
     resumen.descuExenta.toFixed(2),
     resumen.descuGravada.toFixed(2),
-    // resumen.tributos ? resumen.tributos.map((tr) => Number(tr.valor)).reduce((a, b) => a + b).toFixed(2) : "0.00",
     resumen.subTotal.toFixed(2),
-    // resumen.ivaPerci1.toFixed(2),
     resumen.ivaRete1.toFixed(2),
     resumen.reteRenta.toFixed(2),
     resumen.montoTotalOperacion.toFixed(2),
+    ...(tourism > 0 ? [tourism.toFixed(2)] : []),
     propina?.toFixed(2),
     "0.00",
     resumen.totalPagar.toFixed(2),
