@@ -480,31 +480,45 @@ export const footerDocument = (
     }
   }
 
+  let tourism  = 0
+
+  if(svfe01.resumen.tributos && svfe01.resumen.tributos.length > 0){
+    tourism = svfe01.resumen.tributos.find((cuerpo) => cuerpo.codigo === '59').valor ?? 0
+  }
+
   doc.text("Suma Total de Operaciones:", 127, rectMargin + 10);
+  rectMargin = rectMargin + 3
   doc.text(
     "Monto global Desc., Rebajas y otros a ventas no sujetas: ",
     127,
-    rectMargin + 13
+    rectMargin
   );
+  rectMargin = rectMargin + 3
   doc.text(
     "Monto global Desc., Rebajas y otros a ventas exentas:",
     127,
-    rectMargin + 16
+    rectMargin
   );
+  rectMargin = rectMargin + 3
   doc.text(
     "Monto global Desc., Rebajas y otros a ventas gravadas:",
     127,
-    rectMargin + 19
+    rectMargin
   );
-  // doc.text("IVA 13%: ", 127, rectMargin + 22);
-  doc.text("Sub-Total: ", 127, rectMargin + 22);
-  // doc.text("IVA Percibido: ", 127, rectMargin + 28);
-  doc.text("IVA Retenido: ", 127, rectMargin + 25);
-  doc.text("Retención Renta: ", 127, rectMargin + 28);
-  doc.text("Monto Total de la Operación: ", 127, rectMargin + 31);
-  doc.text("Total no Gravado: ", 127, rectMargin + 34);
-  doc.text("Total Otros montos no afectos: ", 127, rectMargin + 37);
-  doc.text("Total a Pagar: ", 127, rectMargin + 40);
+  rectMargin = rectMargin + 3
+  doc.text("Sub-Total: ", 127, rectMargin);
+  rectMargin = rectMargin + 3
+  doc.text("IVA Retenido: ", 127, rectMargin);
+  rectMargin = rectMargin + 3
+  doc.text("Retención Renta: ", 127, rectMargin);
+  rectMargin = rectMargin + 3
+  doc.text("Monto Total de la Operación: ", 127, rectMargin);
+  rectMargin = rectMargin + 3
+  doc.text("Total no Gravado: ", 127, rectMargin);
+  rectMargin = rectMargin + 3
+  doc.text("Total Otros montos no afectos: ", 127, rectMargin);
+  rectMargin = rectMargin + 3
+  doc.text("Total a Pagar: ", 127, rectMargin);
 
   for (let i = 0; i < 10; i++) {
     doc.text("$", 185, rectMargin + i * 3 + 10);
