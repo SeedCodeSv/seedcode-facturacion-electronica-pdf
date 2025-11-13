@@ -488,7 +488,7 @@ export const footerDocument = (
 
   doc.text("Suma Total de Operaciones:", 127, rectMargin + 10);
   let marginY = 0;
-  marginY = rectMargin + 3
+  marginY = rectMargin + 10 + 3
   doc.text(
     "Monto global Desc., Rebajas y otros a ventas no sujetas: ",
     127,
