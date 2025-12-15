@@ -295,7 +295,7 @@ export const generateSvfe14_2 = async ({
           doc.rect(data.cell.x + 220, data.cell.y + 20, 150, 80, "F");
 
           doc.text(
-            String(resumen.subTotal),
+            formatCurrency(resumen.subTotal),
             data.cell.x + 230,
             data.cell.y + 35
           );
@@ -488,7 +488,7 @@ export const generateSvfe14_2 = async ({
         doc.internal.pageSize.height - 175
       );
       doc.text(
-        String(resumen.totalCompra),
+        formatCurrency(resumen.totalCompra),
         750,
         doc.internal.pageSize.height - 185,
         {
