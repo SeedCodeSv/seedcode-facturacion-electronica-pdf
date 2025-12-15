@@ -36,8 +36,7 @@ interface Props {
     phone: string;
     website: string;
   };
-  showDescActivity?: boolean
-
+  showDescActivity?: boolean;
 }
 /**
  * Function to generate svfe14 template 2
@@ -71,7 +70,7 @@ export const generateSvfe14_2 = async ({
   logo = "",
   watermark = "",
   selloInvalidacion = "",
-  showDescActivity = false
+  showDescActivity = false,
 }: Props) => {
   const doc = new jsPDF({
     orientation: "portrait",
@@ -100,24 +99,18 @@ export const generateSvfe14_2 = async ({
     ).lastAutoTable?.finalY ?? 0;
 
   const exclude = ["PROPINA", "PROPINA EXTRA"];
-  let data = svfe14.cuerpoDocumento.filter(item => !exclude.includes(item.descripcion)).map((item) => [
+  let data = svfe14.cuerpoDocumento
+    .filter((item) => !exclude.includes(item.descripcion))
+    .map((item) => [
       item.cantidad,
       item.descripcion,
-      item.precioUni,
-      item.compra,
+      formatCurrency(item.precioUni),
+      formatCurrency(item.compra),
     ]);
 
-    if (data.length === 0) {
-      data = [[
-        "", 
-        "       ", 
-        "",
-         "",
-          "", 
-          "",
-           ""
-      ]];
-    }
+  if (data.length === 0) {
+    data = [["", "       ", "", "", "", "", ""]];
+  }
 
   autoTable(doc, {
     head: [["Cantidad", "Descripción", "Precio unitario", "Total compra"]],
@@ -308,13 +301,29 @@ export const generateSvfe14_2 = async ({
           );
 
           let textYTotals = data.cell.y + 50;
-          doc.text(String(resumen.totalCompra), data.cell.x + 230, textYTotals);
+          doc.text(
+            formatCurrency(resumen.totalCompra),
+            data.cell.x + 230,
+            textYTotals
+          );
           textYTotals += 15;
-          doc.text(String(resumen.ivaRete1), data.cell.x + 230, textYTotals);
+          doc.text(
+            formatCurrency(resumen.ivaRete1),
+            data.cell.x + 230,
+            textYTotals
+          );
           textYTotals += 15;
-          doc.text(String(resumen.reteRenta), data.cell.x + 230, textYTotals);
+          doc.text(
+            formatCurrency(resumen.reteRenta),
+            data.cell.x + 230,
+            textYTotals
+          );
           textYTotals += 15;
-          doc.text(String(resumen.totalPagar), data.cell.x + 230, textYTotals);
+          doc.text(
+            formatCurrency(resumen.totalPagar),
+            data.cell.x + 230,
+            textYTotals
+          );
         }
       }
     },
@@ -377,8 +386,8 @@ export const generateSvfe14_2 = async ({
           ? 600
           : 450
         : i === doc.internal.pages.length - 1
-          ? 700
-          : doc.internal.pageSize.height - 200,
+        ? 700
+        : doc.internal.pageSize.height - 200,
       15,
       15,
       "S"
@@ -536,7 +545,11 @@ export const generateSvfe14_2 = async ({
             doc.setFontSize(8);
             doc.setFont("Nunito", "normal");
             if (showDescActivity) {
-              doc.text(`Actividad económica: ${svfe14.emisor.descActividad}`, data.cell.x + 10, lastY);
+              doc.text(
+                `Actividad económica: ${svfe14.emisor.descActividad}`,
+                data.cell.x + 10,
+                lastY
+              );
               lastY += 10;
             }
 
@@ -545,8 +558,8 @@ export const generateSvfe14_2 = async ({
                 svfe14.emisor.direccion.departamento,
                 svfe14.emisor.direccion.municipio
               ) +
-              " " +
-              svfe14.emisor.direccion.complemento,
+                " " +
+                svfe14.emisor.direccion.complemento,
               380
             );
 
@@ -732,11 +745,11 @@ export const generateSvfe14_2 = async ({
                 doc.splitTextToSize(
                   svfe14.sujetoExcluido.direccion
                     ? formatAddress(
-                      svfe14.sujetoExcluido.direccion.departamento,
-                      svfe14.sujetoExcluido.direccion.municipio
-                    ) +
-                    ", " +
-                    svfe14.sujetoExcluido.direccion.complemento
+                        svfe14.sujetoExcluido.direccion.departamento,
+                        svfe14.sujetoExcluido.direccion.municipio
+                      ) +
+                        ", " +
+                        svfe14.sujetoExcluido.direccion.complemento
                     : "",
                   600
                 ),
