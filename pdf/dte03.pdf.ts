@@ -412,6 +412,7 @@ export const footerDocument = (doc: jsPDF, rectMargin: number, ccf: DteCcf) => {
   doc.text("Monto Total de la Operación: ", 127, rectMargin + 40);
   doc.text("Total Otros montos no afectos: ", 127, rectMargin + 43);
   doc.text("Total a Pagar: ", 127, rectMargin + 46);
+  doc.text("Turismo: ", 127, rectMargin + 49);
 
   for (let i = 0; i < 13; i++) {
     doc.text("$", 185, rectMargin + i * 3 + 10);
@@ -423,7 +424,7 @@ export const footerDocument = (doc: jsPDF, rectMargin: number, ccf: DteCcf) => {
     resumen.descuExenta.toFixed(2),
     resumen.descuGravada.toFixed(2),
     resumen.tributos
-      ? resumen.tributos
+      ? resumen.tributos.filter((item)=> item.codigo === "20")
         .map((tr) => Number(tr.valor))
         .reduce((a, b) => a + b)
         .toFixed(2)
@@ -436,7 +437,12 @@ export const footerDocument = (doc: jsPDF, rectMargin: number, ccf: DteCcf) => {
     propina.toFixed(2),
     "0.00",
     resumen.totalPagar.toFixed(2),
-   
+   resumen.tributos
+      ? resumen.tributos.filter((item)=> item.codigo === "59")
+        .map((tr) => Number(tr.valor))
+        .reduce((a, b) => a + b)
+        .toFixed(2)
+      : "0.00",
   ];
 
   totals.forEach((total, index) => {
