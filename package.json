@@ -28,9 +28,8 @@
     "jspdf": "^3.0.0",
     "jspdf-autotable": "^5.0.2",
     "qrcode": "^1.5.4",
-    "seedcode-catalogos-mh": "^8.1.0",
-    "seedcode-facturacion-electronica-pdf":"github.com/SeedCodeSv/seedcode-facturacion-electronica-pdf#punta-pdf",
-    "sharp": "^0.33.5"
+    "seedcode-catalogos-mh": "^8.1.0"
+    ,    "sharp": "^0.33.5"
   },
   "repository": {
     "url": "https://github.com/SeedCodeSv/seedcode-facturacion-electronica-pdf",
