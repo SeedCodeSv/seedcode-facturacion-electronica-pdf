@@ -424,11 +424,9 @@ export const footerDocument = (doc: jsPDF, rectMargin: number, ccf: DteCcf) => {
     resumen.descuExenta.toFixed(2),
     resumen.descuGravada.toFixed(2),
     resumen.tributos
-      ? resumen.tributos.filter((item)=> item.codigo === "20")
-        .map((tr) => Number(tr.valor))
-        .reduce((a, b) => a + b)
-        .toFixed(2)
-      : "0.00",
+    .filter((item) => item.codigo === "20")
+    .reduce((a, b) => a + Number(b.valor || 0), 0)
+    .toFixed(2),
     resumen.subTotal.toFixed(2),
     resumen.ivaPerci1.toFixed(2),
     resumen.ivaRete1.toFixed(2),
@@ -438,11 +436,10 @@ export const footerDocument = (doc: jsPDF, rectMargin: number, ccf: DteCcf) => {
     "0.00",
     resumen.totalPagar.toFixed(2),
 
-    resumen.tributos ? resumen.tributos.filter(item => item.codigo === "59")
-    .map(tr => Number(tr.valor))
-    .reduce((a, b) => a + b, 0) 
+    resumen.tributos
+    .filter(item => item.codigo === "59")
+    .reduce((a, b) => a + Number(b.valor || 0), 0)
     .toFixed(2)
-: "0.00"
 
   ];
 
