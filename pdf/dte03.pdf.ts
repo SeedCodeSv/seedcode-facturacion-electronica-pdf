@@ -437,12 +437,10 @@ export const footerDocument = (doc: jsPDF, rectMargin: number, ccf: DteCcf) => {
     propina.toFixed(2),
     "0.00",
     resumen.totalPagar.toFixed(2),
-
-    resumen.tributos ? resumen.tributos.filter(item => item.codigo === "59")
-    .map(tr => Number(tr.valor))
-    .reduce((a, b) => a + b, 0) 
-    .toFixed(2)
-: "0.00"
+   resumen.tributos ? resumen.tributos
+      .filter((item) => item.codigo === "59")
+      .reduce((a, b) => a + Number(b.valor ?? 0), 0)
+      .toFixed(2) :'0.00',
 
   ];
 
