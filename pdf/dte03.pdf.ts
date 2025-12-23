@@ -439,7 +439,7 @@ export const footerDocument = (doc: jsPDF, rectMargin: number, ccf: DteCcf) => {
     resumen.totalPagar.toFixed(2),
    resumen.tributos ? resumen.tributos
       .filter((item) => item.codigo === "59")
-      .reduce((a, b) => a + Number(b.valor ?? 0), 0)
+      .reduce((a, b) => a + Number(b.valor || 0), 0)
       .toFixed(2) :'0.00',
 
   ];
