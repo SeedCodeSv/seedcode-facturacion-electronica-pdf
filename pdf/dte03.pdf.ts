@@ -425,9 +425,9 @@ export const footerDocument = (doc: jsPDF, rectMargin: number, ccf: DteCcf) => {
     resumen.descuExenta.toFixed(2),
     resumen.descuGravada.toFixed(2),
     resumen.tributos
-      ? resumen.tributos.filter((item)=> item.codigo === "20")
+      ? resumen.tributos.filter((item) => item.codigo === "20")
         .map((tr) => Number(tr.valor))
-        .reduce((a, b) => a + b)
+        .reduce((a, b) => a + b, 0)
         .toFixed(2)
       : "0.00",
     resumen.subTotal.toFixed(2),
@@ -438,7 +438,7 @@ export const footerDocument = (doc: jsPDF, rectMargin: number, ccf: DteCcf) => {
     propina.toFixed(2),
     "0.00",
     resumen.totalPagar.toFixed(2),
- String(turismo)
+    String(turismo)
 
   ];
 
