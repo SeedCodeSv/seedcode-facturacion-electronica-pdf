@@ -417,19 +417,30 @@ export const footerDocument = (doc: jsPDF, rectMargin: number, ccf: DteCcf) => {
   for (let i = 0; i < 14; i++) {
     doc.text("$", 185, rectMargin + i * 3 + 10);
   }
-  const turismo =
-    resumen?.tributos?.find((t) => t?.codigo === "59")?.valor || 0.0;
+  // const turismo =
+  //   resumen?.tributos?.find((t) => t?.codigo === "59")?.valor || 0.0;
+  const turismo = Number(
+  (resumen?.tributos ?? []).find((t) => t?.codigo === "59")?.valor ?? 0
+);
+
   const totals = [
     resumen.descuGravada.toFixed(2),
     resumen.descuNoSuj.toFixed(2),
     resumen.descuExenta.toFixed(2),
     resumen.descuGravada.toFixed(2),
-    resumen.tributos
-      ? resumen.tributos.filter((item) => item.codigo === "20")
-        .map((tr) => Number(tr.valor))
-        .reduce((a, b) => a + b, 0)
-        .toFixed(2)
-      : "0.00",
+    (
+  resumen.tributos ?? []
+)
+  .filter((item) => item?.codigo === "20")
+  .map((tr) => Number(tr?.valor ?? 0))
+  .reduce((a, b) => a + b, 0)
+  .toFixed(2),
+    // resumen.tributos
+    //   ? resumen.tributos.filter((item) => item.codigo === "20")
+    //     .map((tr) => Number(tr.valor))
+    //     .reduce((a, b) => a + b, 0)
+    //     .toFixed(2)
+    //   : "0.00",
     resumen.subTotal.toFixed(2),
     resumen.ivaPerci1.toFixed(2),
     resumen.ivaRete1.toFixed(2),
