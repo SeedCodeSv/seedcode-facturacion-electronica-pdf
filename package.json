@@ -1,6 +1,6 @@
 {
   "name": "seedcode-facturacion-electronica-pdf",
-  "version": "1.7.7",
+  "version": "1.7.8",
   "description": "Librería para generar PDFs de facturación electronica",
   "main": "dist/main.js",
   "declaration": true,
