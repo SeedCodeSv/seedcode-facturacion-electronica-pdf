@@ -404,7 +404,6 @@ export const footerDocument = (doc: jsPDF, rectMargin: number, ccf: DteCcf) => {
     rectMargin + 19
   );
   doc.text("IVA 13%: ", 127, rectMargin + 22);
-  doc.text("Turismo : ", 127, rectMargin + 49);
   doc.text("Sub-Total: ", 127, rectMargin + 25);
   doc.text("IVA Percibido: ", 127, rectMargin + 28);
   doc.text("IVA Retenido: ", 127, rectMargin + 31);
@@ -414,41 +413,27 @@ export const footerDocument = (doc: jsPDF, rectMargin: number, ccf: DteCcf) => {
   doc.text("Total Otros montos no afectos: ", 127, rectMargin + 43);
   doc.text("Total a Pagar: ", 127, rectMargin + 46);
 
-  for (let i = 0; i < 14; i++) {
+  for (let i = 0; i < 13; i++) {
     doc.text("$", 185, rectMargin + i * 3 + 10);
   }
-  // const turismo =
-  //   resumen?.tributos?.find((t) => t?.codigo === "59")?.valor || 0.0;
-  const turismo = Number(
-  (resumen?.tributos ?? []).find((t) => t?.codigo === "59")?.valor ?? 0
-);
 
   const totals = [
-    resumen.descuGravada.toFixed(2),
+    resumen.subTotalVentas.toFixed(2),
     resumen.descuNoSuj.toFixed(2),
     resumen.descuExenta.toFixed(2),
     resumen.descuGravada.toFixed(2),
-    (
-  resumen.tributos ?? []
-)
-  .filter((item) => item?.codigo === "20")
-  .map((tr) => Number(tr?.valor ?? 0))
-  .reduce((a, b) => a + b, 0)
-  .toFixed(2),
-      String(turismo || 0),
-
-    // resumen.tributos
-    //   ? resumen.tributos.filter((item) => item.codigo === "20")
-    //     .map((tr) => Number(tr.valor))
-    //     .reduce((a, b) => a + b, 0)
-    //     .toFixed(2)
-    //   : "0.00",
+    resumen.tributos
+      ? resumen.tributos.filter((item) => item.codigo === "20")
+        .map((tr) => Number(tr.valor))
+        .reduce((a, b) => a + b, 0)
+        .toFixed(2)
+      : "0.00",
     resumen.subTotal.toFixed(2),
     resumen.ivaPerci1.toFixed(2),
     resumen.ivaRete1.toFixed(2),
     resumen.reteRenta.toFixed(2),
-    resumen.montoTotalOperacion.toFixed(2),
     propina.toFixed(2),
+    resumen.montoTotalOperacion.toFixed(2),
     "0.00",
     resumen.totalPagar.toFixed(2),
 
