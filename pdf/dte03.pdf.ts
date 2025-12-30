@@ -404,6 +404,7 @@ export const footerDocument = (doc: jsPDF, rectMargin: number, ccf: DteCcf) => {
     rectMargin + 19
   );
   doc.text("IVA 13%: ", 127, rectMargin + 22);
+  doc.text("Turismo : ", 127, rectMargin + 49);
   doc.text("Sub-Total: ", 127, rectMargin + 25);
   doc.text("IVA Percibido: ", 127, rectMargin + 28);
   doc.text("IVA Retenido: ", 127, rectMargin + 31);
@@ -412,7 +413,6 @@ export const footerDocument = (doc: jsPDF, rectMargin: number, ccf: DteCcf) => {
   doc.text("Monto Total de la Operación: ", 127, rectMargin + 40);
   doc.text("Total Otros montos no afectos: ", 127, rectMargin + 43);
   doc.text("Total a Pagar: ", 127, rectMargin + 46);
-  doc.text("Turismo: ", 127, rectMargin + 49);
 
   for (let i = 0; i < 14; i++) {
     doc.text("$", 185, rectMargin + i * 3 + 10);
@@ -435,6 +435,8 @@ export const footerDocument = (doc: jsPDF, rectMargin: number, ccf: DteCcf) => {
   .map((tr) => Number(tr?.valor ?? 0))
   .reduce((a, b) => a + b, 0)
   .toFixed(2),
+      String(turismo || 0),
+
     // resumen.tributos
     //   ? resumen.tributos.filter((item) => item.codigo === "20")
     //     .map((tr) => Number(tr.valor))
@@ -449,7 +451,6 @@ export const footerDocument = (doc: jsPDF, rectMargin: number, ccf: DteCcf) => {
     propina.toFixed(2),
     "0.00",
     resumen.totalPagar.toFixed(2),
-    String(turismo || 0)
 
   ];
 
