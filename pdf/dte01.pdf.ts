@@ -405,7 +405,7 @@ export const generateSvfe01 = async (
     if (contingence) {
       doc.saveGraphicsState();
       doc.setGState(doc.GState({ opacity: 0.3 }));
-      const imagePath = join(__dirname, "images/contingencia.png");
+      const imagePath = join(__dirname, "logos/contingencia.png");
       const imageBuffer = readFileSync(imagePath);
       const imgBase64 = imageBuffer.toString("base64");
       doc.addImage(
