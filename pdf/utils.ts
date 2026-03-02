@@ -441,7 +441,7 @@ export const tableProduct = (
       price: formatCurrency(prd.precioUni),
       descu: formatCurrency(prd.montoDescu),
       other: formatCurrency(0),
-      vtSuj: formatCurrency(Number(prd.ventaNoSuj) + Number(prd.noGravado)),
+      vtSuj: formatCurrency(Number(prd.ventaNoSuj) + Number(prd.noGravado ?? 0)),
       vtExe: formatCurrency(prd.ventaExenta),
       vtGrav: formatCurrency(prd.ventaGravada),
     });
