@@ -35,7 +35,7 @@ export const formatAddress = (dep_code: string, mun_code: string) => {
 
 export const returnWidthImgFromBuffer = async (
   imageBuffer: Buffer | Uint8Array,
-  desiredHeight: number
+  desiredHeight: number,
 ): Promise<number> => {
   try {
     const image = sharp(imageBuffer);
@@ -61,14 +61,18 @@ export const returnBoldText = (
   text: string,
   x: number,
   y: number,
-  alignContent: "left" | "center" | "right" = "left"
+  alignContent: "left" | "center" | "right" = "left",
 ) => {
   doc.setFont("helvetica", "bold");
   doc.text(text, x, y, { align: alignContent });
   doc.setFont("helvetica", "normal");
 };
 
-export async function adjustImage(imageData: Uint8Array | string = "", maxWidth: number = 60, maxHeight: number = 35) {
+export async function adjustImage(
+  imageData: Uint8Array | string = "",
+  maxWidth: number = 60,
+  maxHeight: number = 35,
+) {
   if (typeof imageData !== "string") {
     const imageBuffer = Buffer.from(imageData);
     const metadata = await sharp(imageBuffer).metadata();
@@ -95,10 +99,10 @@ export async function adjustImage(imageData: Uint8Array | string = "", maxWidth:
     const desiredHeight = 20;
     const newWidth = await returnWidthImgFromBuffer(
       readFileSync(join(__dirname, "logos/logo.png")),
-      desiredHeight
+      desiredHeight,
     );
     const logo = readFileSync(join(__dirname, "logos/logo.png")).toString(
-      "base64"
+      "base64",
     );
 
     return { imageBase64: logo, width: newWidth, height: desiredHeight };
@@ -107,7 +111,7 @@ export async function adjustImage(imageData: Uint8Array | string = "", maxWidth:
 
 export async function adjustImageByHeight(
   imageData: Uint8Array | string = "",
-  maxHeight: number = 35
+  maxHeight: number = 35,
 ) {
   if (typeof imageData !== "string") {
     const imageBuffer = Buffer.from(imageData);
@@ -130,18 +134,21 @@ export async function adjustImageByHeight(
     const desiredHeight = maxHeight;
     const newWidth = await returnWidthImgFromBuffer(
       readFileSync(join(__dirname, "logos/logo.png")),
-      desiredHeight
+      desiredHeight,
     );
     const logo = readFileSync(join(__dirname, "logos/logo.png")).toString(
-      "base64"
+      "base64",
     );
 
     return { imageBase64: logo, width: newWidth, height: desiredHeight };
   }
 }
 
-
-export const adjustImageWatermark = async (imageData: Uint8Array | string = "", maxWidth: number = 45, maxHeight: number = 20) => {
+export const adjustImageWatermark = async (
+  imageData: Uint8Array | string = "",
+  maxWidth: number = 45,
+  maxHeight: number = 20,
+) => {
   if (typeof imageData !== "string") {
     const imageBuffer = Buffer.from(imageData);
     const metadata = await sharp(imageBuffer).metadata();
@@ -159,24 +166,23 @@ export const adjustImageWatermark = async (imageData: Uint8Array | string = "", 
     const data = await sharp(imageBuffer)
       .resize(Math.round(width * 3.779527), Math.round(height * 3.779527))
       .png({ quality: 60 })
-      .toBuffer()
+      .toBuffer();
     const imageBase64 = uint8ArrayToBase64(data);
-
 
     return { imageBase64, width, height };
   } else {
     const desiredHeight = 20;
     const newWidth = await returnWidthImgFromBuffer(
       readFileSync(join(__dirname, "logos/logo.png")),
-      desiredHeight
+      desiredHeight,
     );
     const logo = readFileSync(join(__dirname, "logos/logo.png")).toString(
-      "base64"
+      "base64",
     );
 
     return { imageBase64: logo, width: newWidth, height: desiredHeight };
   }
-}
+};
 
 function uint8ArrayToBase64(uint8Array: Uint8Array): string {
   return Buffer.from(uint8Array).toString("base64");
@@ -185,7 +191,7 @@ function uint8ArrayToBase64(uint8Array: Uint8Array): string {
 const formatName = (
   name: string,
   nameComercial: string,
-  canInvertName: boolean = false
+  canInvertName: boolean = false,
 ) => {
   if (nameComercial === name) {
     return name;
@@ -202,7 +208,7 @@ export const headerDoc = async (
   logo: Uint8Array | string = "",
   canInvertName: boolean = false,
   splitNameInTwoLines: boolean = false,
-  shortName: boolean = false
+  shortName: boolean = false,
 ) => {
   const dataQR = await generateQR(dte);
 
@@ -224,7 +230,7 @@ export const headerDoc = async (
               width,
               height,
               "LOGO",
-              "SLOW"
+              "SLOW",
             );
           } else {
             doc.addImage(
@@ -235,7 +241,7 @@ export const headerDoc = async (
               width,
               height,
               "LOGO",
-              "SLOW"
+              "SLOW",
             );
           }
         } catch (error) {
@@ -260,10 +266,9 @@ export const headerDoc = async (
           splitNameInTwoLines &&
           nombreComercial
         ) {
-          formattedName = canInvertName ? [nombreComercial, nombre] : [
-            nombre,
-            nombreComercial
-          ];
+          formattedName = canInvertName
+            ? [nombreComercial, nombre]
+            : [nombre, nombreComercial];
         } else {
           formattedName =
             tipoDte === "01" || tipoDte === "03"
@@ -272,7 +277,9 @@ export const headerDoc = async (
         }
 
         const name = Array.isArray(formattedName)
-          ? formattedName.flatMap((line) => doc.splitTextToSize(line, cellWidth - 4))
+          ? formattedName.flatMap((line) =>
+              doc.splitTextToSize(line, cellWidth - 4),
+            )
           : doc.splitTextToSize(formattedName, cellWidth - 4);
 
         const hName = getHeightText(doc, name);
@@ -280,7 +287,7 @@ export const headerDoc = async (
 
         const actEco = doc.splitTextToSize(
           `Actividad económica: ${dte.emisor.descActividad}`,
-          cellWidth - 4
+          cellWidth - 4,
         );
         const hActEco = getHeightText(doc, actEco);
         returnBoldText(
@@ -288,15 +295,15 @@ export const headerDoc = async (
           actEco,
           cellX + cellWidth / 2,
           cellY + hName + 5.5,
-          "center"
+          "center",
         );
 
         const address = doc.splitTextToSize(
           `DIRECCIÓN : ${dte.emisor.direccion.complemento} ${formatAddress(
             dte.emisor.direccion.departamento,
-            dte.emisor.direccion.municipio
+            dte.emisor.direccion.municipio,
           )}`,
-          cellWidth - 4
+          cellWidth - 4,
         );
         const hAddress = getHeightText(doc, address);
         returnBoldText(
@@ -304,7 +311,7 @@ export const headerDoc = async (
           address,
           cellX + cellWidth / 2,
           cellY + hName + hActEco + 6.5,
-          "center"
+          "center",
         );
 
         returnBoldText(
@@ -312,9 +319,8 @@ export const headerDoc = async (
           `TEL: ${dte.emisor.telefono}`,
           cellX + cellWidth / 2,
           cellY + hName + hActEco + hAddress + 7,
-          "center"
+          "center",
         );
-
       }
       if (data.column.index === 2 && data.row.index === 0) {
         const cellX = data.cell.x;
@@ -331,7 +337,7 @@ export const headerDoc = async (
           cellHeight - 4,
           2,
           2,
-          "S"
+          "S",
         );
 
         doc.setFontSize(5);
@@ -340,12 +346,12 @@ export const headerDoc = async (
           "DOCUMENTO TRIBUTARIO ELECTRÓNICO",
           cellX + 50,
           cellY + 5,
-          "center"
+          "center",
         );
 
         const docName = doc.splitTextToSize(
           formatNameByTypeDte(dte.identificacion.tipoDte, shortName),
-          shortName? 20 : 30
+          shortName ? 20 : 30,
         );
         doc.setFontSize(5);
         returnBoldText(doc, docName, cellX + 50, cellY + 9, "center");
@@ -355,14 +361,14 @@ export const headerDoc = async (
           `N.I.T. ${dte.emisor.nit}`,
           cellX + 50,
           cellY + 16,
-          "center"
+          "center",
         );
         returnBoldText(
           doc,
           `NRC No. ${dte.emisor.nrc}`,
           cellX + 50,
           cellY + 20,
-          "center"
+          "center",
         );
 
         doc.addImage(
@@ -373,7 +379,7 @@ export const headerDoc = async (
           23,
           23,
           "QR",
-          "SLOW"
+          "SLOW",
         );
       }
     },
@@ -394,7 +400,9 @@ export const getHeightText = (doc: jsPDF, text: string) => {
 export const formatNameByTypeDte = (typeDte: string, short: boolean) => {
   switch (typeDte) {
     case "01":
-      return short ? "Factura Consumidor Final" : "COMPROBANTE DE FACTURA CONSUMIDOR FINAL";
+      return short
+        ? "Factura Consumidor Final"
+        : "COMPROBANTE DE FACTURA CONSUMIDOR FINAL";
     case "03":
       return "COMPROBANTE DE CRÉDITO FISCAL";
     case "04":
@@ -429,24 +437,26 @@ export const tableHeaders = [
 ];
 
 export const tableProduct = (
-  doc,
+  doc: jsPDF,
   data: DteFe | DteCcf | DteNce,
-  finalY: number
+  finalY: number,
 ) => {
   const array_object: (string | number)[][] = [];
-  data.cuerpoDocumento.filter((cuerpo) => cuerpo.descripcion !== "PROPINA").map((prd) => {
-    const values = Object.values({
-      qty: prd.cantidad,
-      desc: prd.descripcion,
-      price: formatCurrency(prd.precioUni),
-      descu: formatCurrency(prd.montoDescu),
-      other: formatCurrency(0),
-      vtSuj: formatCurrency(Number(prd.ventaNoSuj) + Number(prd.noGravado)),
-      vtExe: formatCurrency(prd.ventaExenta),
-      vtGrav: formatCurrency(prd.ventaGravada),
+  data.cuerpoDocumento
+    .filter((cuerpo) => cuerpo.descripcion !== "PROPINA")
+    .map((prd) => {
+      const values = Object.values({
+        qty: prd.cantidad,
+        desc: prd.descripcion,
+        price: formatCurrency(prd.precioUni),
+        descu: formatCurrency(prd.montoDescu),
+        other: formatCurrency(0),
+        vtSuj: formatCurrency(Number(prd.ventaNoSuj) + Number(prd.noGravado)),
+        vtExe: formatCurrency(prd.ventaExenta),
+        vtGrav: formatCurrency(prd.ventaGravada),
+      });
+      array_object.push(values);
     });
-    array_object.push(values);
-  });
 
   autoTable(doc, {
     theme: "plain",
@@ -499,7 +509,7 @@ export const adjustTextInRect = (
   x: number,
   y: number,
   maxWidth: number,
-  lineHeight: number
+  lineHeight: number,
 ) => {
   const lines = doc.splitTextToSize(text, maxWidth);
   const textHeight = lines.length * lineHeight;
@@ -513,7 +523,7 @@ export const adjustTextInRect = (
 };
 
 export const generateQR = async (
-  dte: DteFe | DteCcf | DteFse | DteNce | DteNre
+  dte: DteFe | DteCcf | DteFse | DteNce | DteNre,
 ) => {
   try {
     const dataUrl = await QRCode.toBuffer(generateUrl(dte));
@@ -537,27 +547,26 @@ export const generateUrl = (dte: DteFe | DteCcf | DteFse | DteNce | DteNre) => {
 
 export const generateQRWithColor = async (
   dte: DteFe | DteCcf | DteFse | DteNce | DteNre,
-  color: string
+  color: string,
 ) => {
   try {
     const dataUrl = await QRCode.toBuffer(generateUrl(dte), {
       color: {
         dark: color,
-        light: "#ffffff"
-      }
+        light: "#ffffff",
+      },
     });
     return dataUrl;
   } catch (err) {
     return "";
   }
-}
-
+};
 
 export const secondHeader = (
   doc: jsPDF,
   dte: DteFe | DteCcf | DteNce | DteNre,
   selloInvalidacion = "",
-  contingence: boolean = false
+  contingence: boolean = false,
 ) => {
   const { receptor, identificacion, respuestaMH, resumen } = dte as DteFe;
 
@@ -573,9 +582,9 @@ export const secondHeader = (
       [
         receptor.direccion
           ? `DIRECCIÓN :  ${receptor.direccion.complemento} ${formatAddress(
-            receptor.direccion.departamento,
-            receptor.direccion.municipio
-          )}, El Salvador`
+              receptor.direccion.departamento,
+              receptor.direccion.municipio,
+            )}, El Salvador`
           : "No establecida",
         `CÓDIGO GENERACIÓN : ${identificacion.codigoGeneracion}`,
       ],
@@ -584,9 +593,10 @@ export const secondHeader = (
         `NUMERO DE CONTROL : ${identificacion.numeroControl}`,
       ],
       [
-        `${identificacion.tipoDte === "03" ? "NIT : " : "NUMERO DOCUMENTO : "} ${identificacion.tipoDte === "03"
-          ? (receptor as unknown as Receptor03).nit
-          : receptor.numDocumento ?? "-"
+        `${identificacion.tipoDte === "03" ? "NIT : " : "NUMERO DOCUMENTO : "} ${
+          identificacion.tipoDte === "03"
+            ? (receptor as unknown as Receptor03).nit
+            : (receptor.numDocumento ?? "-")
         }`,
         `SELLO : ${respuestaMH.selloRecibido}`,
       ],
@@ -596,30 +606,35 @@ export const secondHeader = (
       ],
       [
         `TEL : ${receptor.telefono ?? "-"}`,
-        `MODELO DE FACTURACIÓN : ${identificacion.tipoModelo === 2 ? "Diferido" : "Previo"
+        `MODELO DE FACTURACIÓN : ${
+          identificacion.tipoModelo === 2 ? "Diferido" : "Previo"
         }`,
       ],
       [
-        `CONDICIÓN DE LA OPERACIÓN: ${resumen.condicionOperacion === 1 ? "Contado" : "Crédito"
-        }`,
-        `TIPO DE TRANSMISIÓN : ${identificacion.tipoOperacion === 2 ? "Por contingencia" : "Normal"
+        dte.identificacion.tipoDte === "04"
+          ? ""
+          : `CONDICIÓN DE LA OPERACIÓN: ${
+              resumen.condicionOperacion === 1 ? "Contado" : "Crédito"
+            }`,
+        `TIPO DE TRANSMISIÓN : ${
+          identificacion.tipoOperacion === 2 ? "Por contingencia" : "Normal"
         }`,
       ],
       selloInvalidacion !== ""
         ? [
-          {
-            content: "DTE INVALIDO CORRECTAMENTE",
-            styles: { textColor: "red", fontSize: 8 },
-          },
-          {
-            content: `SELLO DE ANULACIÓN : ${selloInvalidacion}`,
-            styles: {
-              textColor: "red",
-              fontSize: 8,
-              cellPadding: { right: 20 },
+            {
+              content: "DTE INVALIDO CORRECTAMENTE",
+              styles: { textColor: "red", fontSize: 8 },
             },
-          },
-        ]
+            {
+              content: `SELLO DE ANULACIÓN : ${selloInvalidacion}`,
+              styles: {
+                textColor: "red",
+                fontSize: 8,
+                cellPadding: { right: 20 },
+              },
+            },
+          ]
         : [],
     ].filter((row) => row.length > 0),
     columnStyles: { 0: { cellWidth: 115 }, 1: { cellWidth: 105 } },
