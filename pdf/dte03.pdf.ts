@@ -26,7 +26,7 @@ export const generateSvfe03 = async (
   let finalY = (doc as unknown as { lastAutoTable: { finalY: number } })
     .lastAutoTable.finalY;
 
-  const startY = 35;
+  const startY = 42;
   const marginX = 5;
   const marginY = 5;
   const tableWidth = doc.internal.pageSize.width - marginX * 2;
@@ -347,43 +347,58 @@ export const footerDocument = (doc: jsPDF, rectMargin: number, ccf: DteCcf) => {
   doc.text(`$${" "} ${" "} ${resumen.totalExenta}`, 165, rectMargin + 4);
   doc.text(`$${" "} ${" "} ${resumen.totalGravada}`, 185, rectMargin + 4);
   doc.setFontSize(6);
-  returnBoldText(doc, "Responsable por parte del emisor:", 10, rectMargin + 10);
-  if (ccf.extension) {
-    if (ccf.extension.nombEntrega) {
-      doc.text(ccf.extension.nombEntrega, 10, rectMargin + 13);
-    }
-  }
-
-  returnBoldText(doc, "N° de Documento:", 10, rectMargin + 18);
-  if (ccf.extension) {
-    if (ccf.extension.docuEntrega) {
-      doc.text(ccf.extension.docuEntrega, 10, rectMargin + 22);
-    }
-  }
-  returnBoldText(doc, "Observaciones:", 10, rectMargin + 27);
-  // if (ccf.extension) {
-  if (ccf?.extension?.observaciones) {
-    const text = doc.splitTextToSize(ccf?.extension?.observaciones, 115);
-    doc.text(text, 10, rectMargin + 30);
-  }
-  // }
-  returnBoldText(
-    doc,
-    "Responsable por parte del receptor:",
-    65,
-    rectMargin + 10
+   doc.text(
+    "-No se aceptan cambios ni devoluciones despues de 2 dias. Producto Chino no tiene cambio ni devolucion",
+    10,
+    rectMargin + 10,
   );
 
-  if (ccf.extension) {
-    if (ccf.extension.nombRecibe) {
-      doc.text(ccf.extension.nombRecibe, 65, rectMargin + 13);
-    }
-  }
+  const textBig =
+    "-Revisar bien su mercaderia, una vez recibidos los productos no se admitiran cambios ni devoluciones en producto abierto, usado, manipulado o fuera de su empaque";
 
-  returnBoldText(doc, "N° de Documento:", 65, rectMargin + 18);
+  doc.text(doc.splitTextToSize(textBig, 100), 10, rectMargin + 14);
+
+  doc.setFontSize(6);
+
+  returnBoldText(doc, "ENTREGADO POR:", 10, rectMargin + 20);
+  returnBoldText(doc, "NOMBRE:  ________________________", 10, rectMargin + 24);
+  returnBoldText(
+    doc,
+    "DUI:  _____________________________",
+    10,
+    rectMargin + 28,
+  );
+  returnBoldText(
+    doc,
+    "FIRMA: ___________________________",
+    10,
+    rectMargin + 32,
+  );
+  returnBoldText(doc, "TELEFONO: _______________________", 10, rectMargin + 36);
+
+
+  returnBoldText(doc, "RECIBIDO POR:", 80, rectMargin + 20);
+  returnBoldText(doc, "NOMBRE:  ________________________", 80, rectMargin + 26);
+  returnBoldText(
+    doc,
+    "DUI:  _____________________________",
+    80,
+    rectMargin + 29,
+  );
+  returnBoldText(
+    doc,
+    "FIRMA: ___________________________",
+    80,
+    rectMargin + 32,
+  );
+  returnBoldText(doc, "TELEFONO: _______________________", 80, rectMargin + 35);
+
+
+  returnBoldText(doc, "Observaciones:", 10, rectMargin + 43);
   if (ccf.extension) {
-    if (ccf.extension.docuRecibe) {
-      doc.text(ccf.extension.docuRecibe, 65, rectMargin + 22);
+    if (ccf?.extension?.observaciones) {
+      const text = doc.splitTextToSize(ccf?.extension?.observaciones, 115);
+      doc.text(text, 10, rectMargin + 45);
     }
   }
 

@@ -19,7 +19,7 @@ export const generateSvfe01 = async (
   canInvertName: boolean = false,
   splitNameInTwoLines: boolean = false,
   shortName: boolean = false,
-  showIva: boolean = true
+  _showIva: boolean = true,
 ) => {
   const doc = new jsPDF({
     compress: true,
@@ -34,7 +34,7 @@ export const generateSvfe01 = async (
   let finalY = (doc as unknown as { lastAutoTable: { finalY: number } })
     .lastAutoTable.finalY;
 
-  const startY = 35;
+  const startY = 42;
   const marginX = 5;
   const marginY = 5;
   const tableWidth = doc.internal.pageSize.width - marginX * 2;
@@ -50,7 +50,7 @@ export const generateSvfe01 = async (
     tableHeight,
     radius,
     radius,
-    "S"
+    "S",
   );
   finalY = (
     doc as unknown as {
@@ -67,7 +67,7 @@ export const generateSvfe01 = async (
     10,
     2,
     2,
-    "S"
+    "S",
   );
 
   autoTable(doc, {
@@ -100,7 +100,7 @@ export const generateSvfe01 = async (
     10,
     2,
     2,
-    "S"
+    "S",
   );
 
   autoTable(doc, {
@@ -133,7 +133,7 @@ export const generateSvfe01 = async (
     15,
     2,
     2,
-    "S"
+    "S",
   );
 
   const { documentoRelacionado } = svfe01 as DteFe;
@@ -161,10 +161,10 @@ export const generateSvfe01 = async (
     body:
       documentoRelacionado && documentoRelacionado.length > 0
         ? documentoRelacionado.map((prd) => [
-          prd.tipoDocumento,
-          prd.numeroDocumento,
-          prd.fechaEmision,
-        ])
+            prd.tipoDocumento,
+            prd.numeroDocumento,
+            prd.fechaEmision,
+          ])
         : [["-", "-", "-"]],
     startY: finalY + 2,
   });
@@ -179,21 +179,22 @@ export const generateSvfe01 = async (
   finalYFirstPage = finalY;
 
   const array_object: unknown[] = [];
-  cuerpoDocumento.filter((item)=> item.descripcion !== "PROPINA" )
-  .map((prd) => {
-    array_object.push(
-      Object.values({
-        qty: prd.cantidad,
-        desc: prd.descripcion,
-        price: formatCurrency(prd.precioUni),
-        descu: formatCurrency(prd.montoDescu),
-        other: formatCurrency(0),
-        vtSuj: formatCurrency(Number(prd.ventaNoSuj) + Number(prd.noGravado)),
-        vtExe: formatCurrency(prd.ventaExenta),
-        vtGrav: formatCurrency(prd.ventaGravada),
-      })
-    );
-  });
+  cuerpoDocumento
+    .filter((item) => item.descripcion !== "PROPINA")
+    .map((prd) => {
+      array_object.push(
+        Object.values({
+          qty: prd.cantidad,
+          desc: prd.descripcion,
+          price: formatCurrency(prd.precioUni),
+          descu: formatCurrency(prd.montoDescu),
+          other: formatCurrency(0),
+          vtSuj: formatCurrency(Number(prd.ventaNoSuj) + Number(prd.noGravado)),
+          vtExe: formatCurrency(prd.ventaExenta),
+          vtGrav: formatCurrency(prd.ventaGravada),
+        }),
+      );
+    });
 
   autoTable(doc, {
     theme: "plain",
@@ -258,7 +259,14 @@ export const generateSvfe01 = async (
   const pageCount = doc.internal.pages.length - 1;
   for (let i = 1; i <= pageCount; i++) {
     doc.setPage(i);
-    await headerDoc(doc, svfe01, logo, canInvertName, splitNameInTwoLines, shortName);
+    await headerDoc(
+      doc,
+      svfe01,
+      logo,
+      canInvertName,
+      splitNameInTwoLines,
+      shortName,
+    );
     const margin = 5;
     const rectWidth = doc.internal.pageSize.getWidth() - 2 * margin;
     const radius = 2;
@@ -284,7 +292,7 @@ export const generateSvfe01 = async (
           : rectHeight,
       0,
       0,
-      "S"
+      "S",
     );
     doc.roundedRect(
       125,
@@ -297,7 +305,7 @@ export const generateSvfe01 = async (
           : rectHeight,
       0,
       0,
-      "S"
+      "S",
     );
     doc.roundedRect(
       165,
@@ -310,7 +318,7 @@ export const generateSvfe01 = async (
           : rectHeight,
       0,
       0,
-      "S"
+      "S",
     );
 
     //all
@@ -321,7 +329,7 @@ export const generateSvfe01 = async (
       rectHeight - (i !== 1 ? 0 : pageCount === 1 ? 0 : 50),
       radius,
       radius,
-      "S"
+      "S",
     );
     // end all
 
@@ -333,7 +341,7 @@ export const generateSvfe01 = async (
       8,
       radius,
       radius,
-      "FD"
+      "FD",
     );
     autoTable(doc, {
       startY: i !== 1 ? 35 : finalYFirstPage,
@@ -379,7 +387,7 @@ export const generateSvfe01 = async (
         5,
         rectMargin + 7,
         doc.internal.pageSize.getWidth() - 5,
-        rectMargin + 7
+        rectMargin + 7,
       );
       footerDocument(doc, rectMargin, svfe01);
       doc.line(125, rectHeight + 35, 125, rectMargin + 7);
@@ -391,14 +399,14 @@ export const generateSvfe01 = async (
         5,
         rectMargin + 7,
         doc.internal.pageSize.getWidth() - 5,
-        rectMargin + 7
+        rectMargin + 7,
       );
       footerDocument(doc, rectMargin, svfe01);
       doc.line(
         125,
         doc.internal.pageSize.height - 48,
         125,
-        doc.internal.pageSize.height - 5
+        doc.internal.pageSize.height - 5,
       );
     }
 
@@ -416,7 +424,7 @@ export const generateSvfe01 = async (
         100,
         100,
         "FAST",
-        "FAST"
+        "FAST",
       );
       doc.restoreGraphicsState();
     }
@@ -427,56 +435,72 @@ export const generateSvfe01 = async (
 export const footerDocument = (
   doc: jsPDF,
   rectMargin: number,
-  svfe01: DteFe
+  svfe01: DteFe,
 ) => {
   let propina =
-    svfe01.cuerpoDocumento.find((cuerpo) => cuerpo.descripcion === 'PROPINA')?.noGravado ?? 0
+    svfe01.cuerpoDocumento.find((cuerpo) => cuerpo.descripcion === "PROPINA")
+      ?.noGravado ?? 0;
 
   const { resumen } = svfe01 as DteFe;
-  
+
   doc.text(`${resumen.totalLetras}`, 10, rectMargin + 4);
   doc.text("SUMA DE VENTAS:", 120, rectMargin + 4);
   doc.text(`$${" "} ${" "} ${resumen.totalNoSuj}`, 155, rectMargin + 4);
   doc.text(`$${" "} ${" "} ${resumen.totalExenta}`, 175, rectMargin + 4);
   doc.text(`$${" "} ${" "} ${resumen.totalGravada}`, 195, rectMargin + 4);
-  doc.setFontSize(6);
-  returnBoldText(doc, "Responsable por parte del emisor:", 10, rectMargin + 10);
-  if (svfe01.extension) {
-    if (svfe01.extension.nombEntrega) {
-      doc.text(svfe01.extension.nombEntrega, 10, rectMargin + 13);
-    }
-  } 
-
-  returnBoldText(doc, "N° de Documento:", 10, rectMargin + 18);
-  if (svfe01.extension) {
-    if (svfe01.extension.docuEntrega) {
-      doc.text(svfe01.extension.docuEntrega, 10, rectMargin + 22);
-    }
-  }
-  returnBoldText(doc, "Observaciones:", 10, rectMargin + 27);
-  // if (svfe01.extension) {
-  if (svfe01?.extension?.observaciones) {
-    const text = doc.splitTextToSize(svfe01?.extension?.observaciones, 115);
-    doc.text(text, 10, rectMargin + 30);
-  }
-  // }
-  returnBoldText(
-    doc,
-    "Responsable por parte del receptor:",
-    65,
-    rectMargin + 10
+  doc.setFontSize(5.5);
+  doc.text(
+    "-No se aceptan cambios ni devoluciones despues de 2 dias. Producto Chino no tiene cambio ni devolucion",
+    10,
+    rectMargin + 10,
   );
 
-  if (svfe01.extension) {
-    if (svfe01.extension.nombRecibe) {
-      doc.text(svfe01.extension.nombRecibe, 65, rectMargin + 13);
-    }
-  }
+  const textBig =
+    "-Revisar bien su mercaderia, una vez recibidos los productos no se admitiran cambios ni devoluciones en producto abierto, usado, manipulado o fuera de su empaque";
 
-  returnBoldText(doc, "N° de Documento:", 65, rectMargin + 18);
+  doc.text(doc.splitTextToSize(textBig, 100), 10, rectMargin + 14);
+
+  doc.setFontSize(6);
+
+  returnBoldText(doc, "ENTREGADO POR:", 10, rectMargin + 20);
+  returnBoldText(doc, "NOMBRE:  ________________________", 10, rectMargin + 24);
+  returnBoldText(
+    doc,
+    "DUI:  _____________________________",
+    10,
+    rectMargin + 28,
+  );
+  returnBoldText(
+    doc,
+    "FIRMA: ___________________________",
+    10,
+    rectMargin + 32,
+  );
+  returnBoldText(doc, "TELEFONO: _______________________", 10, rectMargin + 36);
+
+
+  returnBoldText(doc, "RECIBIDO POR:", 80, rectMargin + 20);
+  returnBoldText(doc, "NOMBRE:  ________________________", 80, rectMargin + 26);
+  returnBoldText(
+    doc,
+    "DUI:  _____________________________",
+    80,
+    rectMargin + 29,
+  );
+  returnBoldText(
+    doc,
+    "FIRMA: ___________________________",
+    80,
+    rectMargin + 32,
+  );
+  returnBoldText(doc, "TELEFONO: _______________________", 80, rectMargin + 35);
+
+
+  returnBoldText(doc, "Observaciones:", 10, rectMargin + 43);
   if (svfe01.extension) {
-    if (svfe01.extension.docuRecibe) {
-      doc.text(svfe01.extension.docuRecibe, 65, rectMargin + 22);
+    if (svfe01?.extension?.observaciones) {
+      const text = doc.splitTextToSize(svfe01?.extension?.observaciones, 115);
+      doc.text(text, 10, rectMargin + 45);
     }
   }
 
@@ -484,17 +508,17 @@ export const footerDocument = (
   doc.text(
     "Monto global Desc., Rebajas y otros a ventas no sujetas: ",
     127,
-    rectMargin + 13
+    rectMargin + 13,
   );
   doc.text(
     "Monto global Desc., Rebajas y otros a ventas exentas:",
     127,
-    rectMargin + 16
+    rectMargin + 16,
   );
   doc.text(
     "Monto global Desc., Rebajas y otros a ventas gravadas:",
     127,
-    rectMargin + 19
+    rectMargin + 19,
   );
   // doc.text("IVA 13%: ", 127, rectMargin + 22);
   doc.text("Sub-Total: ", 127, rectMargin + 22);
@@ -512,7 +536,7 @@ export const footerDocument = (
 
   const totals = [
     (resumen.totalNoSuj + resumen.totalExenta + resumen.totalGravada).toFixed(
-      2
+      2,
     ),
     resumen.descuNoSuj.toFixed(2),
     resumen.descuExenta.toFixed(2),

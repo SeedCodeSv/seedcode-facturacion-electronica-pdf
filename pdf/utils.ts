@@ -214,7 +214,7 @@ export const headerDoc = async (
 
   const { imageBase64, width, height } = await adjustImageByHeight(logo, 20);
   autoTable(doc, {
-    startY: 5,
+    startY: 2,
     showHead: false,
     body: [["", "", ""]],
     theme: "plain",
@@ -278,8 +278,8 @@ export const headerDoc = async (
 
         const name = Array.isArray(formattedName)
           ? formattedName.flatMap((line) =>
-              doc.splitTextToSize(line, cellWidth - 4),
-            )
+            doc.splitTextToSize(line, cellWidth - 4),
+          )
           : doc.splitTextToSize(formattedName, cellWidth - 4);
 
         const hName = getHeightText(doc, name);
@@ -330,22 +330,23 @@ export const headerDoc = async (
 
         doc.setDrawColor(0, 0, 0);
 
+
         doc.roundedRect(
-          cellX + 30,
+          cellX + 40,
           cellY + 2,
-          cellWidth - 4,
-          cellHeight - 4,
+          50,
+          cellHeight,
           2,
           2,
           "S",
         );
 
-        doc.setFontSize(5);
+        doc.setFontSize(6);
         returnBoldText(
           doc,
           "DOCUMENTO TRIBUTARIO ELECTRÓNICO",
-          cellX + 50,
-          cellY + 5,
+          cellX + 65,
+          cellY + 7,
           "center",
         );
 
@@ -353,21 +354,21 @@ export const headerDoc = async (
           formatNameByTypeDte(dte.identificacion.tipoDte, shortName),
           shortName ? 20 : 30,
         );
-        doc.setFontSize(5);
-        returnBoldText(doc, docName, cellX + 50, cellY + 9, "center");
+        doc.setFontSize(6);
+        returnBoldText(doc, docName, cellX + 65, cellY + 11, "center");
         doc.setFontSize(6);
         returnBoldText(
           doc,
           `N.I.T. ${dte.emisor.nit}`,
-          cellX + 50,
-          cellY + 16,
+          cellX + 65,
+          cellY + 20,
           "center",
         );
         returnBoldText(
           doc,
           `NRC No. ${dte.emisor.nrc}`,
-          cellX + 50,
-          cellY + 20,
+          cellX + 65,
+          cellY + 24,
           "center",
         );
 
@@ -375,9 +376,9 @@ export const headerDoc = async (
           dataQR as Buffer,
           "PNG",
           cellX + 5,
-          cellY + 1,
-          23,
-          23,
+          cellY,
+          34,
+          34,
           "QR",
           "SLOW",
         );
@@ -386,7 +387,7 @@ export const headerDoc = async (
     columnStyles: {
       0: { cellWidth: 45 },
       1: { cellWidth: "auto" },
-      2: { cellWidth: 70 },
+      2: { cellWidth: 90 },
     },
     margin: { top: 5, left: 5, right: 5 },
   });
@@ -566,7 +567,7 @@ export const secondHeader = (
   doc: jsPDF,
   dte: DteFe | DteCcf | DteNce | DteNre,
   selloInvalidacion = "",
-  contingence: boolean = false,
+  _contingence: boolean = false,
 ) => {
   const { receptor, identificacion, respuestaMH, resumen } = dte as DteFe;
 
@@ -576,15 +577,15 @@ export const secondHeader = (
       right: 10,
     },
     showHead: false,
-    startY: 35,
+    startY: 40,
     body: [
       [`NOMBRE: ${receptor.nombre}`, `NRC : ${receptor.nrc ?? "-"}`],
       [
         receptor.direccion
           ? `DIRECCIÓN :  ${receptor.direccion.complemento} ${formatAddress(
-              receptor.direccion.departamento,
-              receptor.direccion.municipio,
-            )}, El Salvador`
+            receptor.direccion.departamento,
+            receptor.direccion.municipio,
+          )}, El Salvador`
           : "No establecida",
         `CÓDIGO GENERACIÓN : ${identificacion.codigoGeneracion}`,
       ],
@@ -593,10 +594,9 @@ export const secondHeader = (
         `NUMERO DE CONTROL : ${identificacion.numeroControl}`,
       ],
       [
-        `${identificacion.tipoDte === "03" ? "NIT : " : "NUMERO DOCUMENTO : "} ${
-          identificacion.tipoDte === "03"
-            ? (receptor as unknown as Receptor03).nit
-            : (receptor.numDocumento ?? "-")
+        `${identificacion.tipoDte === "03" ? "NIT : " : "NUMERO DOCUMENTO : "} ${identificacion.tipoDte === "03"
+          ? (receptor as unknown as Receptor03).nit
+          : (receptor.numDocumento ?? "-")
         }`,
         `SELLO : ${respuestaMH.selloRecibido}`,
       ],
@@ -606,35 +606,32 @@ export const secondHeader = (
       ],
       [
         `TEL : ${receptor.telefono ?? "-"}`,
-        `MODELO DE FACTURACIÓN : ${
-          identificacion.tipoModelo === 2 ? "Diferido" : "Previo"
+        `MODELO DE FACTURACIÓN : ${identificacion.tipoModelo === 2 ? "Diferido" : "Previo"
         }`,
       ],
       [
         dte.identificacion.tipoDte === "04"
           ? ""
-          : `CONDICIÓN DE LA OPERACIÓN: ${
-              resumen.condicionOperacion === 1 ? "Contado" : "Crédito"
-            }`,
-        `TIPO DE TRANSMISIÓN : ${
-          identificacion.tipoOperacion === 2 ? "Por contingencia" : "Normal"
+          : `CONDICIÓN DE LA OPERACIÓN: ${resumen.condicionOperacion === 1 ? "Contado" : "Crédito"
+          }`,
+        `TIPO DE TRANSMISIÓN : ${identificacion.tipoOperacion === 2 ? "Por contingencia" : "Normal"
         }`,
       ],
       selloInvalidacion !== ""
         ? [
-            {
-              content: "DTE INVALIDO CORRECTAMENTE",
-              styles: { textColor: "red", fontSize: 8 },
+          {
+            content: "DTE INVALIDO CORRECTAMENTE",
+            styles: { textColor: "red", fontSize: 8 },
+          },
+          {
+            content: `SELLO DE ANULACIÓN : ${selloInvalidacion}`,
+            styles: {
+              textColor: "red",
+              fontSize: 8,
+              cellPadding: { right: 20 },
             },
-            {
-              content: `SELLO DE ANULACIÓN : ${selloInvalidacion}`,
-              styles: {
-                textColor: "red",
-                fontSize: 8,
-                cellPadding: { right: 20 },
-              },
-            },
-          ]
+          },
+        ]
         : [],
     ].filter((row) => row.length > 0),
     columnStyles: { 0: { cellWidth: 115 }, 1: { cellWidth: 105 } },
