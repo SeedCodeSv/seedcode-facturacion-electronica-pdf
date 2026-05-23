@@ -1,6 +1,6 @@
 import { readFileSync } from "fs";
 import jsPDF from "jspdf";
-import autoTable, { RowInput } from "jspdf-autotable";
+import autoTable, { CellInput, RowInput } from "jspdf-autotable";
 import { join } from "path";
 import { SeedcodeCatalogosMhService } from "seedcode-catalogos-mh";
 import sharp from "sharp";
@@ -202,6 +202,35 @@ const formatName = (
   }
 };
 
+const writeBoldLabel = (
+  doc: jsPDF,
+  label: string,
+  text: string,
+  x: number,
+  y: number,
+  maxWidth: number,
+) => {
+  doc.setFont(undefined, "bold");
+
+  const labelWidth = doc.getTextWidth(label);
+
+  doc.text(label, x, y);
+
+  doc.setFont(undefined, "normal");
+
+  const textLines = doc.splitTextToSize(text, maxWidth - labelWidth);
+
+  doc.text(textLines[0], x + labelWidth, y);
+
+  if (textLines.length > 1) {
+    const lineHeight = doc.getLineHeightFactor() * 2.5;
+
+    doc.text(textLines.slice(1), x, y + lineHeight);
+  }
+
+  return textLines.length * 3;
+};
+
 export const headerDoc = async (
   doc: jsPDF,
   dte: DteFe | DteCcf | DteFse | DteNce | DteNre,
@@ -212,7 +241,7 @@ export const headerDoc = async (
 ) => {
   const dataQR = await generateQR(dte);
 
-  const { imageBase64, width, height } = await adjustImageByHeight(logo, 10);
+  const { imageBase64, width, height } = await adjustImageByHeight(logo, 8);
   autoTable(doc, {
     startY: 2,
     showHead: false,
@@ -225,8 +254,8 @@ export const headerDoc = async (
             doc.addImage(
               logo,
               "PNG",
-              data.cell.x + 2,
-              data.cell.y,
+              5,
+              data.cell.y + 3,
               width,
               height,
               "LOGO",
@@ -236,14 +265,45 @@ export const headerDoc = async (
             doc.addImage(
               `data:image/jpeg;base64,${imageBase64}`,
               "JPEG",
-              data.cell.x + 2,
-              data.cell.y,
+              5,
+              data.cell.y + 3,
               width,
               height,
               "LOGO",
               "SLOW",
             );
           }
+
+          doc.setFontSize(7);
+          const heightAddress = writeBoldLabel(
+            doc,
+            "DIRECCIÓN : ",
+            `${dte.emisor.direccion.complemento} ${formatAddress(
+              dte.emisor.direccion.departamento,
+              dte.emisor.direccion.municipio,
+            )}`,
+            5,
+            20,
+            118,
+          );
+
+          const telHeight = writeBoldLabel(
+            doc,
+            "ACTIVIDAD ECONOMICA: ",
+            dte.emisor.descActividad,
+            5,
+            21 + heightAddress,
+            118,
+          );
+
+          writeBoldLabel(
+            doc,
+            "TEL: ",
+            dte.emisor.telefono,
+            5,
+            22 + telHeight + heightAddress,
+            118,
+          );
         } catch (error) {
           doc.text("error", data.cell.x + 2, data.cell.y + 5);
         }
@@ -278,68 +338,25 @@ export const headerDoc = async (
 
         const name = Array.isArray(formattedName)
           ? formattedName.flatMap((line) =>
-            doc.splitTextToSize(line, cellWidth - 4),
-          )
+              doc.splitTextToSize(line, cellWidth - 4),
+            )
           : doc.splitTextToSize(formattedName, cellWidth - 4);
-
-        const hName = getHeightText(doc, name);
-        returnBoldText(doc, name, cellX + cellWidth / 2, cellY + 5, "center");
-
-        const actEco = doc.splitTextToSize(
-          `Actividad económica: ${dte.emisor.descActividad}`,
-          cellWidth - 4,
-        );
-        const hActEco = getHeightText(doc, actEco);
         returnBoldText(
           doc,
-          actEco,
-          cellX + cellWidth / 2,
-          cellY + hName + 5.5,
-          "center",
-        );
-
-        const address = doc.splitTextToSize(
-          `DIRECCIÓN : ${dte.emisor.direccion.complemento} ${formatAddress(
-            dte.emisor.direccion.departamento,
-            dte.emisor.direccion.municipio,
-          )}`,
-          cellWidth - 4,
-        );
-        const hAddress = getHeightText(doc, address);
-        returnBoldText(
-          doc,
-          address,
-          cellX + cellWidth / 2,
-          cellY + hName + hActEco + 6.5,
-          "center",
-        );
-
-        returnBoldText(
-          doc,
-          `TEL: ${dte.emisor.telefono}`,
-          cellX + cellWidth / 2,
-          cellY + hName + hActEco + hAddress + 7,
+          name,
+          cellX + cellWidth / 2 + 5,
+          cellY + 5,
           "center",
         );
       }
       if (data.column.index === 2 && data.row.index === 0) {
         const cellX = data.cell.x;
         const cellY = data.cell.y;
-        const cellWidth = 45;
         const cellHeight = 25;
 
         doc.setDrawColor(0, 0, 0);
 
-
-        doc.roundedRect(
-          cellX + 40,
-          cellY + 2,
-          50,
-          cellHeight,
-          2,
-          2,
-          "S",
-        );
+        doc.roundedRect(cellX + 40, cellY + 2, 50, cellHeight, 2, 2, "S");
 
         doc.setFontSize(6);
         returnBoldText(
@@ -375,10 +392,10 @@ export const headerDoc = async (
         doc.addImage(
           dataQR as Buffer,
           "PNG",
-          cellX + 5,
-          cellY,
-          34,
-          34,
+          cellX + 4,
+          cellY - 2,
+          36,
+          36,
           "QR",
           "SLOW",
         );
@@ -579,59 +596,92 @@ export const secondHeader = (
     showHead: false,
     startY: 40,
     body: [
-      [`NOMBRE: ${receptor.nombre}`, `NRC : ${receptor.nrc ?? "-"}`],
       [
-        receptor.direccion
-          ? `DIRECCIÓN :  ${receptor.direccion.complemento} ${formatAddress(
-            receptor.direccion.departamento,
-            receptor.direccion.municipio,
-          )}, El Salvador`
-          : "No establecida",
-        `CÓDIGO GENERACIÓN : ${identificacion.codigoGeneracion}`,
+        { content: [`NOMBRE: ${receptor.nombre}`] },
+        { content: [`NRC : ${receptor.nrc ?? "-"}`] },
       ],
       [
-        `GIRO : ${receptor.descActividad ?? "-"}`,
-        `NUMERO DE CONTROL : ${identificacion.numeroControl}`,
+        {
+          content: [
+            receptor.direccion
+              ? `DIRECCIÓN :  ${receptor.direccion.complemento} ${formatAddress(
+                  receptor.direccion.departamento,
+                  receptor.direccion.municipio,
+                )}, El Salvador`
+              : "No establecida",
+          ],
+        },
+        {
+          content: [`CÓDIGO GENERACIÓN : ${identificacion.codigoGeneracion}`],
+        },
       ],
       [
-        `${identificacion.tipoDte === "03" ? "NIT : " : "NUMERO DOCUMENTO : "} ${identificacion.tipoDte === "03"
-          ? (receptor as unknown as Receptor03).nit
-          : (receptor.numDocumento ?? "-")
-        }`,
-        `SELLO : ${respuestaMH.selloRecibido}`,
+        { content: [`GIRO : ${receptor.descActividad ?? "-"}`] },
+        { content: [`NUMERO DE CONTROL : ${identificacion.numeroControl}`] },
       ],
       [
-        `CORREO : ${receptor.correo ?? "-"}`,
-        `FECHA HORA EMISION : ${identificacion.fecEmi} - ${identificacion.horEmi}`,
+        {
+          content: [
+            `${identificacion.tipoDte === "03" ? "NIT : " : "NUMERO DOCUMENTO : "} ${
+              identificacion.tipoDte === "03"
+                ? (receptor as unknown as Receptor03).nit
+                : (receptor.numDocumento ?? "-")
+            }`,
+          ],
+        },
+        { content: [`SELLO : ${respuestaMH.selloRecibido}`] },
       ],
       [
-        `TEL : ${receptor.telefono ?? "-"}`,
-        `MODELO DE FACTURACIÓN : ${identificacion.tipoModelo === 2 ? "Diferido" : "Previo"
-        }`,
+        { content: [`CORREO : ${receptor.correo ?? "-"}`] },
+        {
+          content: [
+            `FECHA HORA EMISION : ${identificacion.fecEmi} - ${identificacion.horEmi}`,
+          ],
+        },
       ],
       [
-        dte.identificacion.tipoDte === "04"
-          ? ""
-          : `CONDICIÓN DE LA OPERACIÓN: ${resumen.condicionOperacion === 1 ? "Contado" : "Crédito"
-          }`,
-        `TIPO DE TRANSMISIÓN : ${identificacion.tipoOperacion === 2 ? "Por contingencia" : "Normal"
-        }`,
+        { content: [`TEL : ${receptor.telefono ?? "-"}`] },
+        {
+          content: [
+            `MODELO DE FACTURACIÓN : ${
+              identificacion.tipoModelo === 2 ? "Diferido" : "Previo"
+            }`,
+          ],
+        },
+      ],
+      [
+        {
+          content: [
+            dte.identificacion.tipoDte !== "04"
+              ? `CONDICIÓN DE LA OPERACIÓN : ${
+                  resumen.condicionOperacion === 1 ? "Contado" : "Crédito"
+                }`
+              : "",
+          ],
+        },
+        {
+          content: [
+            `TIPO DE TRANSMISIÓN : ${
+              identificacion.tipoOperacion === 2 ? "Por contingencia" : "Normal"
+            }`,
+          ],
+        },
       ],
       selloInvalidacion !== ""
         ? [
-          {
-            content: "DTE INVALIDO CORRECTAMENTE",
-            styles: { textColor: "red", fontSize: 8 },
-          },
-          {
-            content: `SELLO DE ANULACIÓN : ${selloInvalidacion}`,
-            styles: {
-              textColor: "red",
-              fontSize: 8,
-              cellPadding: { right: 20 },
+            {
+              content: "DTE INVALIDO CORRECTAMENTE",
+              styles: { textColor: "red", fontSize: 8 },
             },
-          },
-        ]
+            {
+              content: `SELLO DE ANULACIÓN : ${selloInvalidacion}`,
+              styles: {
+                textColor: "red",
+                fontSize: 8,
+                cellPadding: { right: 20 },
+              },
+            },
+          ]
         : [],
     ].filter((row) => row.length > 0),
     columnStyles: { 0: { cellWidth: 115 }, 1: { cellWidth: 105 } },
@@ -640,5 +690,149 @@ export const secondHeader = (
       cellPadding: 0.3,
     },
     theme: "plain",
+    didParseCell: (data) => {
+      const raw =
+        typeof data.cell.raw === "object" &&
+        data.cell.raw !== null &&
+        "content" in data.cell.raw
+          ? String(data.cell.raw.content)
+          : "";
+
+      if (
+        raw.startsWith("NOMBRE:") ||
+        raw.startsWith("NRC :") ||
+        raw.startsWith("GIRO :") ||
+        raw.startsWith("DIRECCIÓN :") ||
+        raw.startsWith("CÓDIGO GENERACIÓN :") ||
+        raw.startsWith("NIT :") ||
+        raw.startsWith("NUMERO DOCUMENTO :") ||
+        raw.startsWith("CORREO :") ||
+        raw.startsWith("TEL :") ||
+        raw.startsWith("NUMERO DE CONTROL :") ||
+        raw.startsWith("SELLO :") ||
+        raw.startsWith("FECHA HORA EMISION :") ||
+        raw.startsWith("MODELO DE FACTURACIÓN :") ||
+        raw.startsWith("TIPO DE TRANSMISIÓN :") ||
+        raw.startsWith("CONDICIÓN DE LA OPERACIÓN :")
+      ) {
+        data.cell.text = [""];
+
+        if (raw.startsWith("DIRECCIÓN :")) {
+          data.cell.styles.minCellHeight = 6;
+        }
+      }
+    },
+
+    didDrawCell: (data) => {
+      const raw =
+        typeof data.cell.raw === "object" &&
+        data.cell.raw !== null &&
+        "content" in data.cell.raw
+          ? String(data.cell.raw.content)
+          : "";
+
+      const x = data.cell.x + data.cell.padding("left");
+      const y = data.cell.y + 4;
+
+      const drawLabel = (label: string, value: string) => {
+        const availableWidth =
+          data.cell.width -
+          data.cell.padding("left") -
+          data.cell.padding("right");
+
+        doc.setFont(undefined, "bold");
+        doc.text(label, x, y);
+        const labelWidth = doc.getTextWidth(label);
+
+        doc.setFont(undefined, "normal");
+
+        // Dividir el valor en líneas respetando el ancho disponible
+        const valueLines = doc.splitTextToSize(
+          value,
+          availableWidth - labelWidth,
+        );
+
+        // Primera línea va junto al label
+        doc.text(valueLines[0], x + labelWidth, y);
+
+        // Las líneas siguientes empiezan desde x (no x + labelWidth)
+        if (valueLines.length > 1) {
+          const lineHeight = doc.getLineHeight() / doc.internal.scaleFactor;
+          for (let i = 1; i < valueLines.length; i++) {
+            doc.text(valueLines[i], x, y + lineHeight * i);
+          }
+        }
+      };
+
+      if (raw.startsWith("NOMBRE:")) {
+        drawLabel("NOMBRE: ", raw.replace("NOMBRE:", "").trim());
+      }
+
+      if (raw.startsWith("NRC :")) {
+        drawLabel("NRC : ", raw.replace("NRC :", "").trim());
+      }
+
+      if (raw.startsWith("DIRECCIÓN :")) {
+        drawLabel("DIRECCIÓN : ", raw.replace("DIRECCIÓN :", "").trim());
+      }
+
+      if (raw.startsWith("CÓDIGO GENERACIÓN :")) {
+        drawLabel(
+          "CÓDIGO GENERACIÓN : ",
+          raw.replace("CÓDIGO GENERACIÓN :", "").trim(),
+        );
+      }
+      if (raw.startsWith("GIRO :")) {
+        drawLabel("GIRO : ", raw.replace("GIRO :", "").trim());
+      }
+      if (raw.startsWith("NIT :")) {
+        drawLabel("NIT : ", raw.replace("NIT :", "").trim());
+      }
+      if (raw.startsWith("NUMERO DOCUMENTO :")) {
+        drawLabel(
+          "NUMERO DOCUMENTO : ",
+          raw.replace("NUMERO DOCUMENTO :", "").trim(),
+        );
+      }
+      if (raw.startsWith("CORREO :")) {
+        drawLabel("CORREO : ", raw.replace("CORREO :", "").trim());
+      }
+      if (raw.startsWith("TEL :")) {
+        drawLabel("TEL : ", raw.replace("TEL :", "").trim());
+      }
+      if (raw.startsWith("NUMERO DE CONTROL :")) {
+        drawLabel(
+          "NUMERO DE CONTROL : ",
+          raw.replace("NUMERO DE CONTROL :", "").trim(),
+        );
+      }
+      if (raw.startsWith("SELLO :")) {
+        drawLabel("SELLO : ", raw.replace("SELLO :", "").trim());
+      }
+      if (raw.startsWith("FECHA HORA EMISION :")) {
+        drawLabel(
+          "FECHA HORA EMISION : ",
+          raw.replace("FECHA HORA EMISION :", "").trim(),
+        );
+      }
+      if (raw.startsWith("MODELO DE FACTURACIÓN :")) {
+        drawLabel(
+          "MODELO DE FACTURACIÓN : ",
+          raw.replace("MODELO DE FACTURACIÓN :", "").trim(),
+        );
+      }
+      if (raw.startsWith("TIPO DE TRANSMISIÓN :")) {
+        drawLabel(
+          "TIPO DE TRANSMISIÓN : ",
+          raw.replace("TIPO DE TRANSMISIÓN :", "").trim(),
+        );
+      }
+      if (raw.startsWith("CONDICIÓN DE LA OPERACIÓN :")) {
+        drawLabel(
+          "CONDICIÓN DE LA OPERACIÓN : ",
+          raw.replace("CONDICIÓN DE LA OPERACIÓN :", "").trim(),
+        );
+      }
+    },
   });
 };
