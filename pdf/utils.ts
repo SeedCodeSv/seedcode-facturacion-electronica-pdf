@@ -241,7 +241,7 @@ export const headerDoc = async (
 ) => {
   const dataQR = await generateQR(dte);
 
-  const { imageBase64, width, height } = await adjustImageByHeight(logo, 8);
+  const { imageBase64, width, height } = await adjustImageByHeight(logo, 10);
   autoTable(doc, {
     startY: 2,
     showHead: false,
@@ -392,7 +392,7 @@ export const headerDoc = async (
         doc.addImage(
           dataQR as Buffer,
           "PNG",
-          cellX + 4,
+          cellX + 2,
           cellY - 2,
           36,
           36,
