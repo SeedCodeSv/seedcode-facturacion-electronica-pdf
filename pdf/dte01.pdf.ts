@@ -126,10 +126,8 @@ export const generateSvfe01 = async (
 
   const { documentoRelacionado } = svfe01 as DteFe;
 
- 
-
   if (documentoRelacionado !== null && documentoRelacionado.length > 0) {
-     returnBoldText(doc, "DOCUMENTOS RELACIONADOS", 100, finalY, "center");
+    returnBoldText(doc, "DOCUMENTOS RELACIONADOS", 100, finalY, "center");
     doc.roundedRect(
       5,
       finalY + 2,
@@ -212,30 +210,26 @@ export const generateSvfe01 = async (
     showHead: true,
     body: array_object as unknown as RowInput[],
     columnStyles: {
-      0: { cellWidth: 15, halign: "center", cellPadding: 2 },
-      1: { cellWidth: 65, cellPadding: 2 },
+      0: { cellWidth: 15, halign: "center" },
+      1: { cellWidth: 65 },
       2: {
         cellWidth: 20,
-        cellPadding: 2,
         halign: "right",
       },
       3: {
         cellWidth: 20,
-        cellPadding: 2,
         halign: "right",
       },
       4: {
         cellWidth: 20,
-        cellPadding: 2,
         halign: "right",
       },
       5: {
         cellWidth: 20,
-        cellPadding: 2,
         halign: "right",
       },
-      6: { cellWidth: 20, cellPadding: 2, halign: "right" },
-      7: { cellPadding: 2, halign: "right" },
+      6: { cellWidth: 20, halign: "right" },
+      7: { halign: "right" },
     },
     headStyles: {
       textColor: [0, 0, 0],
@@ -245,13 +239,14 @@ export const generateSvfe01 = async (
     },
     bodyStyles: {
       fontSize: 7,
+      cellPadding: 1,
     },
     didDrawCell: (data) => {
       if (data.section === "body") {
         const { x, y, width, height } = data.cell;
         const doc = data.doc;
 
-        doc.setDrawColor(0, 0, 0);
+        doc.setDrawColor("#6c757d");
         doc.setLineWidth(0.1);
 
         const dashLength = 1;

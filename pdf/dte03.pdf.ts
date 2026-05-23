@@ -269,32 +269,31 @@ export const generateSvfe03 = async (
       theme: "plain",
       head: [tableHeaders],
       columnStyles: {
-        0: { cellWidth: 15, halign: "center", cellPadding: 2 },
-        1: { cellWidth: 65, cellPadding: 2 },
+        0: { cellWidth: 15, halign: "center" },
+        1: { cellWidth: 65 },
         2: {
           cellWidth: 20,
-          cellPadding: 2,
         },
         3: {
           cellWidth: 20,
-          cellPadding: 2,
         },
         4: {
           cellWidth: 20,
-          cellPadding: 2,
         },
         5: {
           cellWidth: 20,
-          cellPadding: 2,
         },
-        6: { cellWidth: 20, cellPadding: 2 },
-        7: { cellPadding: 2 },
+        6: { cellWidth: 20 },
+        7: {},
       },
       headStyles: {
         textColor: [0, 0, 0],
         fontStyle: "bold",
         halign: "center",
         fontSize: 5,
+      },
+      bodyStyles: {
+        cellPadding: 1,
       },
       body: [["", "", "", "", "", "", ""]],
       margin: {
@@ -306,7 +305,7 @@ export const generateSvfe03 = async (
           const { x, y, width, height } = data.cell;
           const doc = data.doc;
 
-          doc.setDrawColor(0, 0, 0);
+          doc.setDrawColor("#6c757d");
           doc.setLineWidth(0.1);
 
           const dashLength = 1;
