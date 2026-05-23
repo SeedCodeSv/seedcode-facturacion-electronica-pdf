@@ -411,22 +411,16 @@ export const generateSvfe01 = async (
     }
 
     if (contingence) {
-      doc.saveGraphicsState();
-      doc.setGState(doc.GState({ opacity: 0.3 }));
-      const imagePath = join(__dirname, "images/contingencia.png");
-      const imageBuffer = readFileSync(imagePath);
-      const imgBase64 = imageBuffer.toString("base64");
-      doc.addImage(
-        imgBase64,
-        "PNG",
-        doc.internal.pageSize.width / 2 - 50,
+      doc.setFontSize(20);
+      doc.setTextColor(255, 0, 0);
+      doc.text(
+        "CONTINGENCIA",
+        doc.internal.pageSize.width / 2,
         doc.internal.pageSize.height / 2,
-        100,
-        100,
-        "FAST",
-        "FAST",
+        { align: "center", angle: 45 },
       );
-      doc.restoreGraphicsState();
+      doc.setTextColor(0, 0, 0);
+      doc.setFontSize(6);
     }
   }
   return doc.output("arraybuffer");
@@ -478,7 +472,6 @@ export const footerDocument = (
   );
   returnBoldText(doc, "TELEFONO: _______________________", 10, rectMargin + 36);
 
-
   returnBoldText(doc, "RECIBIDO POR:", 80, rectMargin + 20);
   returnBoldText(doc, "NOMBRE:  ________________________", 80, rectMargin + 26);
   returnBoldText(
@@ -494,7 +487,6 @@ export const footerDocument = (
     rectMargin + 32,
   );
   returnBoldText(doc, "TELEFONO: _______________________", 80, rectMargin + 35);
-
 
   returnBoldText(doc, "Observaciones:", 10, rectMargin + 43);
   if (svfe01.extension) {

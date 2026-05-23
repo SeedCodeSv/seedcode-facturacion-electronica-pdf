@@ -212,7 +212,7 @@ export const headerDoc = async (
 ) => {
   const dataQR = await generateQR(dte);
 
-  const { imageBase64, width, height } = await adjustImageByHeight(logo, 20);
+  const { imageBase64, width, height } = await adjustImageByHeight(logo, 10);
   autoTable(doc, {
     startY: 2,
     showHead: false,
@@ -385,7 +385,7 @@ export const headerDoc = async (
       }
     },
     columnStyles: {
-      0: { cellWidth: 45 },
+      0: { cellWidth: 30 },
       1: { cellWidth: "auto" },
       2: { cellWidth: 90 },
     },

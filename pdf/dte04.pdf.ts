@@ -16,7 +16,7 @@ export const generateSvfe04 = async (
   logo: Uint8Array | string = "",
   selloInvalidacion: string = "",
   contingence: boolean = false,
-  canInvertName: boolean = false
+  canInvertName: boolean = false,
 ) => {
   const doc = new jsPDF();
 
@@ -45,7 +45,7 @@ export const generateSvfe04 = async (
     tableHeight,
     radius,
     radius,
-    "S"
+    "S",
   );
   finalY = (
     doc as unknown as {
@@ -60,7 +60,7 @@ export const generateSvfe04 = async (
     10,
     2,
     2,
-    "S"
+    "S",
   );
   autoTable(doc, {
     head: [["Identificación del documento", "Descripción"]],
@@ -89,7 +89,7 @@ export const generateSvfe04 = async (
     10,
     2,
     2,
-    "S"
+    "S",
   );
   autoTable(doc, {
     head: [["NIT", "Nombre, denominación o razón social"]],
@@ -118,7 +118,7 @@ export const generateSvfe04 = async (
     15,
     2,
     2,
-    "S"
+    "S",
   );
 
   const { documentoRelacionado } = svfe04 as DteNre;
@@ -175,7 +175,7 @@ export const generateSvfe04 = async (
         vtSuj: formatCurrency(prd.ventaNoSuj),
         vtExe: formatCurrency(prd.ventaExenta),
         vtGrav: formatCurrency(prd.ventaGravada),
-      })
+      }),
     );
   });
 
@@ -261,11 +261,11 @@ export const generateSvfe04 = async (
       i === 1
         ? rectHeight - 50
         : i === pageCount
-        ? rectHeight - 50
-        : rectHeight,
+          ? rectHeight - 50
+          : rectHeight,
       0,
       0,
-      "S"
+      "S",
     );
     doc.roundedRect(
       125,
@@ -274,11 +274,11 @@ export const generateSvfe04 = async (
       i === 1
         ? rectHeight - 50
         : i === pageCount
-        ? rectHeight - 50
-        : rectHeight,
+          ? rectHeight - 50
+          : rectHeight,
       0,
       0,
-      "S"
+      "S",
     );
     doc.roundedRect(
       165,
@@ -287,11 +287,11 @@ export const generateSvfe04 = async (
       i === 1
         ? rectHeight - 50
         : i === pageCount
-        ? rectHeight - 50
-        : rectHeight,
+          ? rectHeight - 50
+          : rectHeight,
       0,
       0,
-      "S"
+      "S",
     );
 
     //all
@@ -302,7 +302,7 @@ export const generateSvfe04 = async (
       rectHeight - (i !== 1 ? 0 : pageCount === 1 ? 0 : 50),
       radius,
       radius,
-      "S"
+      "S",
     );
     // end all
 
@@ -314,7 +314,7 @@ export const generateSvfe04 = async (
       8,
       radius,
       radius,
-      "FD"
+      "FD",
     );
     autoTable(doc, {
       startY: i !== 1 ? 35 : finalYFirtsPage,
@@ -360,7 +360,7 @@ export const generateSvfe04 = async (
         5,
         rectMargin + 7,
         doc.internal.pageSize.getWidth() - 5,
-        rectMargin + 7
+        rectMargin + 7,
       );
       footerDocument(doc, rectMargin, svfe04);
       doc.line(125, rectHeight + 35, 125, rectMargin + 7);
@@ -372,34 +372,28 @@ export const generateSvfe04 = async (
         5,
         rectMargin + 7,
         doc.internal.pageSize.getWidth() - 5,
-        rectMargin + 7
+        rectMargin + 7,
       );
       footerDocument(doc, rectMargin, svfe04);
       doc.line(
         125,
         doc.internal.pageSize.height - 48,
         125,
-        doc.internal.pageSize.height - 5
+        doc.internal.pageSize.height - 5,
       );
     }
 
     if (contingence) {
-      doc.saveGraphicsState();
-      doc.setGState(doc.GState({ opacity: 0.3 }));
-      const imagePath = join(__dirname, "logos/contingencia.png");
-      const imageBuffer = readFileSync(imagePath);
-      const imgBase64 = imageBuffer.toString("base64");
-      doc.addImage(
-        imgBase64,
-        "PNG",
-        doc.internal.pageSize.width / 2 - 50,
+      doc.setFontSize(20);
+      doc.setTextColor(255, 0, 0);
+      doc.text(
+        "CONTINGENCIA",
+        doc.internal.pageSize.width / 2,
         doc.internal.pageSize.height / 2,
-        100,
-        100,
-        "FAST",
-        "FAST"
+        { align: "center", angle: 45 },
       );
-      doc.restoreGraphicsState();
+      doc.setTextColor(0, 0, 0);
+      doc.setFontSize(6);
     }
   }
 
@@ -439,7 +433,7 @@ export const footerDocument = (doc: jsPDF, rectMargin: number, ccf: DteNre) => {
     doc,
     "Responsable por parte del receptor:",
     65,
-    rectMargin + 10
+    rectMargin + 10,
   );
 
   if (ccf.extension) {
@@ -459,17 +453,17 @@ export const footerDocument = (doc: jsPDF, rectMargin: number, ccf: DteNre) => {
   doc.text(
     "Monto global Desc., Rebajas y otros a ventas no sujetas: ",
     127,
-    rectMargin + 13
+    rectMargin + 13,
   );
   doc.text(
     "Monto global Desc., Rebajas y otros a ventas exentas:",
     127,
-    rectMargin + 16
+    rectMargin + 16,
   );
   doc.text(
     "Monto global Desc., Rebajas y otros a ventas gravadas:",
     127,
-    rectMargin + 19
+    rectMargin + 19,
   );
   doc.text("IVA 13%: ", 127, rectMargin + 22);
   doc.text("Sub-Total: ", 127, rectMargin + 25);
