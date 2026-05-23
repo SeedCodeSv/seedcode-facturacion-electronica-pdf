@@ -124,50 +124,53 @@ export const generateSvfe01 = async (
     }
   ).lastAutoTable.finalY;
 
-  returnBoldText(doc, "DOCUMENTOS RELACIONADOS", 100, finalY, "center");
-
-  doc.roundedRect(
-    5,
-    finalY + 2,
-    doc.internal.pageSize.width - 10,
-    15,
-    2,
-    2,
-    "S",
-  );
-
   const { documentoRelacionado } = svfe01 as DteFe;
 
-  autoTable(doc, {
-    head: [["Tipo de Documento", "N° de Documento", "Fecha de Documento"]],
-    theme: "plain",
-    headStyles: {
-      fontSize: 7,
-    },
-    bodyStyles: {
-      fontSize: 7,
-    },
-    columnStyles: {
-      0: {
-        cellWidth: 60,
+ 
+
+  if (documentoRelacionado !== null && documentoRelacionado.length > 0) {
+     returnBoldText(doc, "DOCUMENTOS RELACIONADOS", 100, finalY, "center");
+    doc.roundedRect(
+      5,
+      finalY + 2,
+      doc.internal.pageSize.width - 10,
+      15,
+      2,
+      2,
+      "S",
+    );
+
+    autoTable(doc, {
+      head: [["Tipo de Documento", "N° de Documento", "Fecha de Documento"]],
+      theme: "plain",
+      headStyles: {
+        fontSize: 7,
       },
-      1: {
-        cellWidth: "auto",
+      bodyStyles: {
+        fontSize: 7,
       },
-      2: {
-        cellWidth: 60,
+      columnStyles: {
+        0: {
+          cellWidth: 60,
+        },
+        1: {
+          cellWidth: "auto",
+        },
+        2: {
+          cellWidth: 60,
+        },
       },
-    },
-    body:
-      documentoRelacionado && documentoRelacionado.length > 0
-        ? documentoRelacionado.map((prd) => [
-            prd.tipoDocumento,
-            prd.numeroDocumento,
-            prd.fechaEmision,
-          ])
-        : [["-", "-", "-"]],
-    startY: finalY + 2,
-  });
+      body:
+        documentoRelacionado && documentoRelacionado.length > 0
+          ? documentoRelacionado.map((prd) => [
+              prd.tipoDocumento,
+              prd.numeroDocumento,
+              prd.fechaEmision,
+            ])
+          : [["-", "-", "-"]],
+      startY: finalY + 2,
+    });
+  }
 
   finalY =
     (
@@ -242,6 +245,26 @@ export const generateSvfe01 = async (
     },
     bodyStyles: {
       fontSize: 7,
+    },
+    didDrawCell: (data) => {
+      if (data.section === "body") {
+        const { x, y, width, height } = data.cell;
+        const doc = data.doc;
+
+        doc.setDrawColor(0, 0, 0);
+        doc.setLineWidth(0.1);
+
+        const dashLength = 1;
+        const gapLength = 1;
+        let drawn = 0;
+
+        while (drawn < width) {
+          const startX = x + drawn;
+          const endX = Math.min(x + drawn + dashLength, x + width);
+          doc.line(startX, y + height, endX, y + height);
+          drawn += dashLength + gapLength;
+        }
+      }
     },
   });
 

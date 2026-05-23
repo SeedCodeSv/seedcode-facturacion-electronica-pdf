@@ -14,7 +14,7 @@ export const generateSvfe03 = async (
   logo: Uint8Array | string = "",
   selloInvalidacion: string = "",
   contingence: boolean = false,
-  canInvertName: boolean = false
+  canInvertName: boolean = false,
 ) => {
   const doc = new jsPDF();
 
@@ -42,7 +42,7 @@ export const generateSvfe03 = async (
     tableHeight,
     radius,
     radius,
-    "S"
+    "S",
   );
 
   finalY = (
@@ -60,7 +60,7 @@ export const generateSvfe03 = async (
     10,
     2,
     2,
-    "S"
+    "S",
   );
 
   autoTable(doc, {
@@ -93,7 +93,7 @@ export const generateSvfe03 = async (
     10,
     2,
     2,
-    "S"
+    "S",
   );
 
   autoTable(doc, {
@@ -117,50 +117,52 @@ export const generateSvfe03 = async (
     }
   ).lastAutoTable.finalY;
 
-  returnBoldText(doc, "DOCUMENTOS RELACIONADOS", 100, finalY, "center");
-
-  doc.roundedRect(
-    5,
-    finalY + 2,
-    doc.internal.pageSize.width - 10,
-    15,
-    2,
-    2,
-    "S"
-  );
-
   const { documentoRelacionado } = svfe03 as DteCcf;
 
-  autoTable(doc, {
-    head: [["Tipo de Documento", "N° de Documento", "Fecha de Documento"]],
-    theme: "plain",
-    headStyles: {
-      fontSize: 7,
-    },
-    bodyStyles: {
-      fontSize: 7,
-    },
-    columnStyles: {
-      0: {
-        cellWidth: 60,
+  if (documentoRelacionado !== null && documentoRelacionado.length > 0) {
+    returnBoldText(doc, "DOCUMENTOS RELACIONADOS", 100, finalY, "center");
+
+    doc.roundedRect(
+      5,
+      finalY + 2,
+      doc.internal.pageSize.width - 10,
+      15,
+      2,
+      2,
+      "S",
+    );
+
+    autoTable(doc, {
+      head: [["Tipo de Documento", "N° de Documento", "Fecha de Documento"]],
+      theme: "plain",
+      headStyles: {
+        fontSize: 7,
       },
-      1: {
-        cellWidth: "auto",
+      bodyStyles: {
+        fontSize: 7,
       },
-      2: {
-        cellWidth: 60,
+      columnStyles: {
+        0: {
+          cellWidth: 60,
+        },
+        1: {
+          cellWidth: "auto",
+        },
+        2: {
+          cellWidth: 60,
+        },
       },
-    },
-    body:
-      documentoRelacionado && documentoRelacionado.length > 0
-        ? documentoRelacionado.map((prd) => [
-          prd.tipoDocumento,
-          prd.numeroDocumento,
-          prd.fechaEmision,
-        ])
-        : [["-", "-", "-"]],
-    startY: finalY + 2,
-  });
+      body:
+        documentoRelacionado && documentoRelacionado.length > 0
+          ? documentoRelacionado.map((prd) => [
+              prd.tipoDocumento,
+              prd.numeroDocumento,
+              prd.fechaEmision,
+            ])
+          : [["-", "-", "-"]],
+      startY: finalY + 2,
+    });
+  }
 
   finalY =
     (
@@ -213,7 +215,7 @@ export const generateSvfe03 = async (
           : rectHeight,
       0,
       0,
-      "S"
+      "S",
     );
     doc.roundedRect(
       125,
@@ -226,7 +228,7 @@ export const generateSvfe03 = async (
           : rectHeight,
       0,
       0,
-      "S"
+      "S",
     );
     doc.roundedRect(
       165,
@@ -239,7 +241,7 @@ export const generateSvfe03 = async (
           : rectHeight,
       0,
       0,
-      "S"
+      "S",
     );
     //all
     doc.roundedRect(
@@ -249,7 +251,7 @@ export const generateSvfe03 = async (
       rectHeight - (i !== 1 ? 0 : pageCount === 1 ? 0 : 50),
       radius,
       radius,
-      "S"
+      "S",
     );
 
     doc.setFillColor("#ced4da");
@@ -260,7 +262,7 @@ export const generateSvfe03 = async (
       8,
       radius,
       radius,
-      "FD"
+      "FD",
     );
     autoTable(doc, {
       startY: i !== 1 ? 35 : finalYFirtsPage,
@@ -299,6 +301,26 @@ export const generateSvfe03 = async (
         right: 5,
         left: 5,
       },
+      didDrawCell: (data) => {
+        if (data.section === "body") {
+          const { x, y, width, height } = data.cell;
+          const doc = data.doc;
+
+          doc.setDrawColor(0, 0, 0);
+          doc.setLineWidth(0.1);
+
+          const dashLength = 1;
+          const gapLength = 1;
+          let drawn = 0;
+
+          while (drawn < width) {
+            const startX = x + drawn;
+            const endX = Math.min(x + drawn + dashLength, x + width);
+            doc.line(startX, y + height, endX, y + height);
+            drawn += dashLength + gapLength;
+          }
+        }
+      },
     });
     if (pageCount > 1 && i === pageCount) {
       doc.line(5, rectMargin, doc.internal.pageSize.getWidth() - 5, rectMargin);
@@ -306,7 +328,7 @@ export const generateSvfe03 = async (
         5,
         rectMargin + 7,
         doc.internal.pageSize.getWidth() - 5,
-        rectMargin + 7
+        rectMargin + 7,
       );
       footerDocument(doc, rectMargin, svfe03);
       doc.line(125, rectHeight + 35, 125, rectMargin + 7);
@@ -318,14 +340,14 @@ export const generateSvfe03 = async (
         5,
         rectMargin + 7,
         doc.internal.pageSize.getWidth() - 5,
-        rectMargin + 7
+        rectMargin + 7,
       );
       footerDocument(doc, rectMargin, svfe03);
       doc.line(
         125,
         doc.internal.pageSize.height - 48,
         125,
-        doc.internal.pageSize.height - 5
+        doc.internal.pageSize.height - 5,
       );
     }
   }
@@ -335,10 +357,8 @@ export const generateSvfe03 = async (
 
 export const footerDocument = (doc: jsPDF, rectMargin: number, ccf: DteCcf) => {
   let propina =
-    ccf.cuerpoDocumento.find(
-      (cuerpo) => cuerpo.descripcion === "PROPINA"
-    )?.noGravado ?? 0;
-
+    ccf.cuerpoDocumento.find((cuerpo) => cuerpo.descripcion === "PROPINA")
+      ?.noGravado ?? 0;
 
   const resumen = ccf.resumen;
   doc.text(`${resumen.totalLetras}`, 10, rectMargin + 4);
@@ -347,7 +367,7 @@ export const footerDocument = (doc: jsPDF, rectMargin: number, ccf: DteCcf) => {
   doc.text(`$${" "} ${" "} ${resumen.totalExenta}`, 165, rectMargin + 4);
   doc.text(`$${" "} ${" "} ${resumen.totalGravada}`, 185, rectMargin + 4);
   doc.setFontSize(6);
-   doc.text(
+  doc.text(
     "-No se aceptan cambios ni devoluciones despues de 2 dias. Producto Chino no tiene cambio ni devolucion",
     10,
     rectMargin + 10,
@@ -376,7 +396,6 @@ export const footerDocument = (doc: jsPDF, rectMargin: number, ccf: DteCcf) => {
   );
   returnBoldText(doc, "TELEFONO: _______________________", 10, rectMargin + 36);
 
-
   returnBoldText(doc, "RECIBIDO POR:", 80, rectMargin + 20);
   returnBoldText(doc, "NOMBRE:  ________________________", 80, rectMargin + 26);
   returnBoldText(
@@ -393,7 +412,6 @@ export const footerDocument = (doc: jsPDF, rectMargin: number, ccf: DteCcf) => {
   );
   returnBoldText(doc, "TELEFONO: _______________________", 80, rectMargin + 35);
 
-
   returnBoldText(doc, "Observaciones:", 10, rectMargin + 43);
   if (ccf.extension) {
     if (ccf?.extension?.observaciones) {
@@ -406,17 +424,17 @@ export const footerDocument = (doc: jsPDF, rectMargin: number, ccf: DteCcf) => {
   doc.text(
     "Monto global Desc., Rebajas y otros a ventas no sujetas: ",
     127,
-    rectMargin + 13
+    rectMargin + 13,
   );
   doc.text(
     "Monto global Desc., Rebajas y otros a ventas exentas:",
     127,
-    rectMargin + 16
+    rectMargin + 16,
   );
   doc.text(
     "Monto global Desc., Rebajas y otros a ventas gravadas:",
     127,
-    rectMargin + 19
+    rectMargin + 19,
   );
   doc.text("IVA 13%: ", 127, rectMargin + 22);
   doc.text("Sub-Total: ", 127, rectMargin + 25);
@@ -439,9 +457,9 @@ export const footerDocument = (doc: jsPDF, rectMargin: number, ccf: DteCcf) => {
     resumen.descuGravada.toFixed(2),
     resumen.tributos
       ? resumen.tributos
-        .map((tr) => Number(tr.valor))
-        .reduce((a, b) => a + b)
-        .toFixed(2)
+          .map((tr) => Number(tr.valor))
+          .reduce((a, b) => a + b)
+          .toFixed(2)
       : "0.00",
     resumen.subTotal.toFixed(2),
     resumen.ivaPerci1.toFixed(2),
@@ -451,7 +469,6 @@ export const footerDocument = (doc: jsPDF, rectMargin: number, ccf: DteCcf) => {
     propina.toFixed(2),
     "0.00",
     resumen.totalPagar.toFixed(2),
-   
   ];
 
   totals.forEach((total, index) => {

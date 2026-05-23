@@ -1,0 +1,130 @@
+{
+  "identificacion": {
+    "version": 3,
+    "codigoGeneracion": "7D89B81D-A898-418F-A7CA-182F58B17485",
+    "ambiente": "01",
+    "tipoDte": "03",
+    "numeroControl": "DTE-03-S003P001-000000000000118",
+    "tipoModelo": 1,
+    "tipoOperacion": 1,
+    "tipoContingencia": null,
+    "motivoContin": null,
+    "tipoMoneda": "USD",
+    "fecEmi": "2026-05-22",
+    "horEmi": "12:54:52"
+  },
+  "documentoRelacionado": null,
+  "emisor": {
+    "nit": "05200111711019",
+    "nrc": "2756260",
+    "nombre": "JOSE ELIAS CANESSA DE LEON",
+    "nombreComercial": "JC RACING",
+    "codActividad": "45301",
+    "descActividad": "Venta de partes, piezas y accesorios nuevos para vehículos automotores",
+    "tipoEstablecimiento": "01",
+    "direccion": {
+      "departamento": "03",
+      "municipio": "18",
+      "complemento": "Blvd. Las Palmeras, Local 1, Col. Santa Marta, Carretera a San Salvador"
+    },
+    "telefono": "74683379",
+    "correo": "facturacionelvaquerogrill@gmail.com",
+    "codEstable": "S003",
+    "codEstableMH": "S003",
+    "codPuntoVenta": "P001",
+    "codPuntoVentaMH": "P001"
+  },
+  "receptor": {
+    "nit": "06141210011042",
+    "nrc": "1359188",
+    "nombre": "OPERADORES PORTUARIOS SALVADOREÑOS S.A DE C.V",
+    "codActividad": "52240",
+    "descActividad": "Manipulación de carga",
+    "nombreComercial": "OPERADORES PORTUARIOS SALVADOREÑOS S.A DE C.V",
+    "direccion": {
+      "departamento": "06",
+      "municipio": "23",
+      "complemento": "79 av sur y av cuscatlan edif plaza cristal col escalon"
+    },
+    "telefono": "78542147",
+    "correo": "facturacion@ops2l.net"
+  },
+  "otrosDocumentos": null,
+  "ventaTercero": null,
+  "cuerpoDocumento": [
+    {
+      "numItem": 1,
+      "tipoItem": 1,
+      "uniMedida": 59,
+      "numeroDocumento": null,
+      "cantidad": 1,
+      "codigo": "RP-000589",
+      "codTributo": null,
+      "descripcion": "HALOGENA LED CUADRADA HELLA C/PAR",
+      "precioUni": 39.823,
+      "montoDescu": 0,
+      "ventaNoSuj": 0,
+      "ventaExenta": 0,
+      "ventaGravada": 39.82,
+      "tributos": [
+        "20"
+      ],
+      "psv": 0,
+      "noGravado": 0
+    }
+  ],
+  "resumen": {
+    "totalNoSuj": 0,
+    "totalExenta": 0,
+    "totalGravada": 39.82,
+    "subTotalVentas": 39.82,
+    "descuNoSuj": 0,
+    "descuExenta": 0,
+    "descuGravada": 0,
+    "porcentajeDescuento": 0,
+    "totalDescu": 0,
+    "tributos": [
+      {
+        "codigo": "20",
+        "descripcion": "Impuesto al Valor Agregado 13%",
+        "valor": 5.18
+      }
+    ],
+    "subTotal": 39.82,
+    "ivaRete1": 0,
+    "reteRenta": 0,
+    "ivaPerci1": 0,
+    "montoTotalOperacion": 45,
+    "totalNoGravado": 0,
+    "totalPagar": 45,
+    "totalLetras": "CUARENTA Y CINCO 00/100 DOLARES AMERICANOS",
+    "saldoFavor": 0,
+    "condicionOperacion": 1,
+    "pagos": [
+      {
+        "codigo": "01",
+        "plazo": null,
+        "periodo": null,
+        "montoPago": 45,
+        "referencia": ""
+      }
+    ],
+    "numPagoElectronico": null
+  },
+  "extension": null,
+  "apendice": null,
+  "respuestaMH": {
+    "version": 2,
+    "ambiente": "01",
+    "versionApp": 2,
+    "estado": "PROCESADO",
+    "codigoGeneracion": "7D89B81D-A898-418F-A7CA-182F58B17485",
+    "selloRecibido": "2026401F4A0EEA6C46D1A5E566E770500E5ESJRX",
+    "fhProcesamiento": "22/05/2026 12:54:53",
+    "clasificaMsg": "10",
+    "codigoMsg": "001",
+    "descripcionMsg": "RECIBIDO",
+    "observaciones": []
+  },
+  "firma": "eyJhbGciOiJSUzUxMiJ9.ewogICJpZGVudGlmaWNhY2lvbiIgOiB7CiAgICAidmVyc2lvbiIgOiAzLAogICAgImNvZGlnb0dlbmVyYWNpb24iIDogIjdEODlCODFELUE4OTgtNDE4Ri1BN0NBLTE4MkY1OEIxNzQ4NSIsCiAgICAiYW1iaWVudGUiIDogIjAxIiwKICAgICJ0aXBvRHRlIiA6ICIwMyIsCiAgICAibnVtZXJvQ29udHJvbCIgOiAiRFRFLTAzLVMwMDNQMDAxLTAwMDAwMDAwMDAwMDExOCIsCiAgICAidGlwb01vZGVsbyIgOiAxLAogICAgInRpcG9PcGVyYWNpb24iIDogMSwKICAgICJ0aXBvQ29udGluZ2VuY2lhIiA6IG51bGwsCiAgICAibW90aXZvQ29udGluIiA6IG51bGwsCiAgICAidGlwb01vbmVkYSIgOiAiVVNEIiwKICAgICJmZWNFbWkiIDogIjIwMjYtMDUtMjIiLAogICAgImhvckVtaSIgOiAiMTI6NTQ6NTIiCiAgfSwKICAiZG9jdW1lbnRvUmVsYWNpb25hZG8iIDogbnVsbCwKICAiZW1pc29yIiA6IHsKICAgICJuaXQiIDogIjA1MjAwMTExNzExMDE5IiwKICAgICJucmMiIDogIjI3NTYyNjAiLAogICAgIm5vbWJyZSIgOiAiSk9TRSBFTElBUyBDQU5FU1NBIERFIExFT04iLAogICAgIm5vbWJyZUNvbWVyY2lhbCIgOiAiSkMgUkFDSU5HIiwKICAgICJjb2RBY3RpdmlkYWQiIDogIjQ1MzAxIiwKICAgICJkZXNjQWN0aXZpZGFkIiA6ICJWZW50YSBkZSBwYXJ0ZXMsIHBpZXphcyB5IGFjY2Vzb3Jpb3MgbnVldm9zIHBhcmEgdmVow61jdWxvcyBhdXRvbW90b3JlcyIsCiAgICAidGlwb0VzdGFibGVjaW1pZW50byIgOiAiMDEiLAogICAgImRpcmVjY2lvbiIgOiB7CiAgICAgICJkZXBhcnRhbWVudG8iIDogIjAzIiwKICAgICAgIm11bmljaXBpbyIgOiAiMTgiLAogICAgICAiY29tcGxlbWVudG8iIDogIkJsdmQuIExhcyBQYWxtZXJhcywgTG9jYWwgMSwgQ29sLiBTYW50YSBNYXJ0YSwgQ2FycmV0ZXJhIGEgU2FuIFNhbHZhZG9yIgogICAgfSwKICAgICJ0ZWxlZm9ubyIgOiAiNzQ2ODMzNzkiLAogICAgImNvcnJlbyIgOiAiZmFjdHVyYWNpb25lbHZhcXVlcm9ncmlsbEBnbWFpbC5jb20iLAogICAgImNvZEVzdGFibGUiIDogIlMwMDMiLAogICAgImNvZEVzdGFibGVNSCIgOiAiUzAwMyIsCiAgICAiY29kUHVudG9WZW50YSIgOiAiUDAwMSIsCiAgICAiY29kUHVudG9WZW50YU1IIiA6ICJQMDAxIgogIH0sCiAgInJlY2VwdG9yIiA6IHsKICAgICJuaXQiIDogIjA2MTQxMjEwMDExMDQyIiwKICAgICJucmMiIDogIjEzNTkxODgiLAogICAgIm5vbWJyZSIgOiAiT1BFUkFET1JFUyBQT1JUVUFSSU9TIFNBTFZBRE9SRcORT1MgUy5BIERFIEMuViIsCiAgICAiY29kQWN0aXZpZGFkIiA6ICI1MjI0MCIsCiAgICAiZGVzY0FjdGl2aWRhZCIgOiAiTWFuaXB1bGFjacOzbiBkZSBjYXJnYSIsCiAgICAibm9tYnJlQ29tZXJjaWFsIiA6ICJPUEVSQURPUkVTIFBPUlRVQVJJT1MgU0FMVkFET1JFw5FPUyBTLkEgREUgQy5WIiwKICAgICJkaXJlY2Npb24iIDogewogICAgICAiZGVwYXJ0YW1lbnRvIiA6ICIwNiIsCiAgICAgICJtdW5pY2lwaW8iIDogIjIzIiwKICAgICAgImNvbXBsZW1lbnRvIiA6ICI3OSBhdiBzdXIgeSBhdiBjdXNjYXRsYW4gZWRpZiBwbGF6YSBjcmlzdGFsIGNvbCBlc2NhbG9uIgogICAgfSwKICAgICJ0ZWxlZm9ubyIgOiAiNzg1NDIxNDciLAogICAgImNvcnJlbyIgOiAiZmFjdHVyYWNpb25Ab3BzMmwubmV0IgogIH0sCiAgIm90cm9zRG9jdW1lbnRvcyIgOiBudWxsLAogICJ2ZW50YVRlcmNlcm8iIDogbnVsbCwKICAiY3VlcnBvRG9jdW1lbnRvIiA6IFsgewogICAgIm51bUl0ZW0iIDogMSwKICAgICJ0aXBvSXRlbSIgOiAxLAogICAgInVuaU1lZGlkYSIgOiA1OSwKICAgICJudW1lcm9Eb2N1bWVudG8iIDogbnVsbCwKICAgICJjYW50aWRhZCIgOiAxLAogICAgImNvZGlnbyIgOiAiUlAtMDAwNTg5IiwKICAgICJjb2RUcmlidXRvIiA6IG51bGwsCiAgICAiZGVzY3JpcGNpb24iIDogIkhBTE9HRU5BIExFRCBDVUFEUkFEQSBIRUxMQSBDL1BBUiIsCiAgICAicHJlY2lvVW5pIiA6IDM5LjgyMywKICAgICJtb250b0Rlc2N1IiA6IDAsCiAgICAidmVudGFOb1N1aiIgOiAwLAogICAgInZlbnRhRXhlbnRhIiA6IDAsCiAgICAidmVudGFHcmF2YWRhIiA6IDM5LjgyLAogICAgInRyaWJ1dG9zIiA6IFsgIjIwIiBdLAogICAgInBzdiIgOiAwLAogICAgIm5vR3JhdmFkbyIgOiAwCiAgfSBdLAogICJyZXN1bWVuIiA6IHsKICAgICJ0b3RhbE5vU3VqIiA6IDAsCiAgICAidG90YWxFeGVudGEiIDogMCwKICAgICJ0b3RhbEdyYXZhZGEiIDogMzkuODIsCiAgICAic3ViVG90YWxWZW50YXMiIDogMzkuODIsCiAgICAiZGVzY3VOb1N1aiIgOiAwLAogICAgImRlc2N1RXhlbnRhIiA6IDAsCiAgICAiZGVzY3VHcmF2YWRhIiA6IDAsCiAgICAicG9yY2VudGFqZURlc2N1ZW50byIgOiAwLAogICAgInRvdGFsRGVzY3UiIDogMCwKICAgICJ0cmlidXRvcyIgOiBbIHsKICAgICAgImNvZGlnbyIgOiAiMjAiLAogICAgICAiZGVzY3JpcGNpb24iIDogIkltcHVlc3RvIGFsIFZhbG9yIEFncmVnYWRvIDEzJSIsCiAgICAgICJ2YWxvciIgOiA1LjE4CiAgICB9IF0sCiAgICAic3ViVG90YWwiIDogMzkuODIsCiAgICAiaXZhUmV0ZTEiIDogMCwKICAgICJyZXRlUmVudGEiIDogMCwKICAgICJpdmFQZXJjaTEiIDogMCwKICAgICJtb250b1RvdGFsT3BlcmFjaW9uIiA6IDQ1LAogICAgInRvdGFsTm9HcmF2YWRvIiA6IDAsCiAgICAidG90YWxQYWdhciIgOiA0NSwKICAgICJ0b3RhbExldHJhcyIgOiAiQ1VBUkVOVEEgWSBDSU5DTyAwMC8xMDAgRE9MQVJFUyBBTUVSSUNBTk9TIiwKICAgICJzYWxkb0Zhdm9yIiA6IDAsCiAgICAiY29uZGljaW9uT3BlcmFjaW9uIiA6IDEsCiAgICAicGFnb3MiIDogWyB7CiAgICAgICJjb2RpZ28iIDogIjAxIiwKICAgICAgInBsYXpvIiA6IG51bGwsCiAgICAgICJwZXJpb2RvIiA6IG51bGwsCiAgICAgICJtb250b1BhZ28iIDogNDUsCiAgICAgICJyZWZlcmVuY2lhIiA6ICIiCiAgICB9IF0sCiAgICAibnVtUGFnb0VsZWN0cm9uaWNvIiA6IG51bGwKICB9LAogICJleHRlbnNpb24iIDogbnVsbCwKICAiYXBlbmRpY2UiIDogbnVsbAp9.Nn8myIO9s8DNDZciTp2aZEZAcsb4CqcmM49IpbzFGNX6ADF_lT6kVHAfFe9bRb-U92VDFaVm0W8d5r7SoGCz5KGQfXLXFpMxfjZiaF_unu2eNpTaho5_Q2FI9hiAUacuk0TJ-JQTjv72M0VQqTjWvF3ZCfbQE3PXkQE5fypLOpurtYyha3cZ2O_pQZGyEjkE4BVtKiqGnqakuRRyz0ArfNXp6cDroaP9qGGEUg1YwI98YskD-BDpD0Tp8PiX30BpRlLo_CJvu4bOoAE60SA-VVvxVEs8y2PtcC9I3Z1W3Kh_XpDZThHCS-o0fu5wIK_SPSqsXOQ4qkzGX5FXoBVw3g"
+}
