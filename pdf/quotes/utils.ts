@@ -3,6 +3,7 @@ import { adjustImageByHeight, formatAddress, returnBoldText } from "../utils";
 import autoTable from "jspdf-autotable";
 import { getHeightText } from "../utils";
 import { QuoteNormal } from "../../interfaces/quote.normal";
+import { QuoteAdvance } from "../../interfaces/quote.advance.01";
 
 export const headerDoc = async (
   quote: QuoteNormal,
@@ -82,7 +83,7 @@ export const headerDoc = async (
           doc,
           "COTIZACION no. : " + quote.no,
           100,
-          yAddress + yName + cellY + 8,
+          yAddress + yName + cellY + 12,
           "center",
         );
       }
@@ -90,14 +91,14 @@ export const headerDoc = async (
   });
 };
 
-export const secondHeader = async (quote: QuoteNormal, doc: jsPDF) => {
+export const secondHeader = async (quote: QuoteNormal | QuoteAdvance, doc: jsPDF) => {
   autoTable(doc, {
     margin: {
       left: 10,
       right: 10,
     },
     showHead: false,
-    startY: 25,
+    startY: 33,
     columnStyles: { 0: { cellWidth: 115 }, 1: { cellWidth: 105 } },
     bodyStyles: {
       fontSize: 6.5,
@@ -112,18 +113,24 @@ export const secondHeader = async (quote: QuoteNormal, doc: jsPDF) => {
       [
         {
           content: [
-            `DIRECCIÓN: ` + quote.customer.direccion
-              ? `DIRECCIÓN :  ${quote.customer.direccion.complemento} ${formatAddress(
-                  quote.customer.direccion.departamento,
-                  quote.customer.direccion.municipio,
-                )}, El Salvador`
-              : "No establecida",
+            `DIRECCIÓN: ${
+              quote.customer.direccion
+                ? `${quote.customer.direccion.complemento}, ${formatAddress(
+                    quote.customer.direccion.departamento,
+                    quote.customer.direccion.municipio,
+                  )}`
+                : "No establecida"
+            }`,
           ],
         },
         { content: [`FECHA HORA EMISION: ${quote.fecEmi} - ${quote.horEmi}`] },
       ],
       [
-        { content: [`GIRO: ${quote.customer.descActividad ?? "-"}`] },
+        {
+          content: [
+            `GIRO: ${quote.customer.descActividad !== "0" ? quote.customer.descActividad : "-"}`,
+          ],
+        },
         { content: [`NUMERO DOCUMENTO: ${quote.customer.numDocumento}`] },
       ],
       [
@@ -232,12 +239,127 @@ export const secondHeader = async (quote: QuoteNormal, doc: jsPDF) => {
         drawLabel("TELEFONO: ", raw.replace("TELEFONO:", "").trim());
       }
       if (raw.startsWith("DIRECCIÓN:")) {
-        drawLabel("DIRECCIÓN : ", raw.replace("DIRECCIÓN:", "").trim());
+        drawLabel("DIRECCIÓN: ", raw.replace("DIRECCIÓN:", "").trim());
       }
       if (raw.startsWith("CONDICION DE LA OPERACION:")) {
         drawLabel(
           "CONDICION DE LA OPERACION: ",
           raw.replace("CONDICION DE LA OPERACION:", "").trim(),
+        );
+      }
+    },
+  });
+};
+
+export const advanceHeaderDoc = async (
+  quote: QuoteAdvance,
+  doc: jsPDF,
+  logo: Uint8Array | string = "",
+) => {
+  const { imageBase64, width, height } = await adjustImageByHeight(logo, 10);
+
+  autoTable(doc, {
+    startY: 2,
+    showHead: false,
+    body: [["", "", ""]],
+    theme: "plain",
+    columnStyles: {
+      0: { cellWidth: 40 },
+      1: { cellWidth: "auto" },
+      2: { cellWidth: 90 },
+    },
+    margin: { top: 5, left: 5, right: 5 },
+    didDrawCell: (data) => {
+      if (data.column.index === 0 && data.row.index === 0) {
+        try {
+          if (imageBase64 === "") {
+            doc.addImage(
+              logo,
+              "PNG",
+              5,
+              data.cell.y + 3,
+              width,
+              height,
+              "LOGO",
+              "SLOW",
+            );
+          } else {
+            doc.addImage(
+              `data:image/jpeg;base64,${imageBase64}`,
+              "JPEG",
+              5,
+              data.cell.y + 3,
+              width,
+              height,
+              "LOGO",
+              "SLOW",
+            );
+          }
+        } catch (error) {
+          doc.text("error", data.cell.x + 2, data.cell.y + 5);
+        }
+      }
+      if (data.column.index === 1 && data.row.index === 0) {
+        const cellY = data.cell.y;
+        const cellWidth = data.cell.width;
+
+        doc.setFontSize(9);
+
+        const name = doc.splitTextToSize(quote.transmitter.name, cellWidth - 4);
+        returnBoldText(doc, name, 90, cellY + 5, "center");
+        doc.setFontSize(7);
+
+        const address = doc.splitTextToSize(
+          quote.transmitter.address,
+          cellWidth - 4,
+        );
+
+        const yName = getHeightText(doc, name);
+        returnBoldText(doc, address, 90, yName + cellY + 7, "center");
+
+        const yAddress = getHeightText(doc, address);
+
+        returnBoldText(
+          doc,
+          "TELEFONO: " + quote.transmitter.phone,
+          90,
+          yAddress + yName + cellY + 8,
+          "center",
+        );
+      }
+      if (data.column.index === 2 && data.row.index === 0) {
+        const cellX = data.cell.x;
+        const cellY = data.cell.y;
+        const cellHeight = 20;
+
+        doc.setDrawColor(0, 0, 0);
+
+        doc.roundedRect(cellX + 40, cellY + 2, 50, cellHeight, 2, 2, "S");
+
+        doc.setFontSize(7);
+        returnBoldText(
+          doc,
+          "COTIZACION",
+          cellX + 65,
+          cellY + 7,
+          "center",
+        );
+        doc.setFontSize(6);
+        returnBoldText(doc, quote.no.toString().padStart(5, '0'), cellX + 65, cellY + 11, "center");
+        doc.setFontSize(6);
+        returnBoldText(
+          doc,
+          `N.I.T. ${quote.transmitter.nit}`,
+          cellX + 65,
+          cellY + 15,
+          "center",
+        );
+        returnBoldText(
+          doc,
+          `NRC No. ${quote.transmitter.nrc}`,
+          cellX + 65,
+          cellY + 20,
+          "center",
         );
       }
     },

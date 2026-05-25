@@ -436,10 +436,11 @@ export const formatNameByTypeDte = (typeDte: string, short: boolean) => {
   }
 };
 
-export const formatCurrency = (value: number) => {
+export const formatCurrency = (value: number, maxDigits = 2) => {
   return value.toLocaleString("en-US", {
     style: "currency",
     currency: "USD",
+    maximumFractionDigits: maxDigits
   });
 };
 

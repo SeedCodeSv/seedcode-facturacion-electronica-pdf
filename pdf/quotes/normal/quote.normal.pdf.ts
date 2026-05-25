@@ -146,8 +146,10 @@ export const generateQuoteNormal = async (
       i > 1 ? 35 : finalYFirstPage,
       180,
       i === 1
-        ? doc.internal.pageSize.getHeight() - 5
-        : doc.internal.pageSize.getHeight() - 35,
+        ? doc.internal.pageSize.getHeight() - 35
+        : i === pageCount
+          ? doc.internal.pageSize.getHeight() - 35
+          : doc.internal.pageSize.getHeight(),
     );
 
     doc.roundedRect(

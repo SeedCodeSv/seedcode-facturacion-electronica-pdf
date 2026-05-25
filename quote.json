@@ -1,0 +1,72 @@
+{
+  "name": "CLIENTE VARIOS",
+  "fecEmi": "2026-05-21",
+  "horEmi": "09:15:08",
+  "totalPagar": 5.00,
+  "totalNoSuj": 110.00,
+  "totalExenta": 110.0,
+  "totalGravada":101.0,
+  "descuNoSuj": 0,
+  "descuExenta": 0,
+  "descuGravada": 0,
+  "subTotal": 0,
+  "ivaRete1": 0,
+  "ivaPerci1": 0,
+  "reteRenta": 0,
+  "totalIva": 0,
+  "montoTotalOperacion": 0,
+  "totalNoGravado": 0,
+  "no": 1,
+  "condition": "1",
+  "period": 0,
+  "deadline": "",
+  "date": "2026-05-21",
+  "status": "Pendiente",
+  "observaciones": "",
+  "customer": {
+    "nombre": "CLIENTE VARIOS",
+    "nombreComercial": "0",
+    "nrc": "0",
+    "nit": "0",
+    "tipoDocumento": "13",
+    "numDocumento": "066625957",
+    "codActividad": "0",
+    "descActividad": "0",
+    "bienTitulo": "0",
+    "telefono": "00000000",
+    "correo": "marquezmanuel1516@gmail.com",
+    "esContribuyente": false,
+    "isWithholdingAgent": false,
+    "latitude": "0",
+    "longitude": "0",
+    "tipoContribuyente": "N/A",
+    "direccion": {
+      "departamento": "03",
+      "nombreDepartamento": "Sonsonate",
+      "municipio": "18",
+      "nombreMunicipio": "SONSONATE CENTRO",
+      "complemento": "NA"
+    }
+  },
+  "quotationDetails": [
+    {
+      "total": 1.50,
+      "cantidadItem": 1.0000,
+      "precioUni": 1.50,
+      "costoUni": 0.89,
+      "montoDescu": 10,
+      "description": "LIJA NORTON #100 METRO",
+      "ventaNoSuj": 0,
+      "ventaExenta": 0,
+      "ventaGravada": 0.5,
+      "noGravado": 0
+    }
+  ],
+  "transmitter": {
+    "phone": "00000000",
+    "name": "GRUPO DURPANEL",
+    "address": "CALLE ALBERTO MASFERRER, BO. LA MERCED, #167, SANTO TOMAS, SAN SALVADOR CENTRO",
+    "nit": "04010806881023",
+    "nrc": "1939101"
+  }
+}
