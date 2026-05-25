@@ -1,7 +1,7 @@
 import jsPDF from "jspdf";
 import { headerDoc, secondHeader } from "../utils";
 import autoTable from "jspdf-autotable";
-import { returnBoldText } from "seedcode-facturacion-electronica-pdf";
+import { returnBoldText } from "../../utils";
 import { writeBoldLabel } from "../../utils";
 import { QuoteNormal } from "../../../interfaces/quote.normal";
 
