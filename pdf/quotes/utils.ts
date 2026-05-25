@@ -78,6 +78,13 @@ export const headerDoc = async (
           yAddress + yName + cellY + 8,
           "center",
         );
+        returnBoldText(
+          doc,
+          "COTIZACION no. : " + quote.no,
+          100,
+          yAddress + yName + cellY + 8,
+          "center",
+        );
       }
     },
   });
@@ -116,12 +123,20 @@ export const secondHeader = async (quote: QuoteNormal, doc: jsPDF) => {
         { content: [`FECHA HORA EMISION: ${quote.fecEmi} - ${quote.horEmi}`] },
       ],
       [
-        { content: [`GIRO: ${quote.customer.descActividad ?? '-'}`] },
+        { content: [`GIRO: ${quote.customer.descActividad ?? "-"}`] },
         { content: [`NUMERO DOCUMENTO: ${quote.customer.numDocumento}`] },
       ],
       [
         { content: [`CORREO: ${quote.customer.correo}`] },
         { content: [`TELEFONO: ${quote.customer.telefono}`] },
+      ],
+      [
+        {
+          content: [
+            `CONDICION DE LA OPERACION: ${quote.condition === "1" ? "CONTADO" : "CREDITO"}`,
+          ],
+        },
+        { content: [``] },
       ],
     ],
     didParseCell: (data) => {
@@ -141,7 +156,8 @@ export const secondHeader = async (quote: QuoteNormal, doc: jsPDF) => {
         raw.startsWith("NUMERO DOCUMENTO:") ||
         raw.startsWith("CORREO:") ||
         raw.startsWith("TELEFONO:") ||
-        raw.startsWith("FECHA HORA EMISION:")
+        raw.startsWith("FECHA HORA EMISION:") ||
+        raw.startsWith("CONDICION DE LA OPERACION:")
       ) {
         data.cell.text = [""];
 
@@ -217,6 +233,12 @@ export const secondHeader = async (quote: QuoteNormal, doc: jsPDF) => {
       }
       if (raw.startsWith("DIRECCIÓN:")) {
         drawLabel("DIRECCIÓN : ", raw.replace("DIRECCIÓN:", "").trim());
+      }
+      if (raw.startsWith("CONDICION DE LA OPERACION:")) {
+        drawLabel(
+          "CONDICION DE LA OPERACION: ",
+          raw.replace("CONDICION DE LA OPERACION:", "").trim(),
+        );
       }
     },
   });

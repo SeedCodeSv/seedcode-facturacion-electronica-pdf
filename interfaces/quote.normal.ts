@@ -1,5 +1,6 @@
 export interface QuoteNormal {
   name: string
+  no: number,
   fecEmi: string
   horEmi: string
   totalPagar: string
