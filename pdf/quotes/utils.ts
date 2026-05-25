@@ -1,7 +1,7 @@
 import jsPDF from "jspdf";
 import { adjustImageByHeight, returnBoldText } from "../utils";
 import autoTable from "jspdf-autotable";
-import { getHeightText } from "seedcode-facturacion-electronica-pdf";
+import { getHeightText } from "../utils";
 import { QuoteNormal } from "../../interfaces/quote.normal";
 
 export const headerDoc = async (
