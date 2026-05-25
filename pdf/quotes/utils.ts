@@ -1,5 +1,5 @@
 import jsPDF from "jspdf";
-import { adjustImageByHeight, returnBoldText } from "../utils";
+import { adjustImageByHeight, formatAddress, returnBoldText } from "../utils";
 import autoTable from "jspdf-autotable";
 import { getHeightText } from "../utils";
 import { QuoteNormal } from "../../interfaces/quote.normal";
@@ -57,15 +57,12 @@ export const headerDoc = async (
 
         doc.setFontSize(9);
 
-        const name = doc.splitTextToSize(
-          "GRUPO DURPANEL. SOCIEDAD ANONIMA DE CAPITAL VARIABLE, GRUPO DURPANEL ",
-          cellWidth - 4,
-        );
+        const name = doc.splitTextToSize(quote.transmitter.name, cellWidth - 4);
         returnBoldText(doc, name, 110, cellY + 5, "center");
         doc.setFontSize(7);
 
         const address = doc.splitTextToSize(
-          "CALLE ALBERTO MASFERRER, BO. LA MERCED, #167, SANTO TOMAS, SAN SALVADOR CENTRO",
+          quote.transmitter.address,
           cellWidth - 4,
         );
 
@@ -76,7 +73,7 @@ export const headerDoc = async (
 
         returnBoldText(
           doc,
-          "TELEFONO: 00000000",
+          "TELEFONO: " + quote.transmitter.phone,
           100,
           yAddress + yName + cellY + 8,
           "center",
@@ -101,22 +98,30 @@ export const secondHeader = async (quote: QuoteNormal, doc: jsPDF) => {
     },
     theme: "plain",
     body: [
-      [{ content: [`NOMBRE: CLIENTE VARIOS`] }, { content: [`NRC: -`] }],
+      [
+        { content: [`NOMBRE: ${quote.customer.nombre}`] },
+        { content: [`NRC: -`] },
+      ],
       [
         {
           content: [
-            `DIRECCIÓN: col altos del palma block b poligono no 1 casa no 17 SANTA ANA CENTRO, Santa Ana, El Salvador`,
+            `DIRECCIÓN: ` + quote.customer.direccion
+              ? `DIRECCIÓN :  ${quote.customer.direccion.complemento} ${formatAddress(
+                  quote.customer.direccion.departamento,
+                  quote.customer.direccion.municipio,
+                )}, El Salvador`
+              : "No establecida",
           ],
         },
-        { content: [`FECHA HORA EMISION: 2026-05-23 - 09:03:52`] },
+        { content: [`FECHA HORA EMISION: ${quote.fecEmi} - ${quote.horEmi}`] },
       ],
       [
-        { content: [`GIRO: -`] },
-        { content: [`NUMERO DOCUMENTO: 02080108610012`] },
+        { content: [`GIRO: ${quote.customer.descActividad ?? '-'}`] },
+        { content: [`NUMERO DOCUMENTO: ${quote.customer.numDocumento}`] },
       ],
       [
-        { content: [`CORREO: mirnamart71@gmail.com`] },
-        { content: [`TELEFONO: 72835908`] },
+        { content: [`CORREO: ${quote.customer.correo}`] },
+        { content: [`TELEFONO: ${quote.customer.telefono}`] },
       ],
     ],
     didParseCell: (data) => {

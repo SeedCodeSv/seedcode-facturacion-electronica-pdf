@@ -11,6 +11,11 @@ export interface QuoteNormal {
   observaciones: string
   customer: Customer
   quotationDetails: QuotationDetail[]
+  transmitter: {
+    phone: string,
+    name: string,
+    address: string
+  }
 }
 
 export interface Customer {

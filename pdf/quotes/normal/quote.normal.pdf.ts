@@ -1,7 +1,11 @@
 import jsPDF from "jspdf";
 import { headerDoc, secondHeader } from "../utils";
 import autoTable from "jspdf-autotable";
-import { returnBoldText } from "../../utils";
+import {
+  convertCurrencyFormat,
+  formatCurrency,
+  returnBoldText,
+} from "../../utils";
 import { writeBoldLabel } from "../../utils";
 import { QuoteNormal } from "../../../interfaces/quote.normal";
 
@@ -141,7 +145,9 @@ export const generateQuoteNormal = async (
       180,
       i > 1 ? 35 : finalYFirstPage,
       180,
-       i === 1 ?  doc.internal.pageSize.getHeight() - 5 : doc.internal.pageSize.getHeight() - 35,
+      i === 1
+        ? doc.internal.pageSize.getHeight() - 5
+        : doc.internal.pageSize.getHeight() - 35,
     );
 
     doc.roundedRect(
@@ -226,18 +232,27 @@ export const footerDocument = (
   rectMargin: number,
 ) => {
   doc.setFontSize(7);
-  doc.text(`ONCE 11/100 DOLARES AMERICANOS`, 10, rectMargin + 4);
+  doc.text(
+    convertCurrencyFormat(Number(quote.totalPagar).toString()),
+    10,
+    rectMargin + 4,
+  );
 
   writeBoldLabel(
     doc,
     "Observaciones: ",
-    "Condición de de la operación: Contado",
+    quote.observaciones,
     10,
     rectMargin + 13,
     250,
   );
   doc.setFontSize(9);
-  returnBoldText(doc, "Total: $4500", 10, rectMargin + 20);
+  returnBoldText(
+    doc,
+    "Total: " + formatCurrency(Number(quote.totalPagar)),
+    10,
+    rectMargin + 20,
+  );
 
   doc.setFontSize(8);
   returnBoldText(doc, "Firma: _______________________", 150, rectMargin + 25);
