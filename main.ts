@@ -23,4 +23,5 @@ export * from "./interfaces/dte14";
 export * from "./utils/constants";
 export * from "./interfaces/dte05";
 export * from "./interfaces/dte04";
-export * from './pdf/quotes/normal/quote.normal.pdf'
+export { generateQuoteNormal } from "./pdf/quotes/normal/quote.normal.pdf";
+export { generateQuoteAdvance01 } from "./pdf/quotes/advance/quote.advance.01.pdf";
