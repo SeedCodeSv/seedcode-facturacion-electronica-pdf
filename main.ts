@@ -15,20 +15,12 @@ export {
   generateSvfe05,
   footerDocument as footerDocument05,
 } from "./pdf/dte05.pdf";
-export {
-  generateSvfe04,
-  // footerDocument as footerDocument04,
-} from "./pdf/dte04.pdf";
-export * from "./interfaces/common"
-export * from "./interfaces/dte01"
-export * from "./interfaces/dte03"
-export * from "./interfaces/dte14"
-export * from "./utils/constants"
-export * from "./interfaces/dte05"
-export * from "./interfaces/dte04"
-export * from "./pdf/template2/dte01_2.pdf"
-export * from "./pdf/template2/dte03_2.pdf"
-export * from "./pdf/template2/dte05_2.pdf"
-export * from "./pdf/template2/dte06_2.pdf"
-export * from "./pdf/template2/dte14_2.pdf"
-export * from "./pdf/template2/utils"
+export { generateSvfe04 } from "./pdf/dte04.pdf";
+export * from "./interfaces/common";
+export * from "./interfaces/dte01";
+export * from "./interfaces/dte03";
+export * from "./interfaces/dte14";
+export * from "./utils/constants";
+export * from "./interfaces/dte05";
+export * from "./interfaces/dte04";
+export * from './pdf/quotes/normal/quote.normal.pdf'

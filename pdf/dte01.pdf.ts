@@ -7,8 +7,6 @@ import {
   secondHeader,
   tableHeaders,
 } from "./utils";
-import { join } from "path";
-import { readFileSync } from "fs";
 import { DteFe } from "../interfaces/dte01";
 
 export const generateSvfe01 = async (
@@ -58,32 +56,43 @@ export const generateSvfe01 = async (
     }
   ).lastAutoTable.finalY;
 
-  returnBoldText(doc, "OTROS DOCUMENTOS ASOCIADOS", 100, finalY + 8, "center");
+  const { documentoRelacionado, otrosDocumentos, ventaTercero } =
+    svfe01 as DteFe;
 
-  doc.roundedRect(
-    5,
-    finalY + 10,
-    doc.internal.pageSize.width - 10,
-    10,
-    2,
-    2,
-    "S",
-  );
+  if (otrosDocumentos !== null && otrosDocumentos) {
+    returnBoldText(
+      doc,
+      "OTROS DOCUMENTOS ASOCIADOS",
+      100,
+      finalY + 8,
+      "center",
+    );
 
-  autoTable(doc, {
-    head: [["Identificación del documento", "Descripción"]],
-    theme: "plain",
-    headStyles: {
-      fontSize: 7,
-    },
-    columnStyles: {
-      0: {
-        cellWidth: 60,
+    doc.roundedRect(
+      5,
+      finalY + 10,
+      doc.internal.pageSize.width - 10,
+      10,
+      2,
+      2,
+      "S",
+    );
+
+    autoTable(doc, {
+      head: [["Identificación del documento", "Descripción"]],
+      theme: "plain",
+      headStyles: {
+        fontSize: 7,
       },
-    },
-    body: [["", ""]],
-    startY: finalY + 10,
-  });
+      columnStyles: {
+        0: {
+          cellWidth: 60,
+        },
+      },
+      body: [["", ""]],
+      startY: finalY + 10,
+    });
+  }
 
   finalY = (
     doc as unknown as {
@@ -91,40 +100,40 @@ export const generateSvfe01 = async (
     }
   ).lastAutoTable.finalY;
 
-  returnBoldText(doc, "VENTA A CUENTA DE TERCEROS", 100, finalY, "center");
+  if (ventaTercero !== null && ventaTercero) {
+    returnBoldText(doc, "VENTA A CUENTA DE TERCEROS", 100, finalY, "center");
 
-  doc.roundedRect(
-    5,
-    finalY + 2,
-    doc.internal.pageSize.width - 10,
-    10,
-    2,
-    2,
-    "S",
-  );
+    doc.roundedRect(
+      5,
+      finalY + 2,
+      doc.internal.pageSize.width - 10,
+      10,
+      2,
+      2,
+      "S",
+    );
 
-  autoTable(doc, {
-    head: [["NIT", "Nombre, denominación o razón social"]],
-    theme: "plain",
-    headStyles: {
-      fontSize: 7,
-    },
-    columnStyles: {
-      0: {
-        cellWidth: 60,
+    autoTable(doc, {
+      head: [["NIT", "Nombre, denominación o razón social"]],
+      theme: "plain",
+      headStyles: {
+        fontSize: 7,
       },
-    },
-    body: [["", ""]],
-    startY: finalY + 2,
-  });
+      columnStyles: {
+        0: {
+          cellWidth: 60,
+        },
+      },
+      body: [["", ""]],
+      startY: finalY + 2,
+    });
+  }
 
   finalY = (
     doc as unknown as {
       lastAutoTable: { finalY: number };
     }
   ).lastAutoTable.finalY;
-
-  const { documentoRelacionado } = svfe01 as DteFe;
 
   if (documentoRelacionado !== null && documentoRelacionado.length > 0) {
     returnBoldText(doc, "DOCUMENTOS RELACIONADOS", 100, finalY, "center");
@@ -175,7 +184,7 @@ export const generateSvfe01 = async (
       doc as unknown as {
         lastAutoTable: { finalY: number };
       }
-    ).lastAutoTable.finalY + 5;
+    ).lastAutoTable.finalY + 10;
 
   finalYFirstPage = finalY;
 

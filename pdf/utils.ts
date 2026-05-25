@@ -202,7 +202,7 @@ const formatName = (
   }
 };
 
-const writeBoldLabel = (
+export const writeBoldLabel = (
   doc: jsPDF,
   label: string,
   text: string,

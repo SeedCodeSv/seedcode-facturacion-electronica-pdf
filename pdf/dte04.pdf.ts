@@ -8,8 +8,6 @@ import {
   tableHeaders,
 } from "./utils";
 import autoTable, { RowInput } from "jspdf-autotable";
-import { join } from "path";
-import { readFileSync } from "fs";
 
 export const generateSvfe04 = async (
   svfe04: DteNre,
