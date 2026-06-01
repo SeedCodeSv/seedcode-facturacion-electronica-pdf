@@ -530,7 +530,28 @@ export const tableProduct = (
     bodyStyles: {
       fontSize: 7,
     },
+    didDrawCell: (data) => {
+      if (data.section === "body") {
+        const { x, y, width, height } = data.cell;
+        const doc = data.doc;
+
+        doc.setDrawColor("#6c757d");
+        doc.setLineWidth(0.1);
+
+        const dashLength = 1;
+        const gapLength = 1;
+        let drawn = 0;
+
+        while (drawn < width) {
+          const startX = x + drawn;
+          const endX = Math.min(x + drawn + dashLength, x + width);
+          doc.line(startX, y + height, endX, y + height);
+          drawn += dashLength + gapLength;
+        }
+      }
+    },
   });
+  
 };
 
 export const adjustTextInRect = (
