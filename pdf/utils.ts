@@ -251,16 +251,16 @@ export const headerDoc = async (
       if (data.column.index === 0 && data.row.index === 0) {
         try {
           if (imageBase64 === "") {
-            doc.addImage(
-              logo,
-              "PNG",
-              5,
-              data.cell.y + 3,
-              width,
-              height,
-              "LOGO",
-              "SLOW",
-            );
+            // doc.addImage(
+            //   logo,
+            //   "PNG",
+            //   5,
+            //   data.cell.y + 3,
+            //   width,
+            //   height,
+            //   "LOGO",
+            //   "SLOW",
+            // );
           } else {
             doc.addImage(
               `data:image/jpeg;base64,${imageBase64}`,
