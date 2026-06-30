@@ -15,3 +15,16 @@
 // }
 
 // getPdf();
+
+// import Dte11 from "./exportacion.json"
+// import { DteExp } from "./interfaces/dte11";
+// import { generateSvfe11 } from "./pdf/dte11.pdf";
+
+// const getPdf = async () => {
+//     const pdf = await generateSvfe11(Dte11 as unknown as DteExp,"","",false,false)
+
+//     // const pdf = await generateQuoteAdvance01(quote)
+//     require("fs").writeFileSync("prueba.pdf", Buffer.from(pdf));
+// }
+
+// getPdf();

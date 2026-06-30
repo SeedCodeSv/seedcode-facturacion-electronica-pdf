@@ -16,6 +16,7 @@ export {
   footerDocument as footerDocument05,
 } from "./pdf/dte05.pdf";
 export { generateSvfe04 } from "./pdf/dte04.pdf";
+export {generateSvfe11} from "./pdf/dte11.pdf"
 export * from "./interfaces/common";
 export * from "./interfaces/dte01";
 export * from "./interfaces/dte03";
@@ -23,5 +24,6 @@ export * from "./interfaces/dte14";
 export * from "./utils/constants";
 export * from "./interfaces/dte05";
 export * from "./interfaces/dte04";
+export * from "./interfaces/dte11";
 export { generateQuoteNormal } from "./pdf/quotes/normal/quote.normal.pdf";
 export { generateQuoteAdvance01 } from "./pdf/quotes/advance/quote.advance.01.pdf";

@@ -11,7 +11,7 @@ import {
   Tributo,
 } from "./common";
 
-export class Receptor01 {
+export interface Receptor01 {
   tipoDocumento: string;
   numDocumento: string | null;
   nrc: string | null;
@@ -23,7 +23,7 @@ export class Receptor01 {
   correo: string;
 }
 
-export class CuerpoDocumento01 {
+export interface CuerpoDocumento01 {
   numItem: number;
   tipoItem: number;
   uniMedida: number;
@@ -43,7 +43,7 @@ export class CuerpoDocumento01 {
   noGravado: number;
 }
 
-export class Resumen01 {
+export interface Resumen01 {
   totalNoSuj: number;
   totalExenta: number;
   totalGravada: number;
@@ -69,7 +69,7 @@ export class Resumen01 {
   numPagoElectronico: string | null;
 }
 
-export class DteFe {
+export interface DteFe {
   identificacion: Identificacion;
   documentoRelacionado: DocumentoRelacionado[] | null;
   emisor: Emisor;
