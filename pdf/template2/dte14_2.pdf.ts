@@ -13,6 +13,7 @@ import {
   adjustImageWatermark,
 } from "../utils";
 import { formatDocumentType, formatNameTypeDocument } from "./utils";
+import { formatearDireccion } from "distritos-sv";
 
 interface Props {
   borderColor: string;
@@ -151,7 +152,7 @@ export const generateSvfe14_2 = async ({
         25,
         data.pageNumber === 1 ? 460 : 210,
         793,
-        data.pageNumber === 1 ? 460 : 210
+        data.pageNumber === 1 ? 460 : 210,
       );
     },
   });
@@ -197,7 +198,7 @@ export const generateSvfe14_2 = async ({
 
           const observations = doc.splitTextToSize(
             `Notas: ${resumen.observaciones ? resumen.observaciones : ""}`,
-            240
+            240,
           );
           doc.text(observations, data.cell.x + 15, data.cell.y + 15);
 
@@ -209,7 +210,7 @@ export const generateSvfe14_2 = async ({
             30,
             5,
             5,
-            "S"
+            "S",
           );
 
           doc.text(resumen.totalLetras, data.cell.x + 110, data.cell.y + 85);
@@ -231,7 +232,7 @@ export const generateSvfe14_2 = async ({
 
             // Filtrar solo los que tienen texto
             const validItems = items.filter(
-              (i) => i.text && i.text.trim() !== ""
+              (i) => i.text && i.text.trim() !== "",
             );
 
             // Medidas
@@ -254,7 +255,7 @@ export const generateSvfe14_2 = async ({
                 x,
                 baseYIcon,
                 iconWidth,
-                iconWidth
+                iconWidth,
               );
               doc.text(item.text, x + 20, baseYText);
             });
@@ -271,7 +272,7 @@ export const generateSvfe14_2 = async ({
             data.cell.y + 35,
             {
               align: "right",
-            }
+            },
           );
 
           let textY = data.cell.y + 50;
@@ -297,32 +298,32 @@ export const generateSvfe14_2 = async ({
           doc.text(
             formatCurrency(resumen.subTotal),
             data.cell.x + 230,
-            data.cell.y + 35
+            data.cell.y + 35,
           );
 
           let textYTotals = data.cell.y + 50;
           doc.text(
             formatCurrency(resumen.totalCompra),
             data.cell.x + 230,
-            textYTotals
+            textYTotals,
           );
           textYTotals += 15;
           doc.text(
             formatCurrency(resumen.ivaRete1),
             data.cell.x + 230,
-            textYTotals
+            textYTotals,
           );
           textYTotals += 15;
           doc.text(
             formatCurrency(resumen.reteRenta),
             data.cell.x + 230,
-            textYTotals
+            textYTotals,
           );
           textYTotals += 15;
           doc.text(
             formatCurrency(resumen.totalPagar),
             data.cell.x + 230,
-            textYTotals
+            textYTotals,
           );
         }
       }
@@ -360,7 +361,7 @@ export const generateSvfe14_2 = async ({
         adjustedImage.width,
         adjustedImage.height,
         "KEY" + i,
-        "FAST"
+        "FAST",
       );
       doc.restoreGraphicsState();
     }
@@ -374,7 +375,7 @@ export const generateSvfe14_2 = async ({
       tableHeight,
       radius,
       radius,
-      "S"
+      "S",
     );
 
     doc.roundedRect(
@@ -386,11 +387,11 @@ export const generateSvfe14_2 = async ({
           ? 600
           : 450
         : i === doc.internal.pages.length - 1
-        ? 700
-        : doc.internal.pageSize.height - 200,
+          ? 700
+          : doc.internal.pageSize.height - 200,
       15,
       15,
-      "S"
+      "S",
     );
 
     let lineHeight: number;
@@ -438,7 +439,7 @@ export const generateSvfe14_2 = async ({
         rectHeight,
         3,
         3,
-        "F"
+        "F",
       );
 
       doc.text(
@@ -447,7 +448,7 @@ export const generateSvfe14_2 = async ({
         offsetY + 14,
         {
           align: "center",
-        }
+        },
       );
 
       doc.restoreGraphicsState();
@@ -463,7 +464,7 @@ export const generateSvfe14_2 = async ({
         20,
         20,
         20,
-        "F"
+        "F",
       );
       doc.roundedRect(
         25,
@@ -472,7 +473,7 @@ export const generateSvfe14_2 = async ({
         10,
         2,
         2,
-        "F"
+        "F",
       );
       doc.setFontSize(11);
       doc.setTextColor(lightTextColor);
@@ -485,7 +486,7 @@ export const generateSvfe14_2 = async ({
         700,
         doc.internal.pageSize.height - 198,
         700,
-        doc.internal.pageSize.height - 175
+        doc.internal.pageSize.height - 175,
       );
       doc.text(
         formatCurrency(resumen.totalCompra),
@@ -493,7 +494,7 @@ export const generateSvfe14_2 = async ({
         doc.internal.pageSize.height - 185,
         {
           align: "center",
-        }
+        },
       );
     }
 
@@ -502,7 +503,7 @@ export const generateSvfe14_2 = async ({
     const { imageBase64, width, height } = await adjustImage(
       logo,
       logoWidth,
-      logoHeight
+      logoHeight,
     );
 
     autoTable(doc, {
@@ -521,7 +522,7 @@ export const generateSvfe14_2 = async ({
               data.cell.y + 10,
               width,
               height,
-              "LOGO"
+              "LOGO",
             );
             doc.setFont("Nunito", "bold");
             doc.setTextColor(darkTextColor);
@@ -548,19 +549,20 @@ export const generateSvfe14_2 = async ({
               doc.text(
                 `Actividad económica: ${svfe14.emisor.descActividad}`,
                 data.cell.x + 10,
-                lastY
+                lastY,
               );
               lastY += 10;
             }
 
             const address = doc.splitTextToSize(
-              formatAddress(
+              formatearDireccion(
                 svfe14.emisor.direccion.departamento,
-                svfe14.emisor.direccion.municipio
+                svfe14.emisor.direccion.municipio,
+                svfe14.emisor.direccion.distrito,
               ) +
                 " " +
                 svfe14.emisor.direccion.complemento,
-              380
+              380,
             );
 
             const textH = getHeightText(doc, address);
@@ -580,7 +582,7 @@ export const generateSvfe14_2 = async ({
               130,
               15,
               15,
-              "S"
+              "S",
             );
 
             doc.setFont("Nunito", "bold");
@@ -590,7 +592,7 @@ export const generateSvfe14_2 = async ({
               "Documento Tributario Electrónico",
               data.cell.x + 200,
               data.cell.y + 20,
-              { align: "center" }
+              { align: "center" },
             );
             doc.setFont("Nunito", "normal");
             doc.setFontSize(8);
@@ -598,7 +600,7 @@ export const generateSvfe14_2 = async ({
               formatDocumentType(svfe14.identificacion.tipoDte),
               data.cell.x + 200,
               data.cell.y + 32,
-              { align: "center" }
+              { align: "center" },
             );
             doc.setTextColor(darkTextColor);
             doc.addImage(
@@ -609,7 +611,7 @@ export const generateSvfe14_2 = async ({
               80,
               80,
               "QR",
-              "FAST"
+              "FAST",
             );
 
             let lastY = data.cell.y + 25 + 18;
@@ -623,7 +625,7 @@ export const generateSvfe14_2 = async ({
             doc.text(
               svfe14.identificacion.codigoGeneracion,
               data.cell.x + 185,
-              lastY + 1
+              lastY + 1,
             );
             lastY += 21;
             doc.setFontSize(8);
@@ -634,7 +636,7 @@ export const generateSvfe14_2 = async ({
             doc.text(
               svfe14.identificacion.numeroControl,
               data.cell.x + 200,
-              lastY + 1
+              lastY + 1,
             );
             lastY += 21;
             doc.setFontSize(8);
@@ -643,9 +645,9 @@ export const generateSvfe14_2 = async ({
             doc.rect(data.cell.x + 167, lastY - 8, 203, 13, "F");
             doc.setFontSize(7.5);
             doc.text(
-              svfe14.respuestaMH.selloRecibido ?? "",
+              svfe14.respuestaMH?.selloRecibido ?? "",
               data.cell.x + 170,
-              lastY + 1
+              lastY + 1,
             );
             lastY += 18;
             doc.setFontSize(7);
@@ -654,7 +656,7 @@ export const generateSvfe14_2 = async ({
               "Tipo de transmisión             Modelo de facturación             Fecha y hora generación",
               data.cell.x + 240,
               lastY,
-              { align: "center" }
+              { align: "center" },
             );
             doc.setFontSize(7.5);
             doc.text("Normal", data.cell.x + 125, lastY + 8);
@@ -662,20 +664,20 @@ export const generateSvfe14_2 = async ({
             doc.text(
               `${svfe14.identificacion.fecEmi} - ${svfe14.identificacion.horEmi}`,
               data.cell.x + 293,
-              lastY + 8
+              lastY + 8,
             );
             doc.setLineWidth(1);
             doc.line(
               data.cell.x + 185,
               lastY + 1,
               data.cell.x + 185,
-              lastY + 12
+              lastY + 12,
             );
             doc.line(
               data.cell.x + 280,
               lastY + 1,
               data.cell.x + 280,
-              lastY + 12
+              lastY + 12,
             );
             doc.setFillColor(fillColor);
             doc.rect(data.cell.x + 172, lastY + 12, 120, 13, "F");
@@ -684,7 +686,7 @@ export const generateSvfe14_2 = async ({
             doc.text(
               svfe14.identificacion.tipoMoneda,
               data.cell.x + 225,
-              lastY + 21
+              lastY + 21,
             );
           }
         }
@@ -697,6 +699,11 @@ export const generateSvfe14_2 = async ({
           lastAutoTable: { finalY: number };
         }
       ).lastAutoTable.finalY;
+
+      const sujetoExcluido =
+        svfe14.sujetoExcluido && Object.keys(svfe14.sujetoExcluido).length > 0
+          ? svfe14.sujetoExcluido
+          : svfe14.receptor;
 
       autoTable(doc, {
         head: [[""]],
@@ -716,7 +723,7 @@ export const generateSvfe14_2 = async ({
                 245,
                 15,
                 15,
-                "S"
+                "S",
               );
               doc.setFillColor(fillColor);
               doc.roundedRect(
@@ -726,7 +733,7 @@ export const generateSvfe14_2 = async ({
                 210,
                 15,
                 15,
-                "F"
+                "F",
               );
               doc.setFont("Nunito", "normal");
               doc.setFontSize(11.5);
@@ -734,7 +741,7 @@ export const generateSvfe14_2 = async ({
               let lastY = data.cell.y + 40;
               const paddingX = data.cell.x + 15;
               doc.text("Cliente: ", paddingX, lastY);
-              doc.text(svfe14.sujetoExcluido.nombre, paddingX + 100, lastY + 3);
+              doc.text(sujetoExcluido.nombre, paddingX + 100, lastY + 3);
               lastY += 30;
               const actEco = doc.splitTextToSize("Actividad Economica: ", 100);
               doc.text("-", paddingX + 100, lastY);
@@ -743,46 +750,47 @@ export const generateSvfe14_2 = async ({
               doc.text("Dirección: ", paddingX, lastY);
               const address = doc.splitTextToSize(
                 doc.splitTextToSize(
-                  svfe14.sujetoExcluido.direccion
-                    ? formatAddress(
-                        svfe14.sujetoExcluido.direccion.departamento,
-                        svfe14.sujetoExcluido.direccion.municipio
+                  sujetoExcluido.direccion
+                    ? formatearDireccion(
+                        sujetoExcluido.direccion.departamento,
+                        sujetoExcluido.direccion.municipio,
+                        sujetoExcluido.direccion.distrito,
                       ) +
                         ", " +
-                        svfe14.sujetoExcluido.direccion.complemento
+                        sujetoExcluido.direccion.complemento
                     : "",
-                  600
+                  600,
                 ),
-                700
+                700,
               );
               doc.text(address, paddingX + 100, lastY);
               lastY += 40;
               doc.text(
                 doc.splitTextToSize("Tipo de documento: ", 100),
                 paddingX,
-                lastY - 10
+                lastY - 10,
               );
               doc.text(
-                svfe14.sujetoExcluido.tipoDocumento
-                  ? formatNameTypeDocument(svfe14.sujetoExcluido.tipoDocumento)
+                sujetoExcluido.tipoDocumento
+                  ? formatNameTypeDocument(sujetoExcluido.tipoDocumento)
                   : "-",
                 paddingX + 100,
-                lastY
+                lastY,
               );
               lastY += 30;
               doc.text(
                 doc.splitTextToSize("Numero de documento: ", 100),
                 paddingX,
-                lastY - 5
+                lastY - 5,
               );
               doc.text(
-                svfe14.sujetoExcluido.numDocumento ?? "-",
+                sujetoExcluido.numDocumento ?? "-",
                 paddingX + 100,
-                lastY
+                lastY,
               );
               lastY += 35;
               doc.text("Correo: ", paddingX, lastY);
-              doc.text(svfe14.sujetoExcluido.correo, paddingX + 100, lastY);
+              doc.text(sujetoExcluido.correo ?? "", paddingX + 100, lastY);
               lastY += 25;
               const nomCom = doc.splitTextToSize("NRC: ", 80);
               doc.text(nomCom, paddingX, lastY);
@@ -794,13 +802,13 @@ export const generateSvfe14_2 = async ({
               doc.text(
                 "Condiciones de pago: ",
                 data.cell.x + 70,
-                data.cell.y + 255
+                data.cell.y + 255,
               );
               doc.setTextColor(darkTextColor);
               doc.text(
                 resumen.condicionOperacion === 1 ? "Contado" : "Credito",
                 data.cell.x + 200,
-                data.cell.y + 255
+                data.cell.y + 255,
               );
             }
           }
