@@ -309,7 +309,7 @@ export const generateSvfe14_2 = async ({
           );
           textYTotals += 15;
           doc.text(
-            formatCurrency(resumen.ivaRete1),
+            formatCurrency(0),
             data.cell.x + 230,
             textYTotals,
           );
