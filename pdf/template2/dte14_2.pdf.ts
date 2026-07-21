@@ -558,7 +558,7 @@ export const generateSvfe14_2 = async ({
               formatearDireccion(
                 svfe14.emisor.direccion.departamento,
                 svfe14.emisor.direccion.municipio,
-                svfe14.emisor.direccion.distrito,
+                Number(svfe14.emisor.direccion.distrito).toString(),
               ) +
                 " " +
                 svfe14.emisor.direccion.complemento,
@@ -754,7 +754,7 @@ export const generateSvfe14_2 = async ({
                     ? formatearDireccion(
                         sujetoExcluido.direccion.departamento,
                         sujetoExcluido.direccion.municipio,
-                        sujetoExcluido.direccion.distrito,
+                        Number(sujetoExcluido.direccion.distrito).toString(),
                       ) +
                         ", " +
                         sujetoExcluido.direccion.complemento
