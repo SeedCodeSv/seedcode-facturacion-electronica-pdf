@@ -900,7 +900,7 @@ export const generateSvfe01_2 = async ({
                 ? formatearDireccion(
                     direccion.departamento,
                     direccion.municipio,
-                    direccion.distrito,
+                    Number(direccion.distrito).toString(),
                   )
                 : formatAddress(direccion.departamento, direccion.municipio) +
                     " " +
@@ -1095,8 +1095,8 @@ export const generateSvfe01_2 = async ({
                     ? direccion?.distrito
                       ? formatearDireccion(
                           direccion.departamento,
-                          direccion.distrito,
-                          direccion.distrito,
+                          direccion.municipio,
+                          Number(direccion.distrito).toString(),
                         )
                       : formatAddress(
                           direccion.departamento,
