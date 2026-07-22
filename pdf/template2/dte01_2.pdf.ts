@@ -896,15 +896,15 @@ export const generateSvfe01_2 = async ({
             const { direccion } = svfe01.emisor;
 
             const address = doc.splitTextToSize(
-              direccion.distrito
+              (direccion.distrito
                 ? formatearDireccion(
                     direccion.departamento,
                     direccion.municipio,
                     Number(direccion.distrito).toString(),
                   )
-                : formatAddress(direccion.departamento, direccion.municipio) +
-                    " " +
-                    svfe01.emisor.direccion.complemento,
+                : formatAddress(direccion.departamento, direccion.municipio)) +
+                ", " +
+                svfe01.emisor.direccion.complemento,
               380,
             );
 
@@ -1092,16 +1092,16 @@ export const generateSvfe01_2 = async ({
               const address = doc.splitTextToSize(
                 doc.splitTextToSize(
                   direccion
-                    ? direccion?.distrito
-                      ? formatearDireccion(
-                          direccion.departamento,
-                          direccion.municipio,
-                          Number(direccion.distrito).toString(),
-                        )
-                      : formatAddress(
-                          direccion.departamento,
-                          direccion.municipio,
-                        ) +
+                    ? (direccion?.distrito
+                        ? formatearDireccion(
+                            direccion.departamento,
+                            direccion.municipio,
+                            Number(direccion.distrito).toString(),
+                          )
+                        : formatAddress(
+                            direccion.departamento,
+                            direccion.municipio,
+                          )) +
                         ", " +
                         direccion.complemento
                     : "",
