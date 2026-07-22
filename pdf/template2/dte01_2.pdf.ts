@@ -326,10 +326,6 @@ export const generateSvfe01_2 = async ({
               align: "right",
             });
             textY += 15;
-            doc.text("(+) IVA Percepción 1%:", data.cell.x + 215, textY, {
-              align: "right",
-            });
-            textY += 15;
             doc.text("(-) IVA Retención 1%:", data.cell.x + 215, textY, {
               align: "right",
             });
@@ -377,10 +373,6 @@ export const generateSvfe01_2 = async ({
             let textY = data.cell.y + 25;
 
             doc.text("Sub-total:", data.cell.x + 215, textY, {
-              align: "right",
-            });
-            textY += 15;
-            doc.text("(+) IVA Percepción 1%:", data.cell.x + 215, textY, {
               align: "right",
             });
             textY += 15;
@@ -470,10 +462,6 @@ export const generateSvfe01_2 = async ({
               align: "right",
             });
             textY += 12;
-            doc.text("IVA percibido:", data.cell.x + 215, textY, {
-              align: "right",
-            });
-            textY += 12;
             doc.text("IVA retenido:", data.cell.x + 215, textY, {
               align: "right",
             });
@@ -507,84 +495,6 @@ export const generateSvfe01_2 = async ({
           doc.setFillColor(fillColor);
           doc.rect(data.cell.x + 220, startY, 150, heightRect, "F");
 
-          // if (custom.typeResume === "detailed") {
-          //   let tourism = 0;
-
-          //   if (resumen.tributos && resumen.tributos.length > 0) {
-          //     tourism =
-          //       resumen.tributos.find((tributo) => tributo.codigo === "59")
-          //         ?.valor || 0;
-          //   }
-
-          //   let valorem = 0;
-
-          //   if (resumen.tributos && resumen.tributos.length > 0) {
-          //     valorem =
-          //       resumen.tributos.find((tributo) => tributo.codigo === "C5")
-          //         ?.valor || 0;
-          //   }
-          //   let propina =
-          //     svfe01.cuerpoDocumento.find(
-          //       (cuerpo) => cuerpo.descripcion === "PROPINA"
-          //     )?.noGravado ?? 0;
-
-          //   const noAfectos = resumen.totalExenta + resumen.totalNoSuj;
-          //   doc.text(
-          //     formatCurrency(resumen.subTotal),
-          //     data.cell.x + 230,
-          //     data.cell.y + 10
-          //   );
-          //   let textYTotals = data.cell.y + 22;
-          //   doc.text(formatCurrency(tourism), data.cell.x + 230, textYTotals);
-          //   textYTotals += 12;
-          //   doc.text(
-          //     formatCurrency(resumen.totalIva),
-          //     data.cell.x + 230,
-          //     textYTotals
-          //   );
-          //   textYTotals += 12;
-          //   doc.text(
-          //     formatCurrency(resumen.subTotalVentas),
-          //     data.cell.x + 230,
-          //     textYTotals
-          //   );
-          //   textYTotals += 12;
-          //   doc.text(
-          //     formatCurrency(resumen.ivaPerci1 ?? 0),
-          //     data.cell.x + 230,
-          //     textYTotals
-          //   );
-          //   textYTotals += 12;
-          //   doc.text(
-          //     formatCurrency(resumen.ivaRete1 ?? 0),
-          //     data.cell.x + 230,
-          //     textYTotals
-          //   );
-          //   textYTotals += 12;
-          //   doc.text(
-          //     formatCurrency(resumen.reteRenta),
-          //     data.cell.x + 230,
-          //     textYTotals
-          //   );
-          //   textYTotals += 12;
-          //   doc.text(
-          //     formatCurrency(resumen.montoTotalOperacion),
-          //     data.cell.x + 230,
-          //     textYTotals
-          //   );
-          //   textYTotals += 12;
-          //   doc.text(formatCurrency(valorem), data.cell.x + 230, textYTotals);
-          //   textYTotals += 12;
-          //   doc.text(formatCurrency(propina), data.cell.x + 230, textYTotals);
-          //   textYTotals += 12;
-          //   doc.text(formatCurrency(noAfectos), data.cell.x + 230, textYTotals);
-          //   textYTotals += 12;
-          //   doc.text(
-          //     formatCurrency(resumen.totalPagar),
-          //     data.cell.x + 230,
-          //     textYTotals
-          //   );
-          // }
           if (custom.typeResume === "detailed") {
             let tourism = 0;
 
@@ -618,14 +528,11 @@ export const generateSvfe01_2 = async ({
               textYTotals,
             );
             textYTotals += 15;
+
+            const ivaRete = resumen.ivaRete1 ? resumen.ivaRete1 : resumen.ivaRete ? resumen.ivaRete : 0
+
             doc.text(
-              formatCurrency(resumen.ivaPerci1 ?? 0),
-              data.cell.x + 230,
-              textYTotals,
-            );
-            textYTotals += 15;
-            doc.text(
-              formatCurrency(resumen.ivaRete1 ?? 0),
+              formatCurrency(ivaRete),
               data.cell.x + 230,
               textYTotals,
             );
