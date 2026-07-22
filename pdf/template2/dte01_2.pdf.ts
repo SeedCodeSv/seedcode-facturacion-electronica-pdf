@@ -13,6 +13,7 @@ import {
   adjustImageWatermark,
 } from "../utils";
 import { formatDocumentType, formatNameTypeDocument } from "./utils";
+import { formatearDireccion } from "distritos-sv";
 
 interface Props {
   borderColor: string;
@@ -215,7 +216,7 @@ export const generateSvfe01_2 = async ({
           doc.setFont("Nunito", "normal");
           doc.setTextColor(darkTextColor);
           const observations = doc.splitTextToSize(
-            `Notas: ${extension ? extension.observaciones : resumen.observaciones ?? "-"}`,
+            `Notas: ${extension ? extension.observaciones : (resumen.observaciones ?? "-")}`,
             225,
           );
           doc.text(observations, data.cell.x + 10, data.cell.y + 20);
@@ -456,7 +457,11 @@ export const generateSvfe01_2 = async ({
           doc.setFillColor(fillColor);
           doc.rect(data.cell.x + 220, startY, 150, heightRect, "F");
 
-          const ivaRete = resumen.ivaRete1 ? resumen.ivaRete1 : resumen.ivaRete ? resumen.ivaRete : 0
+          const ivaRete = resumen.ivaRete1
+            ? resumen.ivaRete1
+            : resumen.ivaRete
+              ? resumen.ivaRete
+              : 0;
 
           if (custom.typeResume === "detailed") {
             let tourism = 0;
@@ -492,13 +497,7 @@ export const generateSvfe01_2 = async ({
             );
             textYTotals += 15;
 
-            
-
-            doc.text(
-              formatCurrency(ivaRete),
-              data.cell.x + 230,
-              textYTotals,
-            );
+            doc.text(formatCurrency(ivaRete), data.cell.x + 230, textYTotals);
             textYTotals += 15;
             doc.text(
               formatCurrency(resumen.montoTotalOperacion),
@@ -546,12 +545,8 @@ export const generateSvfe01_2 = async ({
               textYTotals,
             );
             textYTotals += 15;
-            
-            doc.text(
-              formatCurrency(ivaRete),
-              data.cell.x + 230,
-              textYTotals,
-            );
+
+            doc.text(formatCurrency(ivaRete), data.cell.x + 230, textYTotals);
             textYTotals += 15;
             doc.text(
               formatCurrency(resumen.montoTotalOperacion),
@@ -613,11 +608,7 @@ export const generateSvfe01_2 = async ({
               textYTotals,
             );
             textYTotals += 12;
-            doc.text(
-              formatCurrency(ivaRete),
-              data.cell.x + 230,
-              textYTotals,
-            );
+            doc.text(formatCurrency(ivaRete), data.cell.x + 230, textYTotals);
             textYTotals += 12;
             doc.text(formatCurrency(noAfectos), data.cell.x + 230, textYTotals);
             textYTotals += 12;
@@ -902,13 +893,18 @@ export const generateSvfe01_2 = async ({
               lastY += 10;
             }
 
+            const { direccion } = svfe01.emisor;
+
             const address = doc.splitTextToSize(
-              formatAddress(
-                svfe01.emisor.direccion.departamento,
-                svfe01.emisor.direccion.municipio,
-              ) +
-                " " +
-                svfe01.emisor.direccion.complemento,
+              direccion.distrito
+                ? formatearDireccion(
+                    direccion.departamento,
+                    direccion.municipio,
+                    direccion.distrito,
+                  )
+                : formatAddress(direccion.departamento, direccion.municipio) +
+                    " " +
+                    svfe01.emisor.direccion.complemento,
               380,
             );
 
@@ -1090,15 +1086,24 @@ export const generateSvfe01_2 = async ({
               doc.text(actEco, paddingX, lastY);
               lastY += 35;
               doc.text("Dirección: ", paddingX, lastY);
+
+              const { direccion } = svfe01.receptor;
+
               const address = doc.splitTextToSize(
                 doc.splitTextToSize(
-                  svfe01.receptor.direccion
-                    ? formatAddress(
-                        svfe01.receptor.direccion.departamento,
-                        svfe01.receptor.direccion.municipio,
-                      ) +
+                  direccion
+                    ? direccion?.distrito
+                      ? formatearDireccion(
+                          direccion.departamento,
+                          direccion.distrito,
+                          direccion.distrito,
+                        )
+                      : formatAddress(
+                          direccion.departamento,
+                          direccion.municipio,
+                        ) +
                         ", " +
-                        svfe01.receptor.direccion.complemento
+                        direccion.complemento
                     : "",
                   600,
                 ),
