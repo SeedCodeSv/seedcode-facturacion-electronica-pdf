@@ -211,7 +211,7 @@ export const generateSvfe01_2 = async ({
         if (data.column.index === 0) {
           doc.setLineWidth(1.2);
           doc.setDrawColor(borderColor);
-          doc.roundedRect(data.cell.x, data.cell.y - 5, 250, 110, 15, 15, "S");
+          doc.roundedRect(data.cell.x, data.cell.y - 5, 350, 150, 15, 15, "S");
           doc.setFont("Nunito", "normal");
           doc.setTextColor(darkTextColor);
           const observations = doc.splitTextToSize(
@@ -220,10 +220,10 @@ export const generateSvfe01_2 = async ({
           );
           doc.text(observations, data.cell.x + 10, data.cell.y + 20);
 
-          doc.text("Cantidad en letras: ", data.cell.x + 10, data.cell.y + 125);
+          doc.text("Cantidad en letras: ", data.cell.x + 10, data.cell.y + 190);
           doc.roundedRect(
             data.cell.x + 100,
-            data.cell.y + 110,
+            data.cell.y + 173,
             350,
             30,
             5,
@@ -231,34 +231,7 @@ export const generateSvfe01_2 = async ({
             "S",
           );
 
-          doc.text(resumen.totalLetras, data.cell.x + 110, data.cell.y + 127);
-
-          doc.roundedRect(data.cell.x, data.cell.y + 160, 760, 50, 15, 15, "S");
-
-          doc.setFontSize(9);
-
-          doc.text(
-            `Nombre entrega: ${extension ? (extension.nombEntrega ?? "") : ""}`,
-            data.cell.x + 10,
-            data.cell.y + 179,
-          );
-          doc.text(
-            `Documento entrega: ${
-              extension ? (extension.docuEntrega ?? "") : ""
-            }`,
-            data.cell.x + 10,
-            data.cell.y + 195,
-          );
-          doc.text(
-            `Nombre recibe: ${extension ? (extension.nombRecibe ?? "") : ""}`,
-            data.cell.x + 450,
-            data.cell.y + 179,
-          );
-          doc.text(
-            `Documento recibe: ${extension ? (extension.docuRecibe ?? "") : ""}`,
-            data.cell.x + 450,
-            data.cell.y + 195,
-          );
+          doc.text(resumen.totalLetras, data.cell.x + 110, data.cell.y + 190);
 
           doc.setTextColor(tertiaryColor);
 
@@ -330,10 +303,6 @@ export const generateSvfe01_2 = async ({
               align: "right",
             });
             textY += 15;
-            doc.text("Retención renta:", data.cell.x + 215, textY, {
-              align: "right",
-            });
-            textY += 15;
             doc.text("Total operación:", data.cell.x + 215, textY, {
               align: "right",
             });
@@ -377,10 +346,6 @@ export const generateSvfe01_2 = async ({
             });
             textY += 15;
             doc.text("(-) IVA Retención 1%:", data.cell.x + 215, textY, {
-              align: "right",
-            });
-            textY += 15;
-            doc.text("Retención renta:", data.cell.x + 215, textY, {
               align: "right",
             });
             textY += 15;
@@ -466,10 +431,6 @@ export const generateSvfe01_2 = async ({
               align: "right",
             });
             textY += 12;
-            doc.text("Retención renta:", data.cell.x + 215, textY, {
-              align: "right",
-            });
-            textY += 12;
             doc.text("Monto total de la operación:", data.cell.x + 215, textY, {
               align: "right",
             });
@@ -494,6 +455,8 @@ export const generateSvfe01_2 = async ({
 
           doc.setFillColor(fillColor);
           doc.rect(data.cell.x + 220, startY, 150, heightRect, "F");
+
+          const ivaRete = resumen.ivaRete1 ? resumen.ivaRete1 : resumen.ivaRete ? resumen.ivaRete : 0
 
           if (custom.typeResume === "detailed") {
             let tourism = 0;
@@ -529,16 +492,10 @@ export const generateSvfe01_2 = async ({
             );
             textYTotals += 15;
 
-            const ivaRete = resumen.ivaRete1 ? resumen.ivaRete1 : resumen.ivaRete ? resumen.ivaRete : 0
+            
 
             doc.text(
               formatCurrency(ivaRete),
-              data.cell.x + 230,
-              textYTotals,
-            );
-            textYTotals += 15;
-            doc.text(
-              formatCurrency(resumen.reteRenta),
               data.cell.x + 230,
               textYTotals,
             );
@@ -589,20 +546,9 @@ export const generateSvfe01_2 = async ({
               textYTotals,
             );
             textYTotals += 15;
+            
             doc.text(
-              formatCurrency(resumen.ivaPerci1 ?? 0),
-              data.cell.x + 230,
-              textYTotals,
-            );
-            textYTotals += 15;
-            doc.text(
-              formatCurrency(resumen.ivaRete1 ?? 0),
-              data.cell.x + 230,
-              textYTotals,
-            );
-            textYTotals += 15;
-            doc.text(
-              formatCurrency(resumen.reteRenta),
+              formatCurrency(ivaRete),
               data.cell.x + 230,
               textYTotals,
             );
@@ -668,25 +614,7 @@ export const generateSvfe01_2 = async ({
             );
             textYTotals += 12;
             doc.text(
-              formatCurrency(resumen.reteRenta),
-              data.cell.x + 230,
-              textYTotals,
-            );
-            textYTotals += 12;
-            doc.text(
-              formatCurrency(resumen.ivaPerci1 ?? 0),
-              data.cell.x + 230,
-              textYTotals,
-            );
-            textYTotals += 12;
-            doc.text(
-              formatCurrency(resumen.ivaRete1 ?? 0),
-              data.cell.x + 230,
-              textYTotals,
-            );
-            textYTotals += 12;
-            doc.text(
-              formatCurrency(resumen.reteRenta),
+              formatCurrency(ivaRete),
               data.cell.x + 230,
               textYTotals,
             );

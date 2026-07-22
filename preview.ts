@@ -378,8 +378,9 @@
 // // //     }
 // // // })();
 
-// import Annulation from "./annulation.json";
+// import Annulation from "./9B5944E4-D347-43D8-B24C-DEF2123A9887.json";
 // import { generateAnnulationSVfe } from "./pdf/template2/annulation.pdf";
+// import { generateSvfe01_2 } from "./main";
 
 // export const generateAnnulation = async () => {
 //   const data = {
@@ -407,11 +408,11 @@
 //     logoWidth: 100,
 //     logoHeight: 50,
 //     showDescActivity: true,
-//     svfeAnnulation: Annulation,
+//     svfe01: Annulation,
 //   };
 
 //   try {
-//     const arrayBuffer = await generateAnnulationSVfe(data);
+//     const arrayBuffer = await generateSvfe01_2(data as any);
 //     const outputPath = path.join(__dirname, "preview.pdf");
 //     fs.writeFileSync(outputPath, Buffer.from(arrayBuffer));
 //   } catch (error) {
