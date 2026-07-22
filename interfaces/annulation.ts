@@ -50,5 +50,5 @@ export interface AnnulationSvfe {
   emisor: AnnulationEmisor;
   documento: AnnulationDocumento;
   motivo: AnnulationMotivo;
-  respuestaMH: RespuestaMh;
+  selloRecibido: string,
 }

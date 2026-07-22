@@ -298,7 +298,7 @@ export const generateAnnulationSVfe = async ({
             doc.rect(data.cell.x + 167, lastY - 8, 203, 13, "F");
             doc.setFontSize(7.5);
             doc.text(
-              svfeAnnulation.respuestaMH.selloRecibido ?? "",
+              svfeAnnulation.selloRecibido ?? "",
               data.cell.x + 170,
               lastY + 1,
             );
