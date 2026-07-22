@@ -11,6 +11,7 @@ import { DteCcf, Receptor03 } from "../interfaces/dte03";
 import { DteFse } from "../interfaces/dte14";
 import { DteNce } from "../interfaces/dte05";
 import { DteNre } from "../interfaces/dte04";
+import { AnnulationSvfe } from "../interfaces/annulation";
 
 export const formatAddress = (dep_code: string, mun_code: string) => {
   const service = new SeedcodeCatalogosMhService();
@@ -552,6 +553,52 @@ export const generateQRWithColor = async (
   }
 }
 
+export const generateQRWithColorAnnulation = async (
+  dte: AnnulationSvfe,
+  color: string
+) => {
+  try {
+    const dataUrl = await QRCode.toBuffer(generateUrlAnnulation(dte), {
+      color: {
+        dark: color,
+        light: "#ffffff"
+      }
+    });
+    return dataUrl;
+  } catch (err) {
+    return "";
+  }
+}
+
+export const generateQRFromText = async (
+  text: string,
+  color: string
+) => {
+  try {
+    const dataUrl = await QRCode.toBuffer(text, {
+      color: {
+        dark: color,
+        light: "#ffffff"
+      }
+    });
+    return dataUrl;
+  } catch (err) {
+    return "";
+  }
+}
+
+
+export const generateUrlAnnulation = (dte: AnnulationSvfe) => {
+  return (
+    $MH_QUERY +
+    "?ambiente=" +
+    dte.identificacion.ambiente +
+    "&codGen=" +
+    dte.documento.codigoGeneracion +
+    "&fechaEmi=" +
+    dte.documento.fecEmi
+  );
+};
 
 export const secondHeader = (
   doc: jsPDF,

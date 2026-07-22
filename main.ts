@@ -19,6 +19,9 @@ export {
   generateSvfe04,
   // footerDocument as footerDocument04,
 } from "./pdf/dte04.pdf";
+
+export * from "./pdf/template2/annulation.pdf"
+
 export * from "./interfaces/common"
 export * from "./interfaces/dte01"
 export * from "./interfaces/dte03"

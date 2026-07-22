@@ -32,8 +32,22 @@ export const formatDocumentType = (type: string) => {
     }
 }
 
+export const formatDocumentTypeAnnulation = (type: string) =>{
+    const tipo = formatDocumentType(type)
+
+    return 'ANULACION ' + tipo
+}
+
 export const formatEconomicActivity = (code: string) => {
     const services = new SeedcodeCatalogosMhService()
 
     return services.get019CodigoDeActividaEcono("", 1, 100000).find((item) => item.codigo === code)?.valores
+}
+
+export const formatTypeAnnulation = (code:string)=> {
+    const services = new SeedcodeCatalogosMhService()
+
+    const find = services.get024TipoDeInvalidacion().find((tip)=> tip.codigo === code)
+
+    return find?.valores ?? "-"
 }

@@ -39,7 +39,7 @@ interface Props {
   custom: {
     typeResume: "simple" | "detailed" | "custom";
   };
-  showDescActivity?: boolean
+  showDescActivity?: boolean;
 }
 /**
  * Function to generate svfe01 template 2
@@ -74,7 +74,7 @@ export const generateSvfe01_2 = async ({
   logo = "",
   watermark = "",
   selloInvalidacion = "",
-  showDescActivity = false
+  showDescActivity = false,
 }: Props) => {
   const doc = new jsPDF({
     orientation: "portrait",
@@ -103,27 +103,21 @@ export const generateSvfe01_2 = async ({
     ).lastAutoTable?.finalY ?? 0;
 
   const exclude = ["PROPINA", "PROPINA EXTRA"];
-  let data = svfe01.cuerpoDocumento.filter(item => !exclude.includes(item.descripcion)).map((item) => [
-    item.cantidad,
-    item.descripcion,
-    formatCurrency(+item.precioUni),
-    formatCurrency(+item.montoDescu),
-    formatCurrency(+item.ventaNoSuj),
-    formatCurrency(+item.ventaExenta),
-    formatCurrency(+item.ventaGravada),
-  ]);
+  let data = svfe01.cuerpoDocumento
+    .filter((item) => !exclude.includes(item.descripcion))
+    .map((item) => [
+      item.cantidad,
+      item.descripcion,
+      formatCurrency(+item.precioUni),
+      formatCurrency(+item.montoDescu),
+      formatCurrency(+item.ventaNoSuj),
+      formatCurrency(+item.ventaExenta),
+      formatCurrency(+item.ventaGravada),
+    ]);
 
   if (data.length === 0) {
-  data = [[
-    "", 
-    "       ", 
-    "",
-     "",
-      "", 
-      "",
-       ""
-  ]];
-}
+    data = [["", "       ", "", "", "", "", ""]];
+  }
 
   autoTable(doc, {
     head: [
@@ -177,7 +171,7 @@ export const generateSvfe01_2 = async ({
         25,
         data.pageNumber === 1 ? 460 : 210,
         793,
-        data.pageNumber === 1 ? 460 : 210
+        data.pageNumber === 1 ? 460 : 210,
       );
     },
   });
@@ -222,7 +216,7 @@ export const generateSvfe01_2 = async ({
           doc.setTextColor(darkTextColor);
           const observations = doc.splitTextToSize(
             `Notas: ${extension ? extension.observaciones : ""}`,
-            225
+            225,
           );
           doc.text(observations, data.cell.x + 10, data.cell.y + 20);
 
@@ -234,7 +228,7 @@ export const generateSvfe01_2 = async ({
             30,
             5,
             5,
-            "S"
+            "S",
           );
 
           doc.text(resumen.totalLetras, data.cell.x + 110, data.cell.y + 127);
@@ -244,25 +238,26 @@ export const generateSvfe01_2 = async ({
           doc.setFontSize(9);
 
           doc.text(
-            `Nombre entrega: ${extension ? extension.nombEntrega ?? "" : ""}`,
+            `Nombre entrega: ${extension ? (extension.nombEntrega ?? "") : ""}`,
             data.cell.x + 10,
-            data.cell.y + 179
+            data.cell.y + 179,
           );
           doc.text(
-            `Documento entrega: ${extension ? extension.docuEntrega ?? "" : ""
+            `Documento entrega: ${
+              extension ? (extension.docuEntrega ?? "") : ""
             }`,
             data.cell.x + 10,
-            data.cell.y + 195
+            data.cell.y + 195,
           );
           doc.text(
-            `Nombre recibe: ${extension ? extension.nombRecibe ?? "" : ""}`,
+            `Nombre recibe: ${extension ? (extension.nombRecibe ?? "") : ""}`,
             data.cell.x + 450,
-            data.cell.y + 179
+            data.cell.y + 179,
           );
           doc.text(
-            `Documento recibe: ${extension ? extension.docuRecibe ?? "" : ""}`,
+            `Documento recibe: ${extension ? (extension.docuRecibe ?? "") : ""}`,
             data.cell.x + 450,
-            data.cell.y + 195
+            data.cell.y + 195,
           );
 
           doc.setTextColor(tertiaryColor);
@@ -278,7 +273,7 @@ export const generateSvfe01_2 = async ({
 
             // Filtrar solo los que tienen texto
             const validItems = items.filter(
-              (i) => i.text && i.text.trim() !== ""
+              (i) => i.text && i.text.trim() !== "",
             );
 
             // Medidas
@@ -301,7 +296,7 @@ export const generateSvfe01_2 = async ({
                 x,
                 baseYIcon,
                 iconWidth,
-                iconWidth
+                iconWidth,
               );
               doc.text(item.text, x + 20, baseYText);
             });
@@ -319,7 +314,7 @@ export const generateSvfe01_2 = async ({
               data.cell.y + 2,
               {
                 align: "right",
-              }
+              },
             );
 
             let textY = data.cell.y + 15;
@@ -361,7 +356,7 @@ export const generateSvfe01_2 = async ({
               textY,
               {
                 align: "right",
-              }
+              },
             );
             textY += 15;
             doc.text("TOTAL A PAGAR:", data.cell.x + 215, textY, {
@@ -376,7 +371,7 @@ export const generateSvfe01_2 = async ({
               data.cell.y + 10,
               {
                 align: "right",
-              }
+              },
             );
 
             let textY = data.cell.y + 25;
@@ -415,7 +410,7 @@ export const generateSvfe01_2 = async ({
               textY,
               {
                 align: "right",
-              }
+              },
             );
             textY += 15;
             doc.text("TOTAL A PAGAR:", data.cell.x + 215, textY, {
@@ -430,7 +425,7 @@ export const generateSvfe01_2 = async ({
               data.cell.y + 10,
               {
                 align: "right",
-              }
+              },
             );
 
             let textY = data.cell.y + 22;
@@ -441,7 +436,7 @@ export const generateSvfe01_2 = async ({
               textY,
               {
                 align: "right",
-              }
+              },
             );
             textY += 12;
             doc.text(
@@ -450,7 +445,7 @@ export const generateSvfe01_2 = async ({
               textY,
               {
                 align: "right",
-              }
+              },
             );
             textY += 12;
             doc.text(
@@ -459,7 +454,7 @@ export const generateSvfe01_2 = async ({
               textY,
               {
                 align: "right",
-              }
+              },
             );
             textY += 12;
             doc.text(
@@ -468,7 +463,7 @@ export const generateSvfe01_2 = async ({
               textY,
               {
                 align: "right",
-              }
+              },
             );
             textY += 12;
             doc.text("Sub-total:", data.cell.x + 215, textY, {
@@ -497,7 +492,7 @@ export const generateSvfe01_2 = async ({
               textY,
               {
                 align: "right",
-              }
+              },
             );
             textY += 12;
             doc.text("Total a pagar (USD):", data.cell.x + 215, textY, {
@@ -506,7 +501,8 @@ export const generateSvfe01_2 = async ({
           }
 
           const heightRect = custom.typeResume === "simple" ? 150 : 160;
-          const startY = custom.typeResume === 'detailed' ? data.cell.y - 7 : data.cell.y
+          const startY =
+            custom.typeResume === "detailed" ? data.cell.y - 7 : data.cell.y;
 
           doc.setFillColor(fillColor);
           doc.rect(data.cell.x + 220, startY, 150, heightRect, "F");
@@ -590,7 +586,6 @@ export const generateSvfe01_2 = async ({
           //   );
           // }
           if (custom.typeResume === "detailed") {
-
             let tourism = 0;
 
             if (resumen.tributos && resumen.tributos.length > 0) {
@@ -600,128 +595,131 @@ export const generateSvfe01_2 = async ({
             }
             let propina =
               svfe01.cuerpoDocumento.find(
-                (cuerpo) => cuerpo.descripcion === "PROPINA"
+                (cuerpo) => cuerpo.descripcion === "PROPINA",
               )?.noGravado ?? 0;
 
             let extraPropina =
               svfe01.cuerpoDocumento.find(
-                (cuerpo) => cuerpo.descripcion === "PROPINA EXTRA"
+                (cuerpo) => cuerpo.descripcion === "PROPINA EXTRA",
               )?.noGravado ?? 0;
 
             const noAfectos = resumen.totalExenta + resumen.totalNoSuj;
             doc.text(
               formatCurrency(resumen.subTotal),
               data.cell.x + 230,
-              data.cell.y + 3
+              data.cell.y + 3,
             );
             let textYTotals = data.cell.y + 15;
-            doc.text(
-              formatCurrency(tourism),
-              data.cell.x + 230,
-              textYTotals
-            );
+            doc.text(formatCurrency(tourism), data.cell.x + 230, textYTotals);
             textYTotals += 15;
             doc.text(
               formatCurrency(resumen.subTotalVentas),
               data.cell.x + 230,
-              textYTotals
+              textYTotals,
             );
             textYTotals += 15;
             doc.text(
               formatCurrency(resumen.ivaPerci1 ?? 0),
               data.cell.x + 230,
-              textYTotals
+              textYTotals,
             );
             textYTotals += 15;
             doc.text(
               formatCurrency(resumen.ivaRete1 ?? 0),
               data.cell.x + 230,
-              textYTotals
+              textYTotals,
             );
             textYTotals += 15;
             doc.text(
               formatCurrency(resumen.reteRenta),
               data.cell.x + 230,
-              textYTotals
+              textYTotals,
             );
             textYTotals += 15;
             doc.text(
               formatCurrency(resumen.montoTotalOperacion),
               data.cell.x + 230,
-              textYTotals
+              textYTotals,
             );
             textYTotals += 15;
             doc.text(formatCurrency(propina), data.cell.x + 230, textYTotals);
             textYTotals += 15;
-            doc.text(formatCurrency(extraPropina), data.cell.x + 230, textYTotals);
+            doc.text(
+              formatCurrency(extraPropina),
+              data.cell.x + 230,
+              textYTotals,
+            );
             textYTotals += 15;
             doc.text(formatCurrency(noAfectos), data.cell.x + 230, textYTotals);
             textYTotals += 15;
             doc.text(
               formatCurrency(resumen.totalPagar),
               data.cell.x + 230,
-              textYTotals
+              textYTotals,
             );
           }
           if (custom.typeResume === "simple") {
             let propina =
               svfe01.cuerpoDocumento.find(
-                (cuerpo) => cuerpo.descripcion === "PROPINA"
+                (cuerpo) => cuerpo.descripcion === "PROPINA",
               )?.noGravado ?? 0;
 
             let extraPropina =
               svfe01.cuerpoDocumento.find(
-                (cuerpo) => cuerpo.descripcion === "PROPINA EXTRA"
+                (cuerpo) => cuerpo.descripcion === "PROPINA EXTRA",
               )?.noGravado ?? 0;
-
 
             const noAfectos = resumen.totalExenta + resumen.totalNoSuj;
             doc.text(
               formatCurrency(resumen.subTotal),
               data.cell.x + 230,
-              data.cell.y + 10
+              data.cell.y + 10,
             );
             let textYTotals = data.cell.y + 25;
             doc.text(
               formatCurrency(resumen.subTotalVentas),
               data.cell.x + 230,
-              textYTotals
+              textYTotals,
             );
             textYTotals += 15;
             doc.text(
               formatCurrency(resumen.ivaPerci1 ?? 0),
               data.cell.x + 230,
-              textYTotals
+              textYTotals,
             );
             textYTotals += 15;
             doc.text(
               formatCurrency(resumen.ivaRete1 ?? 0),
               data.cell.x + 230,
-              textYTotals
+              textYTotals,
             );
             textYTotals += 15;
             doc.text(
               formatCurrency(resumen.reteRenta),
               data.cell.x + 230,
-              textYTotals
+              textYTotals,
             );
             textYTotals += 15;
             doc.text(
               formatCurrency(resumen.montoTotalOperacion),
               data.cell.x + 230,
-              textYTotals
+              textYTotals,
             );
             textYTotals += 15;
             doc.text(formatCurrency(propina), data.cell.x + 230, textYTotals);
             textYTotals += 15;
-            doc.text(formatCurrency(extraPropina), data.cell.x + 230, textYTotals);
+            doc.text(
+              formatCurrency(extraPropina),
+              data.cell.x + 230,
+              textYTotals,
+            );
             textYTotals += 15;
             doc.text(formatCurrency(noAfectos), data.cell.x + 230, textYTotals);
             textYTotals += 15;
             doc.text(
               formatCurrency(resumen.totalPagar),
               data.cell.x + 230,
-              textYTotals
+              textYTotals,
             );
           }
           if (custom.typeResume === "custom") {
@@ -729,61 +727,61 @@ export const generateSvfe01_2 = async ({
             doc.text(
               formatCurrency(resumen.subTotalVentas),
               data.cell.x + 230,
-              data.cell.y + 10
+              data.cell.y + 10,
             );
             let textYTotals = data.cell.y + 22;
             doc.text(
               formatCurrency(resumen.descuNoSuj),
               data.cell.x + 230,
-              textYTotals
+              textYTotals,
             );
             textYTotals += 12;
             doc.text(
               formatCurrency(resumen.descuExenta),
               data.cell.x + 230,
-              textYTotals
+              textYTotals,
             );
             textYTotals += 12;
             doc.text(
               formatCurrency(resumen.descuGravada),
               data.cell.x + 230,
-              textYTotals
+              textYTotals,
             );
             textYTotals += 12;
             doc.text(
               formatCurrency(resumen.totalIva ?? 0),
               data.cell.x + 230,
-              textYTotals
+              textYTotals,
             );
             textYTotals += 12;
             doc.text(
               formatCurrency(resumen.subTotal),
               data.cell.x + 230,
-              textYTotals
+              textYTotals,
             );
             textYTotals += 12;
             doc.text(
               formatCurrency(resumen.reteRenta),
               data.cell.x + 230,
-              textYTotals
+              textYTotals,
             );
             textYTotals += 12;
             doc.text(
               formatCurrency(resumen.ivaPerci1 ?? 0),
               data.cell.x + 230,
-              textYTotals
+              textYTotals,
             );
             textYTotals += 12;
             doc.text(
               formatCurrency(resumen.ivaRete1 ?? 0),
               data.cell.x + 230,
-              textYTotals
+              textYTotals,
             );
             textYTotals += 12;
             doc.text(
               formatCurrency(resumen.reteRenta),
               data.cell.x + 230,
-              textYTotals
+              textYTotals,
             );
             textYTotals += 12;
             doc.text(formatCurrency(noAfectos), data.cell.x + 230, textYTotals);
@@ -791,7 +789,7 @@ export const generateSvfe01_2 = async ({
             doc.text(
               formatCurrency(resumen.totalPagar),
               data.cell.x + 230,
-              textYTotals
+              textYTotals,
             );
           }
 
@@ -832,7 +830,7 @@ export const generateSvfe01_2 = async ({
         adjustedImage.width,
         adjustedImage.height,
         "KEY" + i,
-        "FAST"
+        "FAST",
       );
       doc.restoreGraphicsState();
     }
@@ -846,7 +844,7 @@ export const generateSvfe01_2 = async ({
       tableHeight,
       radius,
       radius,
-      "S"
+      "S",
     );
 
     doc.roundedRect(
@@ -862,7 +860,7 @@ export const generateSvfe01_2 = async ({
           : doc.internal.pageSize.height - 200,
       15,
       15,
-      "S"
+      "S",
     );
 
     let lineHeight: number;
@@ -912,7 +910,7 @@ export const generateSvfe01_2 = async ({
         rectHeight,
         3,
         3,
-        "F"
+        "F",
       );
 
       doc.text(
@@ -921,7 +919,7 @@ export const generateSvfe01_2 = async ({
         offsetY + 14,
         {
           align: "center",
-        }
+        },
       );
 
       doc.restoreGraphicsState();
@@ -937,16 +935,16 @@ export const generateSvfe01_2 = async ({
         20,
         20,
         20,
-        "F"
+        "F",
       );
       doc.roundedRect(
         25,
         doc.internal.pageSize.height - 298,
         769,
         10,
-        2,
-        2,
-        "F"
+        30,
+        0,
+        "F",
       );
       doc.setFontSize(11);
       doc.setTextColor(lightTextColor);
@@ -958,7 +956,7 @@ export const generateSvfe01_2 = async ({
         515,
         doc.internal.pageSize.height - 298,
         515,
-        doc.internal.pageSize.height - 278
+        doc.internal.pageSize.height - 278,
       );
       doc.setFontSize(10);
       doc.text(
@@ -967,13 +965,13 @@ export const generateSvfe01_2 = async ({
         doc.internal.pageSize.height - 285,
         {
           align: "center",
-        }
+        },
       );
       doc.line(
         585,
         doc.internal.pageSize.height - 298,
         585,
-        doc.internal.pageSize.height - 278
+        doc.internal.pageSize.height - 278,
       );
       doc.text(
         formatCurrency(resumen.totalNoSuj),
@@ -981,13 +979,13 @@ export const generateSvfe01_2 = async ({
         doc.internal.pageSize.height - 285,
         {
           align: "center",
-        }
+        },
       );
       doc.line(
         655,
         doc.internal.pageSize.height - 298,
         655,
-        doc.internal.pageSize.height - 278
+        doc.internal.pageSize.height - 278,
       );
       doc.text(
         formatCurrency(resumen.totalExenta),
@@ -995,13 +993,13 @@ export const generateSvfe01_2 = async ({
         doc.internal.pageSize.height - 285,
         {
           align: "center",
-        }
+        },
       );
       doc.line(
         725,
         doc.internal.pageSize.height - 298,
         725,
-        doc.internal.pageSize.height - 278
+        doc.internal.pageSize.height - 278,
       );
       doc.text(
         formatCurrency(resumen.totalGravada),
@@ -1009,7 +1007,7 @@ export const generateSvfe01_2 = async ({
         doc.internal.pageSize.height - 285,
         {
           align: "center",
-        }
+        },
       );
     }
 
@@ -1018,7 +1016,7 @@ export const generateSvfe01_2 = async ({
     const { imageBase64, width, height } = await adjustImage(
       logo,
       logoWidth,
-      logoHeight
+      logoHeight,
     );
 
     autoTable(doc, {
@@ -1037,7 +1035,7 @@ export const generateSvfe01_2 = async ({
               data.cell.y + 10,
               width,
               height,
-              "LOGO"
+              "LOGO",
             );
             doc.setFont("Nunito", "bold");
             doc.setTextColor(darkTextColor);
@@ -1061,19 +1059,22 @@ export const generateSvfe01_2 = async ({
             doc.setFontSize(8);
             doc.setFont("Nunito", "normal");
             if (showDescActivity) {
-              doc.text(`Actividad económica: ${svfe01.emisor.descActividad}`, data.cell.x + 10, lastY);
+              doc.text(
+                `Actividad económica: ${svfe01.emisor.descActividad}`,
+                data.cell.x + 10,
+                lastY,
+              );
               lastY += 10;
             }
-
 
             const address = doc.splitTextToSize(
               formatAddress(
                 svfe01.emisor.direccion.departamento,
-                svfe01.emisor.direccion.municipio
+                svfe01.emisor.direccion.municipio,
               ) +
-              " " +
-              svfe01.emisor.direccion.complemento,
-              380
+                " " +
+                svfe01.emisor.direccion.complemento,
+              380,
             );
 
             const textH = getHeightText(doc, address);
@@ -1093,7 +1094,7 @@ export const generateSvfe01_2 = async ({
               130,
               15,
               15,
-              "S"
+              "S",
             );
 
             doc.setFont("Nunito", "bold");
@@ -1103,7 +1104,7 @@ export const generateSvfe01_2 = async ({
               "Documento Tributario Electrónico",
               data.cell.x + 200,
               data.cell.y + 20,
-              { align: "center" }
+              { align: "center" },
             );
             doc.setFont("Nunito", "normal");
             doc.setFontSize(8);
@@ -1111,7 +1112,7 @@ export const generateSvfe01_2 = async ({
               formatDocumentType(svfe01.identificacion.tipoDte),
               data.cell.x + 200,
               data.cell.y + 32,
-              { align: "center" }
+              { align: "center" },
             );
             doc.setTextColor(darkTextColor);
             doc.addImage(
@@ -1122,7 +1123,7 @@ export const generateSvfe01_2 = async ({
               80,
               80,
               "QR",
-              "FAST"
+              "FAST",
             );
 
             let lastY = data.cell.y + 25 + 18;
@@ -1136,7 +1137,7 @@ export const generateSvfe01_2 = async ({
             doc.text(
               svfe01.identificacion.codigoGeneracion,
               data.cell.x + 185,
-              lastY + 1
+              lastY + 1,
             );
             lastY += 21;
             doc.setFontSize(8);
@@ -1147,7 +1148,7 @@ export const generateSvfe01_2 = async ({
             doc.text(
               svfe01.identificacion.numeroControl,
               data.cell.x + 200,
-              lastY + 1
+              lastY + 1,
             );
             lastY += 21;
             doc.setFontSize(8);
@@ -1158,7 +1159,7 @@ export const generateSvfe01_2 = async ({
             doc.text(
               svfe01.respuestaMH.selloRecibido ?? "",
               data.cell.x + 170,
-              lastY + 1
+              lastY + 1,
             );
             lastY += 18;
             doc.setFontSize(7);
@@ -1167,7 +1168,7 @@ export const generateSvfe01_2 = async ({
               "Tipo de transmisión             Modelo de facturación             Fecha y hora generación",
               data.cell.x + 240,
               lastY,
-              { align: "center" }
+              { align: "center" },
             );
             doc.setFontSize(7.5);
             doc.text("Normal", data.cell.x + 125, lastY + 8);
@@ -1175,20 +1176,20 @@ export const generateSvfe01_2 = async ({
             doc.text(
               `${svfe01.identificacion.fecEmi} - ${svfe01.identificacion.horEmi}`,
               data.cell.x + 293,
-              lastY + 8
+              lastY + 8,
             );
             doc.setLineWidth(1);
             doc.line(
               data.cell.x + 185,
               lastY + 1,
               data.cell.x + 185,
-              lastY + 12
+              lastY + 12,
             );
             doc.line(
               data.cell.x + 280,
               lastY + 1,
               data.cell.x + 280,
-              lastY + 12
+              lastY + 12,
             );
             doc.setFillColor(fillColor);
             doc.rect(data.cell.x + 172, lastY + 12, 120, 13, "F");
@@ -1197,7 +1198,7 @@ export const generateSvfe01_2 = async ({
             doc.text(
               svfe01.identificacion.tipoMoneda,
               data.cell.x + 225,
-              lastY + 21
+              lastY + 21,
             );
           }
         }
@@ -1229,7 +1230,7 @@ export const generateSvfe01_2 = async ({
                 245,
                 15,
                 15,
-                "S"
+                "S",
               );
               doc.setFillColor(fillColor);
               doc.roundedRect(
@@ -1239,7 +1240,7 @@ export const generateSvfe01_2 = async ({
                 210,
                 15,
                 15,
-                "F"
+                "F",
               );
               doc.setFont("Nunito", "normal");
               doc.setFontSize(11.5);
@@ -1258,40 +1259,40 @@ export const generateSvfe01_2 = async ({
                 doc.splitTextToSize(
                   svfe01.receptor.direccion
                     ? formatAddress(
-                      svfe01.receptor.direccion.departamento,
-                      svfe01.receptor.direccion.municipio
-                    ) +
-                    ", " +
-                    svfe01.receptor.direccion.complemento
+                        svfe01.receptor.direccion.departamento,
+                        svfe01.receptor.direccion.municipio,
+                      ) +
+                        ", " +
+                        svfe01.receptor.direccion.complemento
                     : "",
-                  600
+                  600,
                 ),
-                700
+                700,
               );
               doc.text(address, paddingX + 100, lastY);
               lastY += 40;
               doc.text(
                 doc.splitTextToSize("Tipo de documento: ", 100),
                 paddingX,
-                lastY - 10
+                lastY - 10,
               );
               doc.text(
                 svfe01.receptor.tipoDocumento
                   ? formatNameTypeDocument(svfe01.receptor.tipoDocumento)
                   : "-",
                 paddingX + 100,
-                lastY
+                lastY,
               );
               lastY += 30;
               doc.text(
                 doc.splitTextToSize("Numero de documento: ", 100),
                 paddingX,
-                lastY - 5
+                lastY - 5,
               );
               doc.text(
                 svfe01.receptor.numDocumento ?? "-",
                 paddingX + 100,
-                lastY
+                lastY,
               );
               lastY += 35;
               doc.text("Correo: ", paddingX, lastY);
@@ -1307,7 +1308,7 @@ export const generateSvfe01_2 = async ({
               doc.text(
                 "Condiciones de pago: ",
                 data.cell.x + 70,
-                data.cell.y + 255
+                data.cell.y + 255,
               );
               doc.setTextColor(darkTextColor);
               doc.text("Contado", data.cell.x + 200, data.cell.y + 255);
