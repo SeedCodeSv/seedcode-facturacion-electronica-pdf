@@ -378,9 +378,9 @@
 // // //     }
 // // // })();
 
-// import Annulation from "./9B5944E4-D347-43D8-B24C-DEF2123A9887.json";
+// import Annulation from "./4F7C0EFD-EE50-41DB-93AA-F0CB738C7D7B.json";
 // import { generateAnnulationSVfe } from "./pdf/template2/annulation.pdf";
-// import { generateSvfe01_2 } from "./main";
+// import { generateSvfe01_2, generateSvfe03_2 } from "./main";
 
 // export const generateAnnulation = async () => {
 //   const data = {
@@ -412,7 +412,7 @@
 //   };
 
 //   try {
-//     const arrayBuffer = await generateSvfe01_2(data as any);
+//     const arrayBuffer = await generateSvfe03_2(data as any);
 //     const outputPath = path.join(__dirname, "preview.pdf");
 //     fs.writeFileSync(outputPath, Buffer.from(arrayBuffer));
 //   } catch (error) {
