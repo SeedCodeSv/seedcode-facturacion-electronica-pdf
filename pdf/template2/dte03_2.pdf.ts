@@ -217,7 +217,7 @@ export const generateSvfe03_2 = async ({
           doc.setFont("Nunito", "normal");
           doc.setTextColor(darkTextColor);
           const observations = doc.splitTextToSize(
-            `Notas: ${extension ? extension.observaciones : ""}`,
+            `Notas: ${extension ? extension.observaciones : (resumen.observaciones ?? "-")}`,
             225,
           );
           doc.text(observations, data.cell.x + 10, data.cell.y + 20);

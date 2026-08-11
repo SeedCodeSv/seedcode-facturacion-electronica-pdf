@@ -57,6 +57,7 @@ export class Resumen03 {
   condicionOperacion!: 1 | 2 | 3;
   pagos?: Pago[] | null;
   numPagoElectronico?: string | null;
+  observaciones!: string | null
 }
 
 export class DteCcf {
