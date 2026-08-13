@@ -11,7 +11,7 @@ import {
   getHeightText,
   adjustImageWatermark,
 } from "../utils";
-import { formatDocumentType } from "./utils";
+import { formatDocumentType, returnPaymethod } from "./utils";
 import { DteCcf } from "../../main";
 import { formatearDireccion } from "distritos-sv";
 
@@ -213,14 +213,15 @@ export const generateSvfe03_2 = async ({
         if (data.column.index === 0) {
           doc.setLineWidth(1.2);
           doc.setDrawColor(borderColor);
-          doc.roundedRect(data.cell.x, data.cell.y - 5, 350, 150, 15, 15, "S");
+          doc.roundedRect(data.cell.x, data.cell.y - 5, 350, 160, 15, 15, "S");
           doc.setFont("Nunito", "normal");
           doc.setTextColor(darkTextColor);
+          doc.setFontSize(9);
           const observations = doc.splitTextToSize(
             `Notas: ${extension ? extension.observaciones : (resumen.observaciones ?? "-")}`,
             225,
           );
-          doc.text(observations, data.cell.x + 10, data.cell.y + 20);
+          doc.text(observations, data.cell.x + 10, data.cell.y + 10);
 
           doc.setFontSize(9);
           doc.text("Cantidad en letras: ", data.cell.x + 10, data.cell.y + 190);
@@ -1134,11 +1135,6 @@ export const generateSvfe03_2 = async ({
         }
       ).lastAutoTable.finalY;
 
-      const payCondition =
-        resumen.pagos && resumen.pagos.length > 0
-          ? resumen.pagos[0].codigo
-          : "01";
-
       autoTable(doc, {
         head: [[""]],
         showHead: true,
@@ -1229,9 +1225,28 @@ export const generateSvfe03_2 = async ({
               );
               doc.setTextColor(darkTextColor);
               doc.text(
-                payCondition === "01" ? "Contado" : "Credito",
+                resumen.condicionOperacion === 1 ? "Contado" : "Credito",
                 data.cell.x + 200,
                 data.cell.y + 255,
+              );
+
+              doc.setFillColor(fillColor2);
+              doc.rect(data.cell.x + 340, data.cell.y + 243, 100, 17, "F");
+              doc.setTextColor("#ffffff");
+              doc.text(
+                "Metodo de pago: ",
+                data.cell.x + 350,
+                data.cell.y + 255,
+              );
+              const payments = resumen.pagos ? returnPaymethod(resumen.pagos) : "No definido"
+              doc.setFontSize(payments.length > 50 ? 8 : 11)
+              
+
+              doc.setTextColor(darkTextColor);
+              doc.text(
+                payments.length > 50 ? doc.splitTextToSize(payments, 300) : payments,
+                data.cell.x + 450,
+                data.cell.y + (payments.length > 50 ? 248 : 255),
               );
             }
           }

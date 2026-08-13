@@ -1,53 +1,70 @@
-import { SeedcodeCatalogosMhService } from "seedcode-catalogos-mh"
+import { SeedcodeCatalogosMhService } from "seedcode-catalogos-mh";
+import { Pago } from "../../interfaces/common";
 
 export const formatNameTypeDocument = (type: string) => {
-    switch (type) {
-        case "13":
-            return "DUI"
-        case "36":
-            return "NIT"
-        case "37":
-            return "OTROS"
-        default:
-            return "OTROS"
-    }
-}
+  switch (type) {
+    case "13":
+      return "DUI";
+    case "36":
+      return "NIT";
+    case "37":
+      return "OTROS";
+    default:
+      return "OTROS";
+  }
+};
 
 export const formatDocumentType = (type: string) => {
-    switch (type) {
-        case "01":
-            return "COMPROBANTE DE FACTURA CONSUMIDOR FINAL"
-        case "03":
-            return "COMPROBANTE DE CRÉDITO FISCAL"
-        case "04":
-            return "COMPROBANTE DE NOTA DE REMISIÓN"
-        case "05":
-            return "COMPROBANTE DE NOTA DE CRÉDITO";
-        case "06":
-            return "COMPROBANTE DE NOTA DE DÉBITO";
-        case "14":
-            return "COMPROBANTE DE SUJETO EXCLUIDO"
-        default:
-            return "OTROS"
-    }
-}
+  switch (type) {
+    case "01":
+      return "COMPROBANTE DE FACTURA CONSUMIDOR FINAL";
+    case "03":
+      return "COMPROBANTE DE CRÉDITO FISCAL";
+    case "04":
+      return "COMPROBANTE DE NOTA DE REMISIÓN";
+    case "05":
+      return "COMPROBANTE DE NOTA DE CRÉDITO";
+    case "06":
+      return "COMPROBANTE DE NOTA DE DÉBITO";
+    case "14":
+      return "COMPROBANTE DE SUJETO EXCLUIDO";
+    default:
+      return "OTROS";
+  }
+};
 
-export const formatDocumentTypeAnnulation = (type: string) =>{
-    const tipo = formatDocumentType(type)
+export const formatDocumentTypeAnnulation = (type: string) => {
+  const tipo = formatDocumentType(type);
 
-    return 'ANULACION ' + tipo
-}
+  return "ANULACION " + tipo;
+};
 
 export const formatEconomicActivity = (code: string) => {
-    const services = new SeedcodeCatalogosMhService()
+  const services = new SeedcodeCatalogosMhService();
 
-    return services.get019CodigoDeActividaEcono("", 1, 100000).find((item) => item.codigo === code)?.valores
-}
+  return services
+    .get019CodigoDeActividaEcono("", 1, 100000)
+    .find((item) => item.codigo === code)?.valores;
+};
 
-export const formatTypeAnnulation = (code:string)=> {
-    const services = new SeedcodeCatalogosMhService()
+export const formatTypeAnnulation = (code: string) => {
+  const services = new SeedcodeCatalogosMhService();
 
-    const find = services.get024TipoDeInvalidacion().find((tip)=> tip.codigo === code)
+  const find = services
+    .get024TipoDeInvalidacion()
+    .find((tip) => tip.codigo === code);
 
-    return find?.valores ?? "-"
-}
+  return find?.valores ?? "-";
+};
+
+export const returnPaymethod = (payments: Pago[]) => {
+  const services = new SeedcodeCatalogosMhService();
+  const formasDePago = services.get017FormaDePago();
+
+  return [...new Set(payments.map((payment) => payment.codigo))]
+    .map(
+      (codigo) =>
+        formasDePago.find((forma) => forma.codigo === codigo)?.valores ?? "-",
+    )
+    .join(", ");
+};
