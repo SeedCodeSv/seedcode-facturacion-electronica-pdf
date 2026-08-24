@@ -17,18 +17,8 @@ export const formatAddress = (
   dep_code: string,
   mun_code: string,
   distrito_code?: string,
-  nombreDistrito?: string,
 ) => {
-  // Usar nombreDistrito si ya viene del DTE (compatibilidad v2/v4)
-  if (nombreDistrito) {
-    const dep = listaDepartamentos().find((d) => d.codigo === dep_code);
-    const mun = listaMunicipios(dep_code).find((m) => m.codigo === mun_code);
-    if (dep && mun) {
-      return `${nombreDistrito}, ${mun.valores}, ${dep.valores}`;
-    }
-  }
-
-  // Si tiene distrito_code, buscar el nombre usando distritos-sv
+  // v2/v4: si viene distrito, buscar nombre usando distritos-sv
   if (distrito_code) {
     // Quitar padding de ceros (MH envía "02", distritos-sv usa "2")
     const cleanDistritoCode = distrito_code.replace(/^0+/, '') || '0';
@@ -41,7 +31,7 @@ export const formatAddress = (
     }
   }
 
-  // Fallback: usar seedcode-catalogos-mh (compatibilidad v1/v3)
+  // v1/v3: fallback sin distrito, solo departamento + municipio
   const service = new SeedcodeCatalogosMhService();
   const deparment = service
     .get012Departamento()
@@ -331,7 +321,6 @@ export const headerDoc = async (
             dte.emisor.direccion.departamento,
             dte.emisor.direccion.municipio,
             dte.emisor.direccion.distrito,
-            dte.emisor.direccion.nombreDistrito,
           )}`,
           cellWidth - 4,
         );
@@ -615,7 +604,6 @@ export const secondHeader = (
               receptor.direccion.departamento,
               receptor.direccion.municipio,
               receptor.direccion.distrito,
-              receptor.direccion.nombreDistrito,
             )}, El Salvador`
           : "No establecida",
         `CÓDIGO GENERACIÓN : ${identificacion.codigoGeneracion}`,

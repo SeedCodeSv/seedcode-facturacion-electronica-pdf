@@ -28,14 +28,14 @@ export class Emisor {
   nombreComercial: string;
   codActividad: string;
   descActividad: string;
-  tipoEstablecimiento: string;
+  tipoEstablecimiento?: string;
   direccion: Direccion;
   telefono: string;
   correo: string;
   codEstable: string;
-  codEstableMH: string;
+  codEstableMH?: string;
   codPuntoVenta: string;
-  codPuntoVentaMH: string;
+  codPuntoVentaMH?: string;
 }
 
 export class Medico {

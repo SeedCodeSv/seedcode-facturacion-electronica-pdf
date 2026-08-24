@@ -591,7 +591,7 @@ export const generateSvfe06_2 = async ({
             );
             textYTotals += 12;
             doc.text(
-              formatCurrency(resumen.reteRenta),
+              formatCurrency(resumen.reteRenta ?? 0),
               data.cell.x + 230,
               textYTotals
             );
@@ -662,7 +662,7 @@ export const generateSvfe06_2 = async ({
             );
             textYTotals += 12;
             doc.text(
-              formatCurrency(resumen.reteRenta),
+              formatCurrency(resumen.reteRenta ?? 0),
               data.cell.x + 230,
               textYTotals
             );
@@ -732,7 +732,7 @@ export const generateSvfe06_2 = async ({
             );
             textYTotals += 12;
             doc.text(
-              formatCurrency(resumen.reteRenta),
+              formatCurrency(resumen.reteRenta ?? 0),
               data.cell.x + 230,
               textYTotals
             );
@@ -750,7 +750,7 @@ export const generateSvfe06_2 = async ({
             );
             textYTotals += 12;
             doc.text(
-              formatCurrency(resumen.reteRenta),
+              formatCurrency(resumen.reteRenta ?? 0),
               data.cell.x + 230,
               textYTotals
             );
@@ -1037,7 +1037,6 @@ export const generateSvfe06_2 = async ({
                 svfe06.emisor.direccion.departamento,
                 svfe06.emisor.direccion.municipio,
                 svfe06.emisor.direccion.distrito,
-                svfe06.emisor.direccion.nombreDistrito,
               ) +
               " " +
               svfe06.emisor.direccion.complemento,
@@ -1223,14 +1222,12 @@ export const generateSvfe06_2 = async ({
               lastY += 40;
               doc.text("Dirección: ", paddingX, lastY);
               const address = doc.splitTextToSize(
-                doc.splitTextToSize(
-                  svfe06.receptor.direccion
-                    ? formatAddress(
-                      svfe06.receptor.direccion.departamento,
-                      svfe06.receptor.direccion.municipio,
-                      svfe06.receptor.direccion.distrito,
-                      svfe06.receptor.direccion.nombreDistrito,
-                    ) +
+                doc.splitTextToSize(                      svfe06.receptor.direccion
+                        ? formatAddress(
+                          svfe06.receptor.direccion.departamento,
+                          svfe06.receptor.direccion.municipio,
+                          svfe06.receptor.direccion.distrito,
+                        ) +
                     ", " +
                     svfe06.receptor.direccion.complemento
                     : "",

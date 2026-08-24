@@ -310,9 +310,9 @@ export const generateSvfe14_2 = async ({
           let textYTotals = data.cell.y + 50;
           doc.text(String(resumen.totalCompra), data.cell.x + 230, textYTotals);
           textYTotals += 15;
-          doc.text(String(resumen.ivaRete1), data.cell.x + 230, textYTotals);
+          doc.text(String(resumen.ivaRete1 ?? 0), data.cell.x + 230, textYTotals);
           textYTotals += 15;
-          doc.text(String(resumen.reteRenta), data.cell.x + 230, textYTotals);
+          doc.text(String(resumen.reteRenta ?? 0), data.cell.x + 230, textYTotals);
           textYTotals += 15;
           doc.text(String(resumen.totalPagar), data.cell.x + 230, textYTotals);
         }
@@ -545,7 +545,6 @@ export const generateSvfe14_2 = async ({
                 svfe14.emisor.direccion.departamento,
                 svfe14.emisor.direccion.municipio,
                 svfe14.emisor.direccion.distrito,
-                svfe14.emisor.direccion.nombreDistrito,
               ) +
               " " +
               svfe14.emisor.direccion.complemento,
@@ -731,14 +730,12 @@ export const generateSvfe14_2 = async ({
               lastY += 35;
               doc.text("Dirección: ", paddingX, lastY);
               const address = doc.splitTextToSize(
-                doc.splitTextToSize(
-                  svfe14.sujetoExcluido.direccion
-                    ? formatAddress(
-                      svfe14.sujetoExcluido.direccion.departamento,
-                      svfe14.sujetoExcluido.direccion.municipio,
-                      svfe14.sujetoExcluido.direccion.distrito,
-                      svfe14.sujetoExcluido.direccion.nombreDistrito,
-                    ) +
+                doc.splitTextToSize(                      svfe14.sujetoExcluido.direccion
+                        ? formatAddress(
+                          svfe14.sujetoExcluido.direccion.departamento,
+                          svfe14.sujetoExcluido.direccion.municipio,
+                          svfe14.sujetoExcluido.direccion.distrito,
+                        ) +
                     ", " +
                     svfe14.sujetoExcluido.direccion.complemento
                     : "",

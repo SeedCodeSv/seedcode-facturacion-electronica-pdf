@@ -52,8 +52,8 @@ export class Resumen14 {
   totalExenta: number;
   totalDescu: number;
   subTotal: number;
-  ivaRete1: number;
-  reteRenta: number;
+  ivaRete1?: number;
+  reteRenta?: number;
   totalPagar: number;
   totalLetras: string;
   condicionOperacion: number;

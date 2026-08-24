@@ -36,7 +36,6 @@ export const generateSvfe14 = async (
           sujetoExcluido.direccion.departamento,
           sujetoExcluido.direccion.municipio,
           sujetoExcluido.direccion.distrito,
-          sujetoExcluido.direccion.nombreDistrito,
         )}, El Salvador`,
         `CÓDIGO GENERACIÓN : ${identificacion.codigoGeneracion}`,
       ],
@@ -338,8 +337,8 @@ export const footerDocument = (doc: jsPDF, rectMargin: number, dte: DteFse) => {
 
   const totals = [
     resumen.subTotal.toFixed(2),
-    resumen.reteRenta.toFixed(2),
-    resumen.ivaRete1.toFixed(2),
+    (resumen.reteRenta ?? 0).toFixed(2),
+    (resumen.ivaRete1 ?? 0).toFixed(2),
     resumen.subTotal.toFixed(2),
     resumen.totalPagar.toFixed(2),
   ];

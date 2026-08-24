@@ -55,10 +55,10 @@ export class Resumen01 {
   totalDescu: number;
   tributos: Tributo[] | null;
   subTotal: number;
-  ivaRete1: number;
-  ivaPerci1: number;
-  reteRenta: number;
-  totalIva: number;
+  ivaRete1?: number;
+  ivaPerci1?: number;
+  reteRenta?: number;
+  totalIva?: number;
   montoTotalOperacion: number;
   totalNoGravado: number;
   totalPagar: number;
@@ -67,6 +67,7 @@ export class Resumen01 {
   condicionOperacion: number;
   pagos: Pago[];
   numPagoElectronico: string | null;
+  observaciones?: string | null;
 }
 
 export class DteFe {

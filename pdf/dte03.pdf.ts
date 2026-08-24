@@ -429,9 +429,9 @@ export const footerDocument = (doc: jsPDF, rectMargin: number, ccf: DteCcf) => {
         .toFixed(2)
       : "0.00",
     resumen.subTotal.toFixed(2),
-    resumen.ivaPerci1.toFixed(2),
-    resumen.ivaRete1.toFixed(2),
-    resumen.reteRenta.toFixed(2),
+    (resumen.ivaPerci1 ?? 0).toFixed(2),
+    (resumen.ivaRete1 ?? 0).toFixed(2),
+    (resumen.reteRenta ?? 0).toFixed(2),
     resumen.montoTotalOperacion.toFixed(2),
     propina.toFixed(2),
     "0.00",
