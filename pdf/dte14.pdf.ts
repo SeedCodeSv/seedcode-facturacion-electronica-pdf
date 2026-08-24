@@ -21,7 +21,8 @@ export const generateSvfe14 = async (
 
   let finalYFirtsPage = 0;
 
-  const { sujetoExcluido, identificacion, respuestaMH } = dte;
+  const receptor = dte.receptor ?? dte.sujetoExcluido;
+  const { identificacion, respuestaMH } = dte;
   autoTable(doc, {
     margin: {
       left: 10,
@@ -30,26 +31,26 @@ export const generateSvfe14 = async (
     showHead: false,
     startY: 35,
     body: [
-      [`NOMBRE: ${sujetoExcluido.nombre}`, `NRC : ${"-"}`],
+      [`NOMBRE: ${receptor?.nombre ?? "-"}`, `NRC : ${"-"}`],
       [
-        `DIRECCIÓN : ${sujetoExcluido.direccion.complemento} ${formatAddress(
-          sujetoExcluido.direccion.departamento,
-          sujetoExcluido.direccion.municipio,
-          sujetoExcluido.direccion.distrito,
+        `DIRECCIÓN : ${receptor?.direccion?.complemento ?? ""} ${formatAddress(
+          receptor?.direccion?.departamento ?? "",
+          receptor?.direccion?.municipio ?? "",
+          receptor?.direccion?.distrito,
         )}, El Salvador`,
         `CÓDIGO GENERACIÓN : ${identificacion.codigoGeneracion}`,
       ],
-      [`GIRO : ${"-"}`, `NUMERO DE CONTROL : ${identificacion.numeroControl}`],
+      [`GIRO : ${receptor?.descActividad ?? "-"}`, `NUMERO DE CONTROL : ${identificacion.numeroControl}`],
       [
-        `NUMERO DOCUMENTO : ${sujetoExcluido.numDocumento ?? "-"}`,
-        `SELLO : ${respuestaMH.selloRecibido}`,
+        `NUMERO DOCUMENTO : ${receptor?.numDocumento ?? "-"}`,
+        `SELLO : ${respuestaMH?.selloRecibido ?? "-"}`,
       ],
       [
-        `CORREO : ${sujetoExcluido.correo ?? "-"}`,
+        `CORREO : ${receptor?.correo ?? "-"}`,
         `FECHA HORA EMISION : ${identificacion.fecEmi} - ${identificacion.horEmi}`,
       ],
       [
-        `TEL : ${sujetoExcluido.telefono ?? "-"}`,
+        `TEL : ${receptor?.telefono ?? "-"}`,
         `MODELO DE FACTURACIÓN : ${contingence ? "Diferido" : "Previo"}`,
       ],
       [
@@ -313,17 +314,20 @@ export const footerDocument = (doc: jsPDF, rectMargin: number, dte: DteFse) => {
   doc.text(`$${" "} ${" "} ${resumen.totalCompra}`, 185, rectMargin + 4);
   doc.setFontSize(6);
   returnBoldText(doc, "Observaciones:", 10, rectMargin + 10);
-  const { lines: linesObservaciones } = adjustTextInRect(
-    doc,
-    dte.resumen.observaciones,
-    50,
-    50,
-    115,
-    5
-  );
-  linesObservaciones.forEach((line, i) => {
-    doc.text(line, 10, rectMargin + 13 + i * 3);
-  });
+  const observacionesText = dte.resumen.observaciones ?? "";
+  if (observacionesText) {
+    const { lines: linesObservaciones } = adjustTextInRect(
+      doc,
+      observacionesText,
+      50,
+      50,
+      115,
+      5
+    );
+    linesObservaciones.forEach((line, i) => {
+      doc.text(line, 10, rectMargin + 13 + i * 3);
+    });
+  }
 
   doc.text("Suma Total de Operaciones:", 127, rectMargin + 10);
   doc.text("Retención renta:", 127, rectMargin + 13);

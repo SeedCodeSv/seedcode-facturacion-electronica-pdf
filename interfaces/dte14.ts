@@ -64,7 +64,8 @@ export class Resumen14 {
 export class DteFse {
   identificacion: Identificacion;
   emisor: Emisor14;
-  sujetoExcluido: SujetoExcluido14;
+  sujetoExcluido?: SujetoExcluido14;
+  receptor?: SujetoExcluido14;
   cuerpoDocumento: CuerpoDocumento14[];
   resumen: Resumen14;
   apendice: Apendice[] | null;
