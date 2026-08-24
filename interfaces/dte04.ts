@@ -54,6 +54,7 @@ export interface Resumen04 {
   subTotal: number;
   montoTotalOperacion: number;
   totalLetras: string;
+  observaciones?: string | null;
 }
 
 export interface DteNre {
