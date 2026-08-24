@@ -11,10 +11,38 @@ import { DteCcf, Receptor03 } from "../interfaces/dte03";
 import { DteFse } from "../interfaces/dte14";
 import { DteNce } from "../interfaces/dte05";
 import { DteNre } from "../interfaces/dte04";
+import { listaDepartamentos, listaMunicipios, listDistritos } from "distritos-sv";
 
-export const formatAddress = (dep_code: string, mun_code: string) => {
+export const formatAddress = (
+  dep_code: string,
+  mun_code: string,
+  distrito_code?: string,
+  nombreDistrito?: string,
+) => {
+  // Usar nombreDistrito si ya viene del DTE (compatibilidad v2/v4)
+  if (nombreDistrito) {
+    const dep = listaDepartamentos().find((d) => d.codigo === dep_code);
+    const mun = listaMunicipios(dep_code).find((m) => m.codigo === mun_code);
+    if (dep && mun) {
+      return `${nombreDistrito}, ${mun.valores}, ${dep.valores}`;
+    }
+  }
+
+  // Si tiene distrito_code, buscar el nombre usando distritos-sv
+  if (distrito_code) {
+    // Quitar padding de ceros (MH envía "02", distritos-sv usa "2")
+    const cleanDistritoCode = distrito_code.replace(/^0+/, '') || '0';
+    const distritos = listDistritos(dep_code, mun_code);
+    const distrito = distritos.find((d) => d.codigo === cleanDistritoCode);
+    const dep = listaDepartamentos().find((d) => d.codigo === dep_code);
+    const mun = listaMunicipios(dep_code).find((m) => m.codigo === mun_code);
+    if (distrito && dep && mun) {
+      return `${distrito.valores}, ${mun.valores}, ${dep.valores}`;
+    }
+  }
+
+  // Fallback: usar seedcode-catalogos-mh (compatibilidad v1/v3)
   const service = new SeedcodeCatalogosMhService();
-
   const deparment = service
     .get012Departamento()
     .find((dep) => dep.codigo === dep_code);
@@ -302,6 +330,8 @@ export const headerDoc = async (
           `DIRECCIÓN : ${dte.emisor.direccion.complemento} ${formatAddress(
             dte.emisor.direccion.departamento,
             dte.emisor.direccion.municipio,
+            dte.emisor.direccion.distrito,
+            dte.emisor.direccion.nombreDistrito,
           )}`,
           cellWidth - 4,
         );
@@ -584,6 +614,8 @@ export const secondHeader = (
           ? `DIRECCIÓN :  ${receptor.direccion.complemento} ${formatAddress(
               receptor.direccion.departamento,
               receptor.direccion.municipio,
+              receptor.direccion.distrito,
+              receptor.direccion.nombreDistrito,
             )}, El Salvador`
           : "No establecida",
         `CÓDIGO GENERACIÓN : ${identificacion.codigoGeneracion}`,

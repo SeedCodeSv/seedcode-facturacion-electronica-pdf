@@ -34,7 +34,9 @@ export const generateSvfe14 = async (
       [
         `DIRECCIÓN : ${sujetoExcluido.direccion.complemento} ${formatAddress(
           sujetoExcluido.direccion.departamento,
-          sujetoExcluido.direccion.municipio
+          sujetoExcluido.direccion.municipio,
+          sujetoExcluido.direccion.distrito,
+          sujetoExcluido.direccion.nombreDistrito,
         )}, El Salvador`,
         `CÓDIGO GENERACIÓN : ${identificacion.codigoGeneracion}`,
       ],

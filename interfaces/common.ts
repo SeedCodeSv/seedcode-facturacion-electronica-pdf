@@ -17,6 +17,8 @@ export class Direccion {
   departamento: string;
   municipio: string;
   complemento: string;
+  distrito?: string;
+  nombreDistrito?: string;
 }
 
 export class Emisor {

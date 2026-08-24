@@ -1035,7 +1035,9 @@ export const generateSvfe05_2 = async ({
             const address = doc.splitTextToSize(
               formatAddress(
                 svfe05.emisor.direccion.departamento,
-                svfe05.emisor.direccion.municipio
+                svfe05.emisor.direccion.municipio,
+                svfe05.emisor.direccion.distrito,
+                svfe05.emisor.direccion.nombreDistrito,
               ) +
               " " +
               svfe05.emisor.direccion.complemento,
@@ -1225,7 +1227,9 @@ export const generateSvfe05_2 = async ({
                   svfe05.receptor.direccion
                     ? formatAddress(
                       svfe05.receptor.direccion.departamento,
-                      svfe05.receptor.direccion.municipio
+                      svfe05.receptor.direccion.municipio,
+                      svfe05.receptor.direccion.distrito,
+                      svfe05.receptor.direccion.nombreDistrito,
                     ) +
                     ", " +
                     svfe05.receptor.direccion.complemento
