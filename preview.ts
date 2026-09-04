@@ -1,3 +1,27 @@
+// import dte01 from "./factura.json";
+// import { generateSvfe01_3 } from "./pdf/template3/dte01_3.pdf";
+
+// import fs from "fs";
+// import path from "path";
+
+// (async () => {
+//   try {
+//     const arrayBuffer = await generateSvfe01_3({
+//       svfe01: dte01,
+//       logo: "",
+//       logoHeight: 50,
+//       logoWidth: 100,
+//       watermark: "",
+//       selloInvalidacion: "",
+//     });
+
+//     const outputPath = path.join(__dirname, "preview.pdf");
+//     fs.writeFileSync(outputPath, Buffer.from(arrayBuffer));
+//   } catch (error) {
+//     console.log(error);
+//   }
+// })();
+
 // import fs from "fs";
 // import path from "path";
 // import { generateSvfe01, generateSvfe01_2, generateSvfe03_2, generateSvfe14_2 } from "./dist/main"; // Ajusta la ruta si tu build está en otro lado
@@ -203,7 +227,6 @@
 //         console.error(error);
 //     }
 // })();
-
 
 // // (async () => {
 // //     try {
