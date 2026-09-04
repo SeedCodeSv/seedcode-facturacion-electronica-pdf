@@ -21,8 +21,8 @@ interface PdfColors {
   border: string;
   headerBackground: string;
   headerText: string;
-  titleColor: string;
-  contentColor: string;
+  titleColor?: string;
+  contentColor?: string;
 }
 
 interface PdfDimensions {
@@ -48,18 +48,16 @@ interface PdfConfig {
 }
 
 const DEFAULT_COLORS: PdfColors = {
-  primary: "#512da8",
-  secondary: "#673ab7",
+  primary: "#263238",
+  secondary: "#455a64",
   background: "#ffffff",
-  surface: "#ede7f6",
-  textPrimary: "#211a2e",
-  textSecondary: "#5e5870",
+  surface: "#f5f5f5",
+  textPrimary: "#212121",
+  textSecondary: "#616161",
   textOnPrimary: "#ffffff",
-  border: "#d8d1e3",
-  headerBackground: "#512da8",
+  border: "#d6d6d6",
+  headerBackground: "#263238",
   headerText: "#ffffff",
-  titleColor: "#4527a0",
-  contentColor: "#240046",
 };
 
 const DEFAULT_DIMENSIONS: PdfDimensions = {
@@ -203,7 +201,16 @@ function drawPageHeader(
 
   if (logo !== "" && logoWidth > 0 && logoHeight > 0) {
     try {
-      doc.addImage(logo, "PNG", layout.leftX, layout.headerY, logoWidth, logoHeight, "LOGO", "SLOW");
+      doc.addImage(
+        logo,
+        "PNG",
+        layout.leftX,
+        layout.headerY,
+        logoWidth,
+        logoHeight,
+        "LOGO",
+        "SLOW",
+      );
     } catch {
       // ignore logo errors
     }
@@ -212,12 +219,9 @@ function drawPageHeader(
   doc.setFont("Nunito", "bold");
   doc.setFontSize(dimensions.fontSize.subtitle);
   doc.setTextColor(colors.primary);
-  doc.text(
-    title,
-    layout.pageWidth - layout.margin,
-    layout.headerY + 12,
-    { align: "right" },
-  );
+  doc.text(title, layout.pageWidth - layout.margin, layout.headerY + 12, {
+    align: "right",
+  });
 
   const headerTableY = layout.headerY + 28;
   const { identificacion } = svfe01;
@@ -364,7 +368,10 @@ function drawBottomSection(
           ["Total descuento", formatCurrency(resumen.totalDescu)],
           ["Sub total", formatCurrency(resumen.subTotal)],
           ["Total IVA", formatCurrency(resumen.totalIva ?? 0)],
-          ["Monto total operacion", formatCurrency(resumen.montoTotalOperacion)],
+          [
+            "Monto total operacion",
+            formatCurrency(resumen.montoTotalOperacion),
+          ],
           ["Total a pagar", formatCurrency(resumen.totalPagar)],
         ]
       : [
@@ -378,7 +385,10 @@ function drawBottomSection(
           ["Sub total", formatCurrency(resumen.subTotal)],
           ["IVA Retenido", formatCurrency(resumen.ivaRete1 ?? 0)],
           ["IVA Percibido", formatCurrency(resumen.ivaPerci1 ?? 0)],
-          ["Monto total operacion", formatCurrency(resumen.montoTotalOperacion)],
+          [
+            "Monto total operacion",
+            formatCurrency(resumen.montoTotalOperacion),
+          ],
           ["Total a pagar", formatCurrency(resumen.totalPagar)],
         ];
 
@@ -457,8 +467,19 @@ export const generateSvfe01_3 = async ({
   colors: customColors = {},
   dimensions: customDimensions = {},
 }: Props) => {
+  const mergedColors: PdfColors = {
+    ...DEFAULT_COLORS,
+    ...customColors,
+    titleColor:
+      customColors.titleColor ?? customColors.primary ?? DEFAULT_COLORS.primary,
+    contentColor:
+      customColors.contentColor ??
+      customColors.textPrimary ??
+      DEFAULT_COLORS.textPrimary,
+  };
+
   const mergedConfig: PdfConfig = {
-    colors: { ...DEFAULT_COLORS, ...customColors },
+    colors: mergedColors,
     dimensions: { ...DEFAULT_DIMENSIONS, ...customDimensions },
   };
 
@@ -484,7 +505,16 @@ export const generateSvfe01_3 = async ({
       ? "COMPROBANTE DE FACTURA CONSUMIDOR FINAL"
       : "COMPROBANTE DE CREDITO FISCAL";
 
-  drawPageHeader(doc, mergedConfig, layout, docTitle, svfe01, logo, logoWidth, logoHeight);
+  drawPageHeader(
+    doc,
+    mergedConfig,
+    layout,
+    docTitle,
+    svfe01,
+    logo,
+    logoWidth,
+    logoHeight,
+  );
 
   const emitterY = layout.nextSection(180);
   const { emisor } = svfe01;
@@ -503,10 +533,7 @@ export const generateSvfe01_3 = async ({
       ["ACT. ECONOMICA:", emisor.descActividad],
       ["TELEFONO:", emisor.telefono],
       ["CORREO:", emisor.correo],
-      [
-        "DIRECCION:",
-        emisor.direccion?.complemento ?? "-",
-      ],
+      ["DIRECCION:", emisor.direccion?.complemento ?? "-"],
     ],
   );
 
@@ -521,10 +548,7 @@ export const generateSvfe01_3 = async ({
           ["N.R.C:", receptor.nrc ?? "-"],
           ["TELEFONO:", receptor.telefono ?? "-"],
           ["CORREO:", receptor.correo ?? "-"],
-          [
-            "DIRECCION:",
-            receptor.direccion?.complemento ?? "-",
-          ],
+          ["DIRECCION:", receptor.direccion?.complemento ?? "-"],
         ]
       : [
           ["NOMBRE:", receptor.nombre],
@@ -533,10 +557,7 @@ export const generateSvfe01_3 = async ({
           ["ACT. ECONOMICA:", receptor.descActividad ?? "-"],
           ["TELEFONO:", receptor.telefono ?? "-"],
           ["CORREO:", receptor.correo ?? "-"],
-          [
-            "DIRECCION:",
-            receptor.direccion?.complemento ?? "-",
-          ],
+          ["DIRECCION:", receptor.direccion?.complemento ?? "-"],
         ];
   drawCard(
     doc,
@@ -560,7 +581,10 @@ export const generateSvfe01_3 = async ({
   const data = cuerpoDocumento
     .filter((item) => !exclude.includes(item.descripcion))
     .map((cuerpo) => [
-      { content: String(cuerpo.cantidad), styles: { halign: "center" as const } },
+      {
+        content: String(cuerpo.cantidad),
+        styles: { halign: "center" as const },
+      },
       { content: cuerpo.descripcion, styles: { halign: "left" as const } },
       {
         content: `$${Number(cuerpo.precioUni).toFixed(2)}`,
@@ -659,7 +683,16 @@ export const generateSvfe01_3 = async ({
     },
     didDrawPage: (data) => {
       if (data.pageNumber > 1) {
-        drawPageHeader(doc, mergedConfig, layout, docTitle, svfe01, logo, logoWidth, logoHeight);
+        drawPageHeader(
+          doc,
+          mergedConfig,
+          layout,
+          docTitle,
+          svfe01,
+          logo,
+          logoWidth,
+          logoHeight,
+        );
       }
     },
   });
@@ -682,7 +715,16 @@ export const generateSvfe01_3 = async ({
   } else {
     doc.addPage();
     bottomPageNumber = itemsPageCount + 1;
-    drawPageHeader(doc, mergedConfig, layout, docTitle, svfe01, logo, logoWidth, logoHeight);
+    drawPageHeader(
+      doc,
+      mergedConfig,
+      layout,
+      docTitle,
+      svfe01,
+      logo,
+      logoWidth,
+      logoHeight,
+    );
 
     const itemsTableY = layout.headerY + HEADER_ON_PAGE_HEIGHT;
 
@@ -787,7 +829,11 @@ export const generateSvfe01_3 = async ({
     const wmHeight = 120;
     const wmX = (dimensions.pageWidth - wmWidth) / 2;
     const wmY = (dimensions.pageHeight - wmHeight) / 2;
-    const adjustedImage = await adjustImageWatermark(watermark, wmWidth, wmHeight);
+    const adjustedImage = await adjustImageWatermark(
+      watermark,
+      wmWidth,
+      wmHeight,
+    );
 
     for (let i = 1; i <= itemsPageCount; i++) {
       doc.setPage(i);
@@ -825,7 +871,7 @@ export const generateSvfe01_3 = async ({
 
   doc.setPage(bottomPageNumber);
 
-  const qrDataUrl = await generateQRWithColor(svfe01, colors.titleColor);
+  const qrDataUrl = await generateQRWithColor(svfe01, colors.titleColor ?? colors.primary);
   drawBottomSection(doc, mergedConfig, layout, bottomStartY, qrDataUrl, svfe01);
 
   if (selloInvalidacion !== "") {
