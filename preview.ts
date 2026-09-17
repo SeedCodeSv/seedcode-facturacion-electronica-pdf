@@ -1,5 +1,60 @@
 // import fs from "fs";
 // import path from "path";
+// import { generateAccountState } from "./pdf/template2/account_state.pdf";
+
+// (async () => {
+//   const props = {
+//     logo: "https://facturacion-seed-code.nyc3.digitaloceanspaces.com/CLIENTS/LOGOS/06140803711184/logo_1_0.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=DO00XCTG77NFNGFZLWHF%2F20251006%2Fnyc3%2Fs3%2Faws4_request&X-Amz-Date=20251006T144110Z&X-Amz-Expires=900&X-Amz-Signature=f586de7a3e974fcd4aab3305484e4fffae515b80fb522e59fcbaac0206d55947&X-Amz-SignedHeaders=host&x-id=GetObject",
+//     watermark: "CLIENTS/LOGOS/06140612191016/watermark_12.png",
+//     borderColor: "#4f96a4",
+//     fillColor: "#e2eafc",
+//     fillColor2: "#157386",
+//     darkTextColor: "#157386",
+//     lightTextColor: "#ffffff",
+//     tertiaryColor: "#48bdb7",
+//     logoWidth: 100,
+//     logoHeight: 50,
+//     emisor: {
+//       nombre: "ROCA SUNZAL, S.A. DE C.V.",
+//       nit: "06142604061017",
+//       nrc: "1715826",
+//       direccion: "La Libertad, LA LIBERTAD COSTA, TAMANIQUE, Carretera Litoral, playa Sunzal, km. 42 1/2, Tamanique, La Libertad.",
+//       correo: "info@rocasunzal.com",
+//       web: "www.rocasunzal.com",
+//     },
+//     receptor: {
+//       nombre: "CARLOS DANIEL CONTRERAS HERNANDEZ",
+//       actividadEconomica: "-",
+//       direccion: "La Libertad, LA LIBERTAD COSTA, TAMANIQUE, Carretera Litoral, playa Sunzal, km. 42 1/2, Tamanique, La Libertad.",
+//       tipoDocumento: "DUI",
+//       numDocumento: "062017584",
+//       correo: "contrerasdannnielgmail.com",
+//       nrc: "-",
+//     },
+//     movimientos: [
+//       {
+//         fecha: "2026-09-14",
+//         codReferencia: "3C8D7207-68A1-43EE-91F3-A13E786665A2",
+//         estado: "PENDIENTE",
+//         montoPagado: 285,
+//         montoPendiente: 265,
+//         totalCredito: 550,
+//         proximoPago: "-",
+//       },
+//     ],
+//     resumen: {
+//       totalCredito: 1250,
+//       totalPagado: 800,
+//       totalPendiente: 450,
+//     },
+//   };
+
+//   const arrayBuffer = await generateAccountState(props);
+
+//   const outputPath = path.join(__dirname, "preview.pdf");
+//           fs.writeFileSync(outputPath, Buffer.from(arrayBuffer));
+  
+// })();
 
 // (async () => {
 //     try {
