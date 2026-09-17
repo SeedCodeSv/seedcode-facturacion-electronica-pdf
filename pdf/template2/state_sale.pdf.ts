@@ -8,24 +8,26 @@ import type {
   AccountStateReceptor,
 } from "./account_state.pdf";
 
-export interface PaymentInfo {
+export interface StateSalePago {
   fecha: string;
-  hora: string;
   formaPago: string;
   banco?: string | null;
   referencia?: string | null;
   monto: number;
+  saldo: number;
+}
+
+export interface StateSaleVenta {
+  fecha: string;
+  codReferencia: string;
   estado: string;
-  fechaAnulacion?: string | null;
+  totalCredito: number;
+  totalPagado: number;
+  totalPendiente: number;
+  proximoPago: string;
 }
 
-export interface PaymentSaldos {
-  anterior: number;
-  abonado: number;
-  actual: number;
-}
-
-export interface PaymentProps {
+export interface StateSaleProps {
   borderColor: string;
   fillColor: string;
   fillColor2: string;
@@ -38,18 +40,17 @@ export interface PaymentProps {
   watermark: Uint8Array | string;
   emisor: AccountStateEmisor;
   receptor: AccountStateReceptor;
-  codReferencia: string;
-  pago: PaymentInfo;
-  saldos: PaymentSaldos;
+  venta: StateSaleVenta;
+  pagos: StateSalePago[];
 }
 
 const money = (n: number): string => `$${Number(n ?? 0).toFixed(2)}`;
 
 /**
- * Comprobante de pago con datos reales: encabezado del emisor, tarjeta del
- * receptor, detalle del pago y saldos. Mismo estilo template2.
+ * Igual que el estado de cuentas pero de UNA venta: encabezado del emisor,
+ * tarjeta del receptor, banda de la venta y tabla con su lista de pagos.
  */
-export const generatePayment = async ({
+export const generateStateSale = async ({
   tertiaryColor,
   darkTextColor,
   logo,
@@ -62,10 +63,9 @@ export const generatePayment = async ({
   watermark = "",
   emisor,
   receptor,
-  codReferencia,
-  pago,
-  saldos,
-}: PaymentProps) => {
+  venta,
+  pagos,
+}: StateSaleProps) => {
   const doc = new jsPDF({
     orientation: "portrait",
     unit: "pt",
@@ -97,9 +97,6 @@ export const generatePayment = async ({
     logoWidth,
     logoHeight,
   );
-
-  const isAnnulled = pago.estado.toUpperCase() === "ANULADO";
-  const title = isAnnulled ? "COMPROBANTE DE PAGO ANULADO" : "COMPROBANTE DE PAGO";
 
   // ---------- Encabezado: logo + emisor | título ----------
   autoTable(doc, {
@@ -151,26 +148,22 @@ export const generatePayment = async ({
         }
         if (data.column.index === 1) {
           doc.setFont("Nunito", "bold");
-          doc.setFontSize(13);
+          doc.setFontSize(15);
           doc.setTextColor(tertiaryColor);
-          doc.text(title, data.cell.x + 200, data.cell.y + 20, {
-            align: "center",
-          });
-          doc.setFont("Nunito", "normal");
-          doc.setFontSize(8);
-          doc.setTextColor(darkTextColor);
           doc.text(
-            `Fecha: ${pago.fecha}   Hora: ${pago.hora}`,
+            "ESTADO DE CUENTA",
             data.cell.x + 200,
-            data.cell.y + 38,
+            data.cell.y + 20,
             { align: "center" },
           );
+          doc.setFont("Nunito", "normal");
+          doc.setFontSize(8);
         }
       }
     },
   });
 
-  // ---------- Tarjeta del cliente + referencia ----------
+  // ---------- Tarjeta del cliente ----------
   let lastY = getFinalY();
   autoTable(doc, {
     head: [[""]],
@@ -186,7 +179,7 @@ export const generatePayment = async ({
           data.cell.x + 5,
           data.cell.y + 15,
           data.cell.width - 10,
-          200,
+          245,
           15,
           15,
           "S",
@@ -196,7 +189,7 @@ export const generatePayment = async ({
           data.cell.x + 100,
           data.cell.y + 30,
           665,
-          165,
+          210,
           15,
           15,
           "F",
@@ -209,6 +202,20 @@ export const generatePayment = async ({
         doc.text("Cliente: ", paddingX, y);
         doc.text(receptor.nombre, paddingX + 100, y + 3);
         y += 30;
+        doc.text(receptor.actividadEconomica, paddingX + 100, y);
+        doc.text(
+          doc.splitTextToSize("Actividad Economica: ", 100),
+          paddingX,
+          y,
+        );
+        y += 35;
+        doc.text("Dirección: ", paddingX, y);
+        const address = doc.splitTextToSize(
+          doc.splitTextToSize(receptor.direccion, 600),
+          700,
+        );
+        doc.text(address, paddingX + 100, y);
+        y += 40;
         doc.text(
           doc.splitTextToSize("Tipo de documento: ", 100),
           paddingX,
@@ -226,69 +233,53 @@ export const generatePayment = async ({
         doc.text("Correo: ", paddingX, y);
         doc.text(receptor.correo, paddingX + 100, y);
         y += 25;
-        doc.text("DTE: ", paddingX, y);
-        doc.setFont("Nunito", "bold");
-        doc.text(codReferencia, paddingX + 100, y);
-        doc.setFont("Nunito", "normal");
-        y += 25;
-        doc.text("Referencia: ", paddingX, y);
-        doc.text(pago.referencia || "—", paddingX + 100, y);
+        doc.text(doc.splitTextToSize("NRC: ", 80), paddingX, y);
+        doc.text(receptor.nrc, paddingX + 100, y);
       }
     },
   });
 
   let y = getFinalY() + 25;
 
-  // ---------- Monto del pago ----------
-  if (y > doc.internal.pageSize.height - 320) {
+  // ---------- Banda de la venta ----------
+  if (y > doc.internal.pageSize.height - 260) {
     doc.addPage();
     y = 40;
   }
 
+  const bandX = marginX + 10;
+  const bandW = tableWidth - 20;
+
   doc.setFillColor(fillColor2);
-  doc.roundedRect(marginX + 10, y, tableWidth - 20, 60, 10, 10, "F");
+  doc.roundedRect(bandX, y, bandW, 34, 8, 8, "F");
   doc.setFont("Nunito", "bold");
-  doc.setFontSize(9);
+  doc.setFontSize(10);
   doc.setTextColor(lightTextColor);
-  doc.text("MONTO DEL PAGO", marginX + 25, y + 20);
-  doc.setFontSize(22);
-  doc.text(money(pago.monto), marginX + 25, y + 45);
-  doc.setFontSize(9);
+  doc.text(`VENTA · ${venta.codReferencia}`, bandX + 12, y + 14);
   doc.setFont("Nunito", "normal");
+  doc.setFontSize(8.5);
   doc.text(
-    pago.banco ? `${pago.formaPago} · ${pago.banco}` : pago.formaPago,
-    marginX + 250,
-    y + 30,
+    `Fecha: ${venta.fecha}   ·   Estado: ${venta.estado}   ·   Total: ${money(venta.totalCredito)}   ·   Pagado: ${money(venta.totalPagado)}   ·   Saldo: ${money(venta.totalPendiente)}   ·   Próx: ${venta.proximoPago}`,
+    bandX + 12,
+    y + 26,
   );
-  doc.setFont("Nunito", "bold");
-  doc.text(`ESTADO: ${pago.estado}`, marginX + 250, y + 45);
-  if (isAnnulled && pago.fechaAnulacion) {
-    doc.setFont("Nunito", "normal");
-    doc.setFontSize(8);
-    doc.text(`Anulado: ${pago.fechaAnulacion}`, marginX + 250, y + 56);
-  }
 
-  y += 70;
+  y += 40;
 
-  // ---------- Tabla detalle ----------
-  const body: string[][] = [
-    [
-      pago.banco ? `${pago.formaPago} · ${pago.banco}` : pago.formaPago,
-      pago.referencia || "—",
-      money(pago.monto),
-    ],
-  ];
-
-  if (isAnnulled) {
-    body.push([
-      "Anulación del pago",
-      pago.fechaAnulacion || "—",
-      `(${money(pago.monto)})`,
-    ]);
-  }
+  // ---------- Tabla con la lista de pagos ----------
+  const body =
+    pagos.length > 0
+      ? pagos.map((p) => [
+          p.fecha,
+          p.banco ? `${p.formaPago} · ${p.banco}` : p.formaPago,
+          p.referencia || "—",
+          money(p.monto),
+          money(p.saldo),
+        ])
+      : [["—", "Sin abonos registrados aún.", "—", "—", "—"]];
 
   autoTable(doc, {
-    head: [["FORMA DE PAGO / BANCO", "REFERENCIA", "MONTO"]],
+    head: [["FECHA", "FORMA DE PAGO / BANCO", "REFERENCIA", "ABONO", "SALDO"]],
     body,
     showHead: true,
     theme: "plain",
@@ -314,12 +305,14 @@ export const generatePayment = async ({
       font: "Nunito",
     },
     columnStyles: {
-      0: { cellWidth: 400 },
-      1: { cellWidth: 200, halign: "center", valign: "middle" },
-      2: { cellWidth: 166, halign: "right", valign: "middle" },
+      0: { cellWidth: 70, halign: "center", valign: "middle" },
+      1: { cellWidth: 350 },
+      2: { cellWidth: 116, halign: "center", valign: "middle" },
+      3: { cellWidth: 115, halign: "right", valign: "middle" },
+      4: { cellWidth: 115, halign: "right", valign: "middle" },
     },
     didDrawCell: (cell) => {
-      if (cell.section === "body" && cell.column.index < 2) {
+      if (cell.section === "body" && cell.column.index < 4) {
         doc.setLineWidth(0.2);
         doc.setDrawColor(borderColor);
         doc.line(
@@ -334,7 +327,7 @@ export const generatePayment = async ({
 
   y = getFinalY() + 18;
 
-  // ---------- Saldos ----------
+  // ---------- Resumen ----------
   if (y > doc.internal.pageSize.height - 160) {
     doc.addPage();
     y = 60;
@@ -347,9 +340,9 @@ export const generatePayment = async ({
   const boxHeight = 80;
 
   const boxes = [
-    { label: "SALDO ANTERIOR", value: money(saldos.anterior) },
-    { label: "TOTAL ABONADO", value: money(saldos.abonado) },
-    { label: "SALDO ACTUAL", value: money(saldos.actual) },
+    { label: "TOTAL CREDITO", value: money(venta.totalCredito) },
+    { label: "TOTAL PAGADO", value: money(venta.totalPagado) },
+    { label: "TOTAL PENDIENTE", value: money(venta.totalPendiente) },
   ];
 
   boxes.forEach((box, index) => {
@@ -413,9 +406,7 @@ export const generatePayment = async ({
     doc.setFontSize(8);
     doc.setTextColor(tertiaryColor);
     doc.text(
-      isAnnulled
-        ? `Comprobante anulado · Sin validez fiscal · Pág ${i}/${pageCount}`
-        : `Comprobante de pago · Sin validez fiscal · Pág ${i}/${pageCount}`,
+      `Estado de cuenta · Sin validez fiscal · Pág ${i}/${pageCount}`,
       doc.internal.pageSize.width / 2,
       doc.internal.pageSize.height - 22,
       { align: "center" },
