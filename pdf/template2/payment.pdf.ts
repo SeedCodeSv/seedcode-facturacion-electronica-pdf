@@ -259,7 +259,7 @@ export const generatePayment = async ({
   doc.setFontSize(9);
   doc.setFont("Nunito", "normal");
   doc.text(
-    pago.banco ? `${pago.formaPago} · ${pago.banco}` : pago.formaPago,
+    pago.formaPago,
     marginX + 250,
     y + 30,
   );
@@ -275,11 +275,7 @@ export const generatePayment = async ({
 
   // ---------- Tabla detalle ----------
   const body: string[][] = [
-    [
-      pago.banco ? `${pago.formaPago} · ${pago.banco}` : pago.formaPago,
-      pago.referencia || "—",
-      money(pago.monto),
-    ],
+    [pago.formaPago, pago.referencia || "—", money(pago.monto)],
   ];
 
   if (isAnnulled) {
