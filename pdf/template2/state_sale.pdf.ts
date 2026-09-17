@@ -3,31 +3,19 @@ import { nunitoBold } from "./fonts/nunito";
 import { nunitoSemibold } from "./fonts/nunito-semibold";
 import { adjustImage, adjustImageWatermark, getHeightText } from "../utils";
 import autoTable from "jspdf-autotable";
-import type {
-  AccountStateEmisor,
-  AccountStateReceptor,
-} from "./account_state.pdf";
+import { AccountStateEmisor, AccountStateReceptor, AccountStateResumen } from "./account_state.pdf";
 
-export interface StateSalePago {
+export interface AccountStateSale {
   fecha: string;
-  formaPago: string;
-  banco?: string | null;
-  referencia?: string | null;
-  monto: number;
-  saldo: number;
-}
-
-export interface StateSaleVenta {
-  fecha: string;
-  codReferencia: string;
+  noPago: string;
   estado: string;
+  montoPagado: number;
+  montoPendiente: number;
   totalCredito: number;
-  totalPagado: number;
-  totalPendiente: number;
   proximoPago: string;
 }
 
-export interface StateSaleProps {
+export interface AccountStateSaleProps {
   borderColor: string;
   fillColor: string;
   fillColor2: string;
@@ -40,16 +28,11 @@ export interface StateSaleProps {
   watermark: Uint8Array | string;
   emisor: AccountStateEmisor;
   receptor: AccountStateReceptor;
-  venta: StateSaleVenta;
-  pagos: StateSalePago[];
+  movimientos: AccountStateSale[];
+  resumen: AccountStateResumen;
+  codGeneracion: string;
 }
 
-const money = (n: number): string => `$${Number(n ?? 0).toFixed(2)}`;
-
-/**
- * Igual que el estado de cuentas pero de UNA venta: encabezado del emisor,
- * tarjeta del receptor, banda de la venta y tabla con su lista de pagos.
- */
 export const generateStateSale = async ({
   tertiaryColor,
   darkTextColor,
@@ -58,14 +41,13 @@ export const generateStateSale = async ({
   logoWidth,
   borderColor,
   fillColor,
-  lightTextColor,
-  fillColor2,
   watermark = "",
   emisor,
   receptor,
-  venta,
-  pagos,
-}: StateSaleProps) => {
+  movimientos,
+  resumen,
+  codGeneracion,
+}: AccountStateSaleProps) => {
   const doc = new jsPDF({
     orientation: "portrait",
     unit: "pt",
@@ -85,12 +67,133 @@ export const generateStateSale = async ({
   const tableHeight = doc.internal.pageSize.height - marginY * 2;
   const radius = 15;
 
-  const getFinalY = (): number =>
+  let lastY =
     (
       doc as unknown as {
         lastAutoTable: { finalY: number };
       }
     ).lastAutoTable?.finalY ?? 0;
+
+  const data = movimientos.map((m) => [
+    m.fecha,
+    m.noPago,
+    m.estado,
+    `$${m.montoPagado}`,
+    `$${m.montoPendiente}`,
+    `$${m.totalCredito}`,
+    m.proximoPago,
+  ]);
+
+  autoTable(doc, {
+    head: [
+      [
+        "Fecha",
+        "Cod. referencia",
+        "Estado",
+        "Monto pagado",
+        "Monto pendiente",
+        "Total credito",
+        "Proximo pago",
+      ],
+    ],
+    foot: [["", "", "", "", "", ""]],
+    body: [...data],
+    showHead: true,
+    theme: "plain",
+    startY: 425,
+    margin: {
+      top: 175,
+      left: marginX + 10,
+      right: marginX + 10,
+      bottom: doc.internal.pages.length > 1 ? 10 : 55,
+    },
+    headStyles: {
+      minCellHeight: 35,
+      valign: "middle",
+      halign: "center",
+      fontStyle: "bold",
+      textColor: darkTextColor,
+      fontSize: 10,
+      font: "Nunito",
+    },
+    bodyStyles: {
+      textColor: darkTextColor,
+      fontSize: 9,
+    },
+    columnStyles: {
+      0: { cellWidth: 70, halign: "center", valign: "middle" },
+      1: { cellWidth: 350 },
+      2: { cellWidth: 70, halign: "center", valign: "middle" },
+      3: { cellWidth: 70, halign: "center", valign: "middle" },
+      4: { cellWidth: 70, halign: "center", valign: "middle" },
+      5: { cellWidth: 70, halign: "center", valign: "middle" },
+      6: { cellWidth: 70, halign: "center", valign: "middle" },
+    },
+    didDrawPage: (data) => {
+      doc.setLineWidth(1.2);
+      doc.setDrawColor(borderColor);
+      doc.line(
+        25,
+        data.pageNumber === 1 ? 460 : 210,
+        793,
+        data.pageNumber === 1 ? 460 : 210,
+      );
+    },
+  });
+
+  lastY = (
+    doc as unknown as {
+      lastAutoTable: { finalY: number };
+    }
+  ).lastAutoTable.finalY;
+
+  const result = doc.internal.pageSize.height - lastY;
+
+  if (result < 250) {
+    doc.addPage();
+    lastY = 20;
+  }
+
+  const startY = 900;
+  const gap = 6;
+  const startX = marginX + 10;
+  const endX = doc.internal.pageSize.getWidth() - marginX - 8;
+
+  const availableWidth = endX - startX;
+  const boxCount = 3;
+  const boxWidth = (availableWidth - gap * (boxCount - 1)) / boxCount;
+  const boxHeight = 80;
+
+  const boxes = [
+    { label: "TOTAL CREDITO", value: `$${resumen.totalCredito.toFixed(2)}` },
+    { label: "TOTAL PAGADO", value: `$${resumen.totalPagado.toFixed(2)}` },
+    { label: "TOTAL PENDIENTE", value: `$${resumen.totalPendiente.toFixed(2)}` },
+  ];
+
+  boxes.forEach((box, index) => {
+    const x = startX + index * (boxWidth + gap);
+
+    doc.setDrawColor(0, 0, 0);
+    doc.setLineWidth(0.3);
+    doc.setDrawColor(borderColor);
+    doc.roundedRect(x, startY, boxWidth, boxHeight, 10, 10, "S");
+
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(8);
+    doc.setTextColor(darkTextColor);
+    doc.text(box.label, x + boxWidth / 2, startY + (boxHeight / 2) - 15, {
+      align: "center",
+    });
+
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(18);
+    doc.setTextColor(darkTextColor);
+    doc.text(box.value, x + boxWidth / 2, startY + (boxHeight / 2) + 5, {
+      align: "center",
+    });
+  });
+
+  const pageCounter = doc.internal.pages.length - 1;
 
   const { imageBase64, width, height } = await adjustImage(
     logo,
@@ -98,278 +201,11 @@ export const generateStateSale = async ({
     logoHeight,
   );
 
-  // ---------- Encabezado: logo + emisor | título ----------
-  autoTable(doc, {
-    head: [["", ""]],
-    showHead: true,
-    startY: marginY + 3,
-    theme: "plain",
-    margin: { left: marginX + 3, right: marginX + 3 },
-    didDrawCell: (data) => {
-      if (data.section === "head") {
-        if (data.column.index === 0) {
-          doc.addImage(
-            imageBase64,
-            "PNG",
-            data.cell.x + 10,
-            data.cell.y + 10,
-            width,
-            height,
-            "LOGO",
-          );
-          doc.setFont("Nunito", "bold");
-          doc.setTextColor(darkTextColor);
-
-          let lastY = 110;
-          doc.setFontSize(13);
-          doc.text(emisor.nombre, data.cell.x + 10, lastY);
-          lastY += 15;
-          doc.setFontSize(10);
-          doc.setTextColor(tertiaryColor);
-          doc.text("N.I.T: ", data.cell.x + 10, lastY);
-          doc.setFont("Nunito", "normal");
-          doc.text(emisor.nit, data.cell.x + 40, lastY);
-          doc.setFont("Nunito", "bold");
-          doc.text("N.R.C: ", data.cell.x + 150, lastY);
-          doc.setFont("Nunito", "normal");
-          doc.text(emisor.nrc, data.cell.x + 180, lastY);
-          doc.setTextColor(darkTextColor);
-          lastY += 15;
-          doc.setFontSize(8);
-          doc.setFont("Nunito", "normal");
-
-          const address = doc.splitTextToSize(emisor.direccion, 700);
-          const textH = getHeightText(doc, address);
-
-          doc.text(address, data.cell.x + 10, lastY);
-          lastY += textH + 2;
-          doc.text(emisor.correo, data.cell.x + 10, lastY);
-          doc.text(emisor.web, data.cell.x + 150, lastY);
-        }
-        if (data.column.index === 1) {
-          doc.setFont("Nunito", "bold");
-          doc.setFontSize(15);
-          doc.setTextColor(tertiaryColor);
-          doc.text(
-            "ESTADO DE CUENTA",
-            data.cell.x + 200,
-            data.cell.y + 20,
-            { align: "center" },
-          );
-          doc.setFont("Nunito", "normal");
-          doc.setFontSize(8);
-        }
-      }
-    },
-  });
-
-  // ---------- Tarjeta del cliente ----------
-  let lastY = getFinalY();
-  autoTable(doc, {
-    head: [[""]],
-    showHead: true,
-    startY: lastY + 110,
-    theme: "plain",
-    margin: { left: marginX + 3, right: marginX + 3 },
-    didDrawCell: (data) => {
-      if (data.section === "head" && data.column.index === 0) {
-        doc.setLineWidth(1.2);
-        doc.setDrawColor(borderColor);
-        doc.roundedRect(
-          data.cell.x + 5,
-          data.cell.y + 15,
-          data.cell.width - 10,
-          245,
-          15,
-          15,
-          "S",
-        );
-        doc.setFillColor(fillColor);
-        doc.roundedRect(
-          data.cell.x + 100,
-          data.cell.y + 30,
-          665,
-          210,
-          15,
-          15,
-          "F",
-        );
-        doc.setFont("Nunito", "normal");
-        doc.setFontSize(11.5);
-        doc.setTextColor(darkTextColor);
-        let y = data.cell.y + 40;
-        const paddingX = data.cell.x + 15;
-        doc.text("Cliente: ", paddingX, y);
-        doc.text(receptor.nombre, paddingX + 100, y + 3);
-        y += 30;
-        doc.text(receptor.actividadEconomica, paddingX + 100, y);
-        doc.text(
-          doc.splitTextToSize("Actividad Economica: ", 100),
-          paddingX,
-          y,
-        );
-        y += 35;
-        doc.text("Dirección: ", paddingX, y);
-        const address = doc.splitTextToSize(
-          doc.splitTextToSize(receptor.direccion, 600),
-          700,
-        );
-        doc.text(address, paddingX + 100, y);
-        y += 40;
-        doc.text(
-          doc.splitTextToSize("Tipo de documento: ", 100),
-          paddingX,
-          y - 10,
-        );
-        doc.text(receptor.tipoDocumento, paddingX + 100, y);
-        y += 30;
-        doc.text(
-          doc.splitTextToSize("Numero de documento: ", 100),
-          paddingX,
-          y - 5,
-        );
-        doc.text(receptor.numDocumento, paddingX + 100, y);
-        y += 35;
-        doc.text("Correo: ", paddingX, y);
-        doc.text(receptor.correo, paddingX + 100, y);
-        y += 25;
-        doc.text(doc.splitTextToSize("NRC: ", 80), paddingX, y);
-        doc.text(receptor.nrc, paddingX + 100, y);
-      }
-    },
-  });
-
-  let y = getFinalY() + 25;
-
-  // ---------- Banda de la venta ----------
-  if (y > doc.internal.pageSize.height - 260) {
-    doc.addPage();
-    y = 40;
-  }
-
-  const bandX = marginX + 10;
-  const bandW = tableWidth - 20;
-
-  doc.setFillColor(fillColor2);
-  doc.roundedRect(bandX, y, bandW, 34, 8, 8, "F");
-  doc.setFont("Nunito", "bold");
-  doc.setFontSize(10);
-  doc.setTextColor(lightTextColor);
-  doc.text(`VENTA · ${venta.codReferencia}`, bandX + 12, y + 14);
-  doc.setFont("Nunito", "normal");
-  doc.setFontSize(8.5);
-  doc.text(
-    `Fecha: ${venta.fecha}   ·   Estado: ${venta.estado}   ·   Total: ${money(venta.totalCredito)}   ·   Pagado: ${money(venta.totalPagado)}   ·   Saldo: ${money(venta.totalPendiente)}   ·   Próx: ${venta.proximoPago}`,
-    bandX + 12,
-    y + 26,
-  );
-
-  y += 40;
-
-  // ---------- Tabla con la lista de pagos ----------
-  const body =
-    pagos.length > 0
-      ? pagos.map((p) => [
-          p.fecha,
-          p.banco ? `${p.formaPago} · ${p.banco}` : p.formaPago,
-          p.referencia || "—",
-          money(p.monto),
-          money(p.saldo),
-        ])
-      : [["—", "Sin abonos registrados aún.", "—", "—", "—"]];
-
-  autoTable(doc, {
-    head: [["FECHA", "FORMA DE PAGO / BANCO", "REFERENCIA", "ABONO", "SALDO"]],
-    body,
-    showHead: true,
-    theme: "plain",
-    startY: y,
-    margin: {
-      top: 175,
-      left: marginX + 10,
-      right: marginX + 10,
-      bottom: 60,
-    },
-    headStyles: {
-      minCellHeight: 28,
-      valign: "middle",
-      halign: "center",
-      fontStyle: "bold",
-      textColor: darkTextColor,
-      fontSize: 9,
-      font: "Nunito",
-    },
-    bodyStyles: {
-      textColor: darkTextColor,
-      fontSize: 9,
-      font: "Nunito",
-    },
-    columnStyles: {
-      0: { cellWidth: 70, halign: "center", valign: "middle" },
-      1: { cellWidth: 350 },
-      2: { cellWidth: 116, halign: "center", valign: "middle" },
-      3: { cellWidth: 115, halign: "right", valign: "middle" },
-      4: { cellWidth: 115, halign: "right", valign: "middle" },
-    },
-    didDrawCell: (cell) => {
-      if (cell.section === "body" && cell.column.index < 4) {
-        doc.setLineWidth(0.2);
-        doc.setDrawColor(borderColor);
-        doc.line(
-          cell.cell.x + cell.cell.width,
-          cell.cell.y,
-          cell.cell.x + cell.cell.width,
-          cell.cell.y + cell.cell.height,
-        );
-      }
-    },
-  });
-
-  y = getFinalY() + 18;
-
-  // ---------- Resumen ----------
-  if (y > doc.internal.pageSize.height - 160) {
-    doc.addPage();
-    y = 60;
-  }
-
-  const gap = 6;
-  const startX = marginX + 10;
-  const endX = doc.internal.pageSize.getWidth() - marginX - 8;
-  const boxWidth = (endX - startX - gap * 2) / 3;
-  const boxHeight = 80;
-
-  const boxes = [
-    { label: "TOTAL CREDITO", value: money(venta.totalCredito) },
-    { label: "TOTAL PAGADO", value: money(venta.totalPagado) },
-    { label: "TOTAL PENDIENTE", value: money(venta.totalPendiente) },
-  ];
-
-  boxes.forEach((box, index) => {
-    const x = startX + index * (boxWidth + gap);
-
-    doc.setLineWidth(0.3);
-    doc.setDrawColor(borderColor);
-    doc.roundedRect(x, y, boxWidth, boxHeight, 10, 10, "S");
-
-    doc.setFont("helvetica", "bold");
-    doc.setFontSize(8);
-    doc.setTextColor(darkTextColor);
-    doc.text(box.label, x + boxWidth / 2, y + boxHeight / 2 - 15, {
-      align: "center",
-    });
-
-    doc.setFontSize(18);
-    doc.text(box.value, x + boxWidth / 2, y + boxHeight / 2 + 5, {
-      align: "center",
-    });
-  });
-
-  // ---------- Marcos, marca de agua y pie en cada página ----------
-  const pageCount = doc.internal.pages.length - 1;
-
-  for (let i = 1; i <= pageCount; i++) {
+  for (let i = 1; i <= pageCounter; i++) {
     doc.setPage(i);
+    const isFirstPage = i === 1;
+    const isLastPage = i === doc.internal.pages.length - 1;
+    const hasMultiplePages = doc.internal.pages.length - 1 > 1;
 
     if (watermark !== "") {
       doc.saveGraphicsState();
@@ -381,10 +217,14 @@ export const generateStateSale = async ({
         adjustedImage.imageBase64,
         "PNG",
         doc.internal.pageSize.width / 2 - 150,
-        doc.internal.pageSize.width / 2 + 50,
+        isFirstPage
+          ? hasMultiplePages
+            ? doc.internal.pageSize.width / 2 + 100
+            : doc.internal.pageSize.width / 2 + 50
+          : doc.internal.pageSize.width / 2,
         adjustedImage.width,
         adjustedImage.height,
-        `KEY${i}`,
+        "KEY" + i,
         "FAST",
       );
       doc.restoreGraphicsState();
@@ -402,15 +242,195 @@ export const generateStateSale = async ({
       "S",
     );
 
-    doc.setFont("Nunito", "normal");
-    doc.setFontSize(8);
-    doc.setTextColor(tertiaryColor);
-    doc.text(
-      `Estado de cuenta · Sin validez fiscal · Pág ${i}/${pageCount}`,
-      doc.internal.pageSize.width / 2,
-      doc.internal.pageSize.height - 22,
-      { align: "center" },
+    doc.roundedRect(
+      25,
+      i === 1 ? 420 : 170,
+      768,
+      i === 1
+        ? doc.internal.pages.length - 1 > 1
+          ? 600
+          : 450
+        : i === doc.internal.pages.length - 1
+          ? 700
+          : doc.internal.pageSize.height - 200,
+      15,
+      15,
+      "S",
     );
+
+    let lineHeight: number;
+
+    if (isFirstPage) {
+      lineHeight = hasMultiplePages
+        ? doc.internal.pageSize.height - 38
+        : doc.internal.pageSize.height - 190;
+    } else if (isLastPage) {
+      lineHeight = doc.internal.pageSize.height - 198;
+    } else {
+      lineHeight = doc.internal.pageSize.height - 30;
+    }
+
+    doc.line(95, i === 1 ? 420 : 160, 95, lineHeight);
+    doc.line(445, i === 1 ? 420 : 170, 445, lineHeight);
+    doc.line(515, i === 1 ? 420 : 170, 515, lineHeight);
+    doc.line(585, i === 1 ? 420 : 170, 585, lineHeight);
+    doc.line(655, i === 1 ? 420 : 170, 655, lineHeight);
+    doc.line(725, i === 1 ? 420 : 170, 725, lineHeight);
+
+    autoTable(doc, {
+      head: [["", ""]],
+      showHead: true,
+      startY: marginY + 3,
+      theme: "plain",
+      margin: { left: marginX + 3, right: marginX + 3 },
+      didDrawCell: (data) => {
+        if (data.section === "head") {
+          if (data.column.index === 0) {
+            doc.addImage(
+              imageBase64,
+              "PNG",
+              data.cell.x + 10,
+              data.cell.y + 10,
+              width,
+              height,
+              "LOGO",
+            );
+            doc.setFont("Nunito", "bold");
+            doc.setTextColor(darkTextColor);
+
+            let lastY = 110;
+            doc.setFontSize(13);
+            doc.text(emisor.nombre, data.cell.x + 10, lastY);
+            lastY += 15;
+            doc.setFontSize(10);
+            doc.setTextColor(tertiaryColor);
+            doc.text("N.I.T: ", data.cell.x + 10, lastY);
+            doc.setFont("Nunito", "normal");
+            doc.text(emisor.nit, data.cell.x + 40, lastY);
+            doc.setFont("Nunito", "bold");
+            doc.text("N.R.C: ", data.cell.x + 150, lastY);
+            doc.setFont("Nunito", "normal");
+            doc.text(emisor.nrc, data.cell.x + 180, lastY);
+            doc.setTextColor(darkTextColor);
+            doc.setFont("Nunito", "bold");
+            lastY += 15;
+            doc.setFontSize(8);
+            doc.setFont("Nunito", "normal");
+
+            const address = doc.splitTextToSize(emisor.direccion, 700);
+
+            const textH = getHeightText(doc, address);
+
+            doc.text(address, data.cell.x + 10, lastY);
+            lastY += textH + 2;
+            doc.text(emisor.correo, data.cell.x + 10, lastY);
+            doc.text(emisor.web, data.cell.x + 150, lastY);
+          }
+          if (data.column.index === 1) {
+            doc.setFont("Nunito", "bold");
+            doc.setFontSize(15);
+            doc.setTextColor(tertiaryColor);
+            doc.text(
+              "ESTADO DE CUENTAS",
+              data.cell.x + 200,
+              data.cell.y + 20,
+              { align: "center" },
+            );
+            doc.setFont("Nunito", "normal");
+            doc.setFontSize(12);
+            doc.text(
+              `CODIGO DE GENERACION: ${codGeneracion}`,
+              data.cell.x + 200,
+              data.cell.y + 30,
+              { align: "center" },
+            );
+            doc.setFontSize(8);
+          }
+        }
+      },
+    });
+
+    if (i === 1) {
+      lastY = (
+        doc as unknown as {
+          lastAutoTable: { finalY: number };
+        }
+      ).lastAutoTable.finalY;
+      autoTable(doc, {
+        head: [[""]],
+        showHead: true,
+        startY: lastY + 110,
+        theme: "plain",
+        margin: { left: marginX + 3, right: marginX + 3 },
+        didDrawCell: (data) => {
+          if (data.section === "head") {
+            if (data.column.index === 0) {
+              doc.setLineWidth(1.2);
+              doc.setDrawColor(borderColor);
+              doc.roundedRect(
+                data.cell.x + 5,
+                data.cell.y + 15,
+                data.cell.width - 10,
+                245,
+                15,
+                15,
+                "S",
+              );
+              doc.setFillColor(fillColor);
+              doc.roundedRect(
+                data.cell.x + 100,
+                data.cell.y + 30,
+                665,
+                210,
+                15,
+                15,
+                "F",
+              );
+              doc.setFont("Nunito", "normal");
+              doc.setFontSize(11.5);
+              doc.setTextColor(darkTextColor);
+              let lastY = data.cell.y + 40;
+              const paddingX = data.cell.x + 15;
+              doc.text("Cliente: ", paddingX, lastY);
+              doc.text(receptor.nombre, paddingX + 100, lastY + 3);
+              lastY += 30;
+              const actEco = doc.splitTextToSize("Actividad Economica: ", 100);
+              doc.text(receptor.actividadEconomica, paddingX + 100, lastY);
+              doc.text(actEco, paddingX, lastY);
+              lastY += 35;
+              doc.text("Dirección: ", paddingX, lastY);
+
+              const address = doc.splitTextToSize(
+                doc.splitTextToSize(receptor.direccion, 600),
+                700,
+              );
+              doc.text(address, paddingX + 100, lastY);
+              lastY += 40;
+              doc.text(
+                doc.splitTextToSize("Tipo de documento: ", 100),
+                paddingX,
+                lastY - 10,
+              );
+              doc.text(receptor.tipoDocumento, paddingX + 100, lastY);
+              lastY += 30;
+              doc.text(
+                doc.splitTextToSize("Numero de documento: ", 100),
+                paddingX,
+                lastY - 5,
+              );
+              doc.text(receptor.numDocumento, paddingX + 100, lastY);
+              lastY += 35;
+              doc.text("Correo: ", paddingX, lastY);
+              doc.text(receptor.correo, paddingX + 100, lastY);
+              lastY += 25;
+              const nomCom = doc.splitTextToSize("NRC: ", 80);
+              doc.text(nomCom, paddingX, lastY);
+              doc.text(receptor.nrc, paddingX + 100, lastY);
+            }
+          }
+        },
+      });
+    }
   }
 
   return doc.output("arraybuffer");
