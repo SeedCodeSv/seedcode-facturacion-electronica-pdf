@@ -171,11 +171,14 @@ export const generatePayment = async ({
   });
 
   // ---------- Tarjeta del cliente + referencia ----------
+  // La tarjeta mide 200 de alto fijo: el contenido sigue debajo de ella,
+  // no del final de la tabla (que es casi 0 y encimaba todo).
   let lastY = getFinalY();
+  const cardTop = lastY + 110;
   autoTable(doc, {
     head: [[""]],
     showHead: true,
-    startY: lastY + 110,
+    startY: cardTop,
     theme: "plain",
     margin: { left: marginX + 3, right: marginX + 3 },
     didDrawCell: (data) => {
@@ -237,7 +240,7 @@ export const generatePayment = async ({
     },
   });
 
-  let y = getFinalY() + 25;
+  let y = cardTop + 15 + 200 + 25;
 
   // ---------- Monto del pago ----------
   if (y > doc.internal.pageSize.height - 320) {
