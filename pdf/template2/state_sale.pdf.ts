@@ -342,13 +342,14 @@ export const generateStateSale = async ({
               { align: "center" },
             );
             doc.setFont("Nunito", "normal");
-            doc.setFontSize(12);
-            doc.text(
-              `CODIGO DE GENERACION: ${codGeneracion}`,
-              data.cell.x + 200,
-              data.cell.y + 30,
-              { align: "center" },
-            );
+            doc.setFontSize(10);
+            doc.text("CODIGO DE GENERACION:", data.cell.x + 200, data.cell.y + 32, {
+              align: "center",
+            });
+            doc.setFontSize(8.5);
+            doc.text(codGeneracion, data.cell.x + 200, data.cell.y + 44, {
+              align: "center",
+            });
             doc.setFontSize(8);
           }
         }
