@@ -9,9 +9,10 @@ export interface AccountStateSale {
   fecha: string;
   noPago: string;
   estado: string;
-  montoPagado: number;
-  montoPendiente: number;
-  totalCredito: number;
+  metodoPago: string;
+  montoAnterior: number;
+  montoPago: number;
+  nuevoMonto: number;
   proximoPago: string;
 }
 
@@ -78,9 +79,10 @@ export const generateStateSale = async ({
     m.fecha,
     m.noPago,
     m.estado,
-    `$${m.montoPagado}`,
-    `$${m.montoPendiente}`,
-    `$${m.totalCredito}`,
+    m.metodoPago,
+    `$${m.montoAnterior}`,
+    `$${m.montoPago}`,
+    `$${m.nuevoMonto}`,
     m.proximoPago,
   ]);
 
@@ -88,15 +90,16 @@ export const generateStateSale = async ({
     head: [
       [
         "Fecha",
-        "Cod. referencia",
+        "No. pago",
         "Estado",
-        "Monto pagado",
-        "Monto pendiente",
-        "Total credito",
-        "Proximo pago",
+        "Método de pago",
+        "Monto anterior",
+        "Monto de pago",
+        "Nuevo monto",
+        "Próximo pago",
       ],
     ],
-    foot: [["", "", "", "", "", ""]],
+    foot: [["", "", "", "", "", "", "", ""]],
     body: [...data],
     showHead: true,
     theme: "plain",
@@ -122,12 +125,13 @@ export const generateStateSale = async ({
     },
     columnStyles: {
       0: { cellWidth: 70, halign: "center", valign: "middle" },
-      1: { cellWidth: 350 },
-      2: { cellWidth: 70, halign: "center", valign: "middle" },
-      3: { cellWidth: 70, halign: "center", valign: "middle" },
-      4: { cellWidth: 70, halign: "center", valign: "middle" },
-      5: { cellWidth: 70, halign: "center", valign: "middle" },
-      6: { cellWidth: 70, halign: "center", valign: "middle" },
+      1: { cellWidth: 90, halign: "center", valign: "middle" },
+      2: { cellWidth: 80, halign: "center", valign: "middle" },
+      3: { cellWidth: 170, halign: "center", valign: "middle" },
+      4: { cellWidth: 90, halign: "center", valign: "middle" },
+      5: { cellWidth: 90, halign: "center", valign: "middle" },
+      6: { cellWidth: 90, halign: "center", valign: "middle" },
+      7: { cellWidth: 86, halign: "center", valign: "middle" },
     },
     didDrawPage: (data) => {
       doc.setLineWidth(1.2);
@@ -271,11 +275,12 @@ export const generateStateSale = async ({
     }
 
     doc.line(95, i === 1 ? 420 : 160, 95, lineHeight);
-    doc.line(445, i === 1 ? 420 : 170, 445, lineHeight);
-    doc.line(515, i === 1 ? 420 : 170, 515, lineHeight);
-    doc.line(585, i === 1 ? 420 : 170, 585, lineHeight);
-    doc.line(655, i === 1 ? 420 : 170, 655, lineHeight);
-    doc.line(725, i === 1 ? 420 : 170, 725, lineHeight);
+    doc.line(185, i === 1 ? 420 : 170, 185, lineHeight);
+    doc.line(265, i === 1 ? 420 : 170, 265, lineHeight);
+    doc.line(435, i === 1 ? 420 : 170, 435, lineHeight);
+    doc.line(525, i === 1 ? 420 : 170, 525, lineHeight);
+    doc.line(615, i === 1 ? 420 : 170, 615, lineHeight);
+    doc.line(705, i === 1 ? 420 : 170, 705, lineHeight);
 
     autoTable(doc, {
       head: [["", ""]],
