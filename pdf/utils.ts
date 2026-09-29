@@ -906,15 +906,23 @@ export const secondHeaderExp = (
       ],
       [
         { content: [`NOMBRE PAIS: ${receptor.nombrePais ?? "-"}`] },
-        { content: [`TELEFONO: ${receptor.telefono ?? "-"}`] },
+        {
+          content: [
+            `FECHA HORA EMISION: ${identificacion.fecEmi} - ${identificacion.horEmi}`,
+          ],
+        },
       ],
       [
         { content: [`CORREO: ${receptor.correo}`] },
+        { content: [`TELEFONO: ${receptor.telefono ?? "-"}`] },
+      ],
+      [
         {
           content: [
             `TIPO DE PERSONA: ${returnTypePerson(String(receptor.tipoPersona))}`,
           ],
         },
+        { content: [""] },
       ],
        [
         { content: [`TIPO DE DOCUMENTO: ${returnTypeDocument(receptor.tipoDocumento)}`] },
@@ -961,6 +969,7 @@ export const secondHeaderExp = (
         raw.startsWith("CODIGO GENERACION:") ||
         raw.startsWith("CODIGO PAIS:") ||
         raw.startsWith("SELLO RECIBIDO:") ||
+        raw.startsWith("FECHA HORA EMISION:") ||
         raw.startsWith("NUMERO DOCUMENTO:") ||
         raw.startsWith("NOMBRE PAIS:") ||
         raw.startsWith("TELEFONO:") ||
@@ -1041,6 +1050,12 @@ export const secondHeaderExp = (
       }
       if (raw.startsWith("SELLO RECIBIDO:")) {
         drawLabel("SELLO RECIBIDO:", raw.replace("SELLO RECIBIDO:", "").trim());
+      }
+      if (raw.startsWith("FECHA HORA EMISION:")) {
+        drawLabel(
+          "FECHA HORA EMISION:",
+          raw.replace("FECHA HORA EMISION:", "").trim(),
+        );
       }
       if (raw.startsWith("NUMERO DOCUMENTO:")) {
         drawLabel(
