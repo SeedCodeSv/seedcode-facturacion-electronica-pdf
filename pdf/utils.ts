@@ -11,7 +11,11 @@ import { DteCcf, Receptor03 } from "../interfaces/dte03";
 import { DteFse } from "../interfaces/dte14";
 import { DteNce } from "../interfaces/dte05";
 import { DteNre } from "../interfaces/dte04";
-import { listaDepartamentos, listaMunicipios, listDistritos } from "distritos-sv";
+import {
+  listaDepartamentos,
+  listaMunicipios,
+  listDistritos,
+} from "distritos-sv";
 
 export const formatAddress = (
   dep_code: string,
@@ -21,7 +25,7 @@ export const formatAddress = (
   // v2/v4: si viene distrito, buscar nombre usando distritos-sv
   if (distrito_code) {
     // Quitar padding de ceros (MH envía "02", distritos-sv usa "2")
-    const cleanDistritoCode = distrito_code.replace(/^0+/, '') || '0';
+    const cleanDistritoCode = distrito_code.replace(/^0+/, "") || "0";
     const distritos = listDistritos(dep_code, mun_code);
     const distrito = distritos.find((d) => d.codigo === cleanDistritoCode);
     const dep = listaDepartamentos().find((d) => d.codigo === dep_code);
@@ -438,9 +442,13 @@ export const formatNameByTypeDte = (typeDte: string, short: boolean) => {
 };
 
 export const formatCurrency = (value: number) => {
+  const decimals = (value.toString().split(".")[1] || "").length;
+
   return value.toLocaleString("en-US", {
     style: "currency",
     currency: "USD",
+    minimumFractionDigits: Math.max(2, decimals),
+    maximumFractionDigits: Math.max(2, decimals),
   });
 };
 
