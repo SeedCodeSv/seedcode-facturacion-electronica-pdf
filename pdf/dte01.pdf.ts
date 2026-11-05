@@ -179,21 +179,21 @@ export const generateSvfe01 = async (
   finalYFirstPage = finalY;
 
   const array_object: unknown[] = [];
-  cuerpoDocumento.filter((item)=> item.descripcion !== "PROPINA" )
-  .map((prd) => {
-    array_object.push(
-      Object.values({
-        qty: prd.cantidad,
-        desc: prd.descripcion,
-        price: formatCurrency(prd.precioUni),
-        descu: formatCurrency(prd.montoDescu),
-        other: formatCurrency(0),
-        vtSuj: formatCurrency(Number(prd.ventaNoSuj) + Number(prd.noGravado)),
-        vtExe: formatCurrency(prd.ventaExenta),
-        vtGrav: formatCurrency(prd.ventaGravada),
-      })
-    );
-  });
+  cuerpoDocumento.filter((item) => item.descripcion !== "PROPINA")
+    .map((prd) => {
+      array_object.push(
+        Object.values({
+          qty: prd.cantidad,
+          desc: prd.descripcion,
+          price: formatCurrency(prd.precioUni),
+          descu: formatCurrency(prd.montoDescu),
+          other: formatCurrency(0),
+          vtSuj: formatCurrency(Number(prd.ventaNoSuj) + Number(prd.noGravado)),
+          vtExe: formatCurrency(prd.ventaExenta),
+          vtGrav: formatCurrency(prd.ventaGravada),
+        })
+      );
+    });
 
   autoTable(doc, {
     theme: "plain",
@@ -433,7 +433,7 @@ export const footerDocument = (
     svfe01.cuerpoDocumento.find((cuerpo) => cuerpo.descripcion === 'PROPINA')?.noGravado ?? 0
 
   const { resumen } = svfe01 as DteFe;
-  
+
   doc.text(`${resumen.totalLetras}`, 10, rectMargin + 4);
   doc.text("SUMA DE VENTAS:", 120, rectMargin + 4);
   doc.text(`$${" "} ${" "} ${resumen.totalNoSuj}`, 155, rectMargin + 4);
@@ -445,7 +445,7 @@ export const footerDocument = (
     if (svfe01.extension.nombEntrega) {
       doc.text(svfe01.extension.nombEntrega, 10, rectMargin + 13);
     }
-  } 
+  }
 
   returnBoldText(doc, "N° de Documento:", 10, rectMargin + 18);
   if (svfe01.extension) {
@@ -522,8 +522,8 @@ export const footerDocument = (
     // resumen.ivaPerci1.toFixed(2),
     resumen.ivaRete1.toFixed(2),
     resumen.reteRenta.toFixed(2),
-    resumen.montoTotalOperacion.toFixed(2),
     propina?.toFixed(2),
+    resumen.montoTotalOperacion.toFixed(2),
     "0.00",
     resumen.totalPagar.toFixed(2),
   ];
