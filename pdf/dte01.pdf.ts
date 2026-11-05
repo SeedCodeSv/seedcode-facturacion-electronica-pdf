@@ -511,8 +511,8 @@ export const footerDocument = (
   doc.text("Total Otros montos no afectos: ", 127, rectMargin + 37);
   doc.text("Total a Pagar: ", 127, rectMargin + 40);
 
-  for (let i = 0; i < 10; i++) {
-    doc.text("$", 185, rectMargin + i * 3 + 10);
+  for (let i = 0; i < 11; i++) {
+    doc.text("$", 185, rectMargin + i * 3 + 11);
   }
 
   const totals = [
