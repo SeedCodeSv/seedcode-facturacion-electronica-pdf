@@ -432,6 +432,8 @@ export const footerDocument = (
   let propina =
     svfe01.cuerpoDocumento.find((cuerpo) => cuerpo.descripcion === 'PROPINA')?.noGravado ?? 0
 
+  let newVersion = svfe01.identificacion.version === 2
+
   const { resumen } = svfe01 as DteFe;
 
   doc.text(`${resumen.totalLetras}`, 10, rectMargin + 4);
@@ -453,10 +455,13 @@ export const footerDocument = (
       doc.text(svfe01.extension.docuEntrega, 10, rectMargin + 22);
     }
   }
+  const observaciones = newVersion ?
+    svfe01.extension?.observaciones
+    : svfe01.resumen?.observaciones;
   returnBoldText(doc, "Observaciones:", 10, rectMargin + 27);
   // if (svfe01.extension) {
   if (svfe01?.extension?.observaciones) {
-    const text = doc.splitTextToSize(svfe01?.extension?.observaciones, 115);
+    const text = doc.splitTextToSize(observaciones ?? '', 115);
     doc.text(text, 10, rectMargin + 30);
   }
   // }
@@ -514,14 +519,14 @@ export const footerDocument = (
     (resumen.totalNoSuj + resumen.totalExenta + resumen.totalGravada).toFixed(
       2
     ),
-    resumen.descuNoSuj.toFixed(2),
-    resumen.descuExenta.toFixed(2),
-    resumen.descuGravada.toFixed(2),
+    newVersion ? "0.00" : resumen?.descuNoSuj?.toFixed(2),
+    newVersion ? "0.00" : resumen.descuExenta.toFixed(2),
+    newVersion ? "0.00" : resumen.descuGravada.toFixed(2),
     // resumen.tributos ? resumen.tributos.map((tr) => Number(tr.valor)).reduce((a, b) => a + b).toFixed(2) : "0.00",
-    resumen.subTotal.toFixed(2),
+    newVersion ? resumen.subTotalVentas.toFixed(2) : resumen?.subTotal?.toFixed(2),
     // resumen.ivaPerci1.toFixed(2),
-    resumen.ivaRete1.toFixed(2),
-    resumen.reteRenta.toFixed(2),
+    newVersion ? resumen.ivaRete.toFixed(2) : resumen?.ivaRete1?.toFixed(2),
+    newVersion ? "0.00" : resumen.reteRenta.toFixed(2),
     resumen.montoTotalOperacion.toFixed(2),
     propina?.toFixed(2),
     "0.00",
