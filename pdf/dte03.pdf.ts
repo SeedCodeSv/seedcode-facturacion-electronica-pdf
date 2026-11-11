@@ -84,7 +84,10 @@ export const generateSvfe03 = async (
           cellWidth: 60,
         },
       },
-      body: [["", ""]],
+      body: otrosDocumentos.map((documento) => [
+        documento.descDocumento ?? "-",
+        documento.detalleDocumento ?? "-",
+      ]),
       startY: finalY + 10,
     });
   }
@@ -119,7 +122,7 @@ export const generateSvfe03 = async (
           cellWidth: 60,
         },
       },
-      body: [["", ""]],
+      body: [[ventaTercero.nit ?? "-", ventaTercero.nombre]],
       startY: finalY + 2,
     });
   }
@@ -321,6 +324,7 @@ export const generateSvfe03 = async (
         rectMargin + 7,
       );
       footerDocument(doc, rectMargin, svfe03);
+      doc.setPage(i);
       doc.line(125, rectHeight + 35, 125, rectMargin + 7);
     }
 
@@ -333,6 +337,7 @@ export const generateSvfe03 = async (
         rectMargin + 7,
       );
       footerDocument(doc, rectMargin, svfe03);
+      doc.setPage(i);
       doc.line(
         125,
         doc.internal.pageSize.height - 48,
@@ -346,124 +351,44 @@ export const generateSvfe03 = async (
 };
 
 export const footerDocument = (doc: jsPDF, rectMargin: number, ccf: DteCcf) => {
-  let propina =
-    ccf.cuerpoDocumento.find((cuerpo) => cuerpo.descripcion === "PROPINA")
-      ?.noGravado ?? 0;
-
   const resumen = ccf.resumen;
-  doc.text(`${resumen.totalLetras}`, 10, rectMargin + 4);
+  doc.text(resumen.totalLetras ?? "", 10, rectMargin + 4);
   doc.text("SUMA DE VENTAS:", 120, rectMargin + 4);
   doc.text(`$${" "} ${" "} ${resumen.totalNoSuj}`, 145, rectMargin + 4);
   doc.text(`$${" "} ${" "} ${resumen.totalExenta}`, 165, rectMargin + 4);
   doc.text(`$${" "} ${" "} ${resumen.totalGravada}`, 185, rectMargin + 4);
   doc.setFontSize(6);
-  doc.text(
-    "-No se aceptan cambios ni devoluciones despues de 2 dias. Producto Chino no tiene cambio ni devolucion",
-    10,
-    rectMargin + 10,
-  );
-
-  const textBig =
-    "-Revisar bien su mercaderia, una vez recibidos los productos no se admitiran cambios ni devoluciones en producto abierto, usado, manipulado o fuera de su empaque";
-
-  doc.text(doc.splitTextToSize(textBig, 100), 10, rectMargin + 14);
-
-  doc.setFontSize(6);
-
-  returnBoldText(doc, "ENTREGADO POR:", 10, rectMargin + 20);
-  returnBoldText(doc, "NOMBRE:  ________________________", 10, rectMargin + 24);
-  returnBoldText(
-    doc,
-    "DUI:  _____________________________",
-    10,
-    rectMargin + 28,
-  );
-  returnBoldText(
-    doc,
-    "FIRMA: ___________________________",
-    10,
-    rectMargin + 32,
-  );
-  returnBoldText(doc, "TELEFONO: _______________________", 10, rectMargin + 36);
-
-  returnBoldText(doc, "RECIBIDO POR:", 80, rectMargin + 20);
-  returnBoldText(doc, "NOMBRE:  ________________________", 80, rectMargin + 26);
-  returnBoldText(
-    doc,
-    "DUI:  _____________________________",
-    80,
-    rectMargin + 29,
-  );
-  returnBoldText(
-    doc,
-    "FIRMA: ___________________________",
-    80,
-    rectMargin + 32,
-  );
-  returnBoldText(doc, "TELEFONO: _______________________", 80, rectMargin + 35);
-
-  returnBoldText(doc, "Observaciones:", 10, rectMargin + 43);
-  if (ccf.extension) {
-    if (ccf?.extension?.observaciones) {
-      const text = doc.splitTextToSize(ccf?.extension?.observaciones, 115);
-      doc.text(text, 10, rectMargin + 45);
-    }
-  }
-
-  doc.text("Suma Total de Operaciones:", 127, rectMargin + 10);
-  doc.text(
-    "Monto global Desc., Rebajas y otros a ventas no sujetas: ",
-    127,
-    rectMargin + 13,
-  );
-  doc.text(
-    "Monto global Desc., Rebajas y otros a ventas exentas:",
-    127,
-    rectMargin + 16,
-  );
-  doc.text(
-    "Monto global Desc., Rebajas y otros a ventas gravadas:",
-    127,
-    rectMargin + 19,
-  );
-  doc.text("IVA 13%: ", 127, rectMargin + 22);
-  doc.text("Sub-Total: ", 127, rectMargin + 25);
-  doc.text("IVA Percibido: ", 127, rectMargin + 28);
-  doc.text("IVA Retenido: ", 127, rectMargin + 31);
-  doc.text("Retención Renta: ", 127, rectMargin + 34);
-  doc.text("Total no gravado: ", 127, rectMargin + 37);
-  doc.text("Monto Total de la Operación: ", 127, rectMargin + 40);
-  doc.text("Total Otros montos no afectos: ", 127, rectMargin + 43);
-  doc.text("Total a Pagar: ", 127, rectMargin + 46);
-
-  for (let i = 0; i < 13; i++) {
-    doc.text("$", 185, rectMargin + i * 3 + 10);
-  }
-
-  const totals = [
-    resumen.descuGravada.toFixed(2),
-    resumen.descuNoSuj.toFixed(2),
-    resumen.descuExenta.toFixed(2),
-    resumen.descuGravada.toFixed(2),
-    resumen.tributos
-      ? resumen.tributos
-          .map((tr) => Number(tr.valor))
-          .reduce((a, b) => a + b)
-          .toFixed(2)
-      : "0.00",
-    resumen.subTotal.toFixed(2),
-    resumen.ivaPerci1.toFixed(2),
-    resumen.ivaRete1.toFixed(2),
-    resumen.reteRenta.toFixed(2),
-    resumen.montoTotalOperacion.toFixed(2),
-    propina.toFixed(2),
-    "0.00",
-    resumen.totalPagar.toFixed(2),
+  const totals: [string, number][] = [
+    ["Suma Total de Operaciones:", resumen.subTotalVentas],
+    ["Monto global Desc., Rebajas y otros a ventas no sujetas:", resumen.descuNoSuj],
+    ["Monto global Desc., Rebajas y otros a ventas exentas:", resumen.descuExenta],
+    ["Monto global Desc., Rebajas y otros a ventas gravadas:", resumen.descuGravada],
+    ["IVA 13%:", (resumen.tributos ?? []).filter((tributo) => tributo.codigo === "20")
+      .reduce((total, tributo) => total + tributo.valor, 0)],
+    ["Sub-Total:", resumen.subTotal],
+    ["IVA Percibido:", resumen.ivaPerci],
+    ["IVA Retenido:", resumen.ivaRete],
+    ["Monto Total de la Operación:", resumen.montoTotalOperacion],
+    ["Total no gravado:", resumen.totalNoGravado],
+    ["Total a Pagar:", resumen.totalPagar],
   ];
 
-  totals.forEach((total, index) => {
-    doc.text(total, 202.5, rectMargin + index * 3 + 10, {
-      align: "right",
-    });
+  totals.forEach(([label, total], index) => {
+    const y = rectMargin + index * 3 + 10;
+    doc.text(label, 127, y);
+    doc.text("$", 185, y);
+    doc.text(total.toFixed(2), 202.5, y, { align: "right" });
   });
+
+  returnBoldText(doc, "Observaciones:", 10, rectMargin + 10);
+  if (resumen.observaciones) {
+    const lines: string[] = doc.splitTextToSize(resumen.observaciones, 110);
+    autoTable(doc, {
+      startY: rectMargin + 12,
+      margin: { left: 10, right: 90, bottom: 8, top: 35 },
+      theme: "plain",
+      styles: { fontSize: 6, cellPadding: 0 },
+      body: lines.map((line) => [line]),
+    });
+  }
 };
