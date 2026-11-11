@@ -140,5 +140,5 @@ export class DteCcf {
   apendice: Apendice[] | null;
   /** Metadatos de procesamiento; no forman parte del esquema del DTE. */
   respuestaMH?: RespuestaMh;
-  firma?: string;
+  firmaElectronica?: string;
 }
