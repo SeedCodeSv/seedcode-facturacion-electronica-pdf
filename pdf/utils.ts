@@ -7,18 +7,24 @@ import sharp from "sharp";
 import * as QRCode from "qrcode";
 import { $MH_QUERY } from "../utils/constants";
 import { DteFe } from "../interfaces/dte01";
-import { DteCcf, Receptor03 } from "../interfaces/dte03";
+import { DteCcf } from "../interfaces/dte03";
 import { DteFse } from "../interfaces/dte14";
 import { DteNce } from "../interfaces/dte05";
 import { DteNre } from "../interfaces/dte04";
 import { DteExp } from "../interfaces/dte11";
 
-export const formatAddress = (dep_code: string, mun_code: string) => {
+export const formatAddress = (dep_code: string, mun_code: string, distrito?: string) => {
   const service = new SeedcodeCatalogosMhService();
 
   const deparment = service
     .get012Departamento()
     .find((dep) => dep.codigo === dep_code);
+
+  // El catálogo instalado contiene los municipios anteriores a la versión 2.
+  // Con distrito, conservar los códigos nuevos sin asignarles nombres antiguos.
+  if (distrito !== undefined) {
+    return `Distrito ${distrito}, Municipio ${mun_code}, ${deparment?.valores ?? dep_code}`;
+  }
 
   if (deparment) {
     const municipio = service.get013Municipio(dep_code);
@@ -282,6 +288,7 @@ export const headerDoc = async (
             `${dte.emisor.direccion.complemento} ${formatAddress(
               dte.emisor.direccion.departamento,
               dte.emisor.direccion.municipio,
+              "distrito" in dte.emisor.direccion ? dte.emisor.direccion.distrito : undefined,
             )}`,
             5,
             20,
@@ -483,8 +490,10 @@ export const tableProduct = (
         desc: prd.descripcion,
         price: formatCurrency(prd.precioUni),
         descu: formatCurrency(prd.montoDescu),
-        other: formatCurrency(0),
-        vtSuj: formatCurrency(Number(prd.ventaNoSuj) + Number(prd.noGravado)),
+        other: formatCurrency(data.identificacion.tipoDte === "03" ? prd.noGravado : 0),
+        vtSuj: formatCurrency(data.identificacion.tipoDte === "03"
+          ? prd.ventaNoSuj
+          : Number(prd.ventaNoSuj) + Number(prd.noGravado)),
         vtExe: formatCurrency(prd.ventaExenta),
         vtGrav: formatCurrency(prd.ventaGravada),
       });
@@ -621,7 +630,8 @@ export const secondHeader = (
   selloInvalidacion = "",
   _contingence: boolean = false,
 ) => {
-  const { receptor, identificacion, respuestaMH, resumen } = dte as DteFe;
+  const { identificacion, resumen, receptor } = dte;
+  const respuestaMH = "respuestaMH" in dte ? dte.respuestaMH : undefined;
 
   autoTable(doc, {
     margin: {
@@ -632,16 +642,17 @@ export const secondHeader = (
     startY: 40,
     body: [
       [
-        { content: [`NOMBRE: ${receptor.nombre}`] },
-        { content: [`NRC : ${receptor.nrc ?? "-"}`] },
+        { content: [`NOMBRE: ${receptor?.nombre ?? "-"}`] },
+        { content: [`NRC : ${receptor?.nrc ?? "-"}`] },
       ],
       [
         {
           content: [
-            receptor.direccion
-              ? `DIRECCIÓN :  ${receptor.direccion.complemento} ${formatAddress(
-                  receptor.direccion.departamento,
-                  receptor.direccion.municipio,
+            receptor?.direccion
+              ? `DIRECCIÓN :  ${receptor?.direccion.complemento} ${formatAddress(
+                  receptor?.direccion.departamento,
+                  receptor?.direccion.municipio,
+                  "distrito" in receptor.direccion ? receptor.direccion.distrito : undefined,
                 )}, El Salvador`
               : "No establecida",
           ],
@@ -651,23 +662,23 @@ export const secondHeader = (
         },
       ],
       [
-        { content: [`GIRO : ${receptor.descActividad ?? "-"}`] },
+        { content: [`GIRO : ${receptor?.descActividad ?? "-"}`] },
         { content: [`NUMERO DE CONTROL : ${identificacion.numeroControl}`] },
       ],
       [
         {
           content: [
-            `${identificacion.tipoDte === "03" ? "NIT : " : "NUMERO DOCUMENTO : "} ${
-              identificacion.tipoDte === "03"
-                ? (receptor as unknown as Receptor03).nit
-                : (receptor.numDocumento ?? "-")
+            `${dte.identificacion.tipoDte === "03" ? "NIT : " : "NUMERO DOCUMENTO : "} ${
+              dte.identificacion.tipoDte === "03"
+                ? (receptor && "nit" in receptor ? receptor.nit : "-")
+                : (receptor && "numDocumento" in receptor ? receptor.numDocumento ?? "-" : "-")
             }`,
           ],
         },
-        { content: [`SELLO : ${respuestaMH.selloRecibido}`] },
+        { content: [`SELLO : ${respuestaMH?.selloRecibido ?? "-"}`] },
       ],
       [
-        { content: [`CORREO : ${receptor.correo ?? "-"}`] },
+        { content: [`CORREO : ${receptor?.correo ?? "-"}`] },
         {
           content: [
             `FECHA HORA EMISION : ${identificacion.fecEmi} - ${identificacion.horEmi}`,
@@ -675,7 +686,7 @@ export const secondHeader = (
         },
       ],
       [
-        { content: [`TEL : ${receptor.telefono ?? "-"}`] },
+        { content: [`TEL : ${receptor?.telefono ?? "-"}`] },
         {
           content: [
             `MODELO DE FACTURACIÓN : ${
@@ -689,7 +700,7 @@ export const secondHeader = (
           content: [
             dte.identificacion.tipoDte !== "04"
               ? `CONDICIÓN DE LA OPERACIÓN : ${
-                  resumen.condicionOperacion === 1 ? "Contado" : "Crédito"
+                  "condicionOperacion" in resumen && resumen.condicionOperacion === 1 ? "Contado" : "Crédito"
                 }`
               : "",
           ],
