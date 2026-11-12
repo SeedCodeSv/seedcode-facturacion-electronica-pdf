@@ -12,19 +12,35 @@ import { DteFse } from "../interfaces/dte14";
 import { DteNce } from "../interfaces/dte05";
 import { DteNre } from "../interfaces/dte04";
 import { DteExp } from "../interfaces/dte11";
+import {
+  listaDepartamentos,
+  listaMunicipios,
+  listDistritos,
+} from "distritos-sv";
 
-export const formatAddress = (dep_code: string, mun_code: string, distrito?: string) => {
+export const formatAddress = (
+  dep_code: string,
+  mun_code: string,
+  distrito_code?: string,
+) => {
+  // v2/v4: si viene distrito, buscar nombre usando distritos-sv
+  if (distrito_code) {
+    // Quitar padding de ceros (MH envía "02", distritos-sv usa "2")
+    const cleanDistritoCode = distrito_code.replace(/^0+/, "") || "0";
+    const distritos = listDistritos(dep_code, mun_code);
+    const distrito = distritos.find((d) => d.codigo === cleanDistritoCode);
+    const dep = listaDepartamentos().find((d) => d.codigo === dep_code);
+    const mun = listaMunicipios(dep_code).find((m) => m.codigo === mun_code);
+    if (distrito && dep && mun) {
+      return `${distrito.valores}, ${mun.valores}, ${dep.valores}`;
+    }
+  }
+
+  // v1/v3: fallback sin distrito, solo departamento + municipio
   const service = new SeedcodeCatalogosMhService();
-
   const deparment = service
     .get012Departamento()
     .find((dep) => dep.codigo === dep_code);
-
-  // El catálogo instalado contiene los municipios anteriores a la versión 2.
-  // Con distrito, conservar los códigos nuevos sin asignarles nombres antiguos.
-  if (distrito !== undefined) {
-    return `Distrito ${distrito}, Municipio ${mun_code}, ${deparment?.valores ?? dep_code}`;
-  }
 
   if (deparment) {
     const municipio = service.get013Municipio(dep_code);
@@ -288,7 +304,9 @@ export const headerDoc = async (
             `${dte.emisor.direccion.complemento} ${formatAddress(
               dte.emisor.direccion.departamento,
               dte.emisor.direccion.municipio,
-              "distrito" in dte.emisor.direccion ? dte.emisor.direccion.distrito : undefined,
+              "distrito" in dte.emisor.direccion
+                ? dte.emisor.direccion.distrito
+                : undefined,
             )}`,
             5,
             20,
@@ -490,10 +508,14 @@ export const tableProduct = (
         desc: prd.descripcion,
         price: formatCurrency(prd.precioUni),
         descu: formatCurrency(prd.montoDescu),
-        other: formatCurrency(data.identificacion.tipoDte === "03" ? prd.noGravado : 0),
-        vtSuj: formatCurrency(data.identificacion.tipoDte === "03"
-          ? prd.ventaNoSuj
-          : Number(prd.ventaNoSuj) + Number(prd.noGravado)),
+        other: formatCurrency(
+          data.identificacion.tipoDte === "03" ? prd.noGravado : 0,
+        ),
+        vtSuj: formatCurrency(
+          data.identificacion.tipoDte === "03"
+            ? prd.ventaNoSuj
+            : Number(prd.ventaNoSuj) + Number(prd.noGravado),
+        ),
         vtExe: formatCurrency(prd.ventaExenta),
         vtGrav: formatCurrency(prd.ventaGravada),
       });
@@ -595,7 +617,9 @@ export const generateQR = async (
   }
 };
 
-export const generateUrl = (dte: DteFe | DteCcf | DteFse | DteNce | DteNre | DteExp) => {
+export const generateUrl = (
+  dte: DteFe | DteCcf | DteFse | DteNce | DteNre | DteExp,
+) => {
   return (
     $MH_QUERY +
     "?ambiente=" +
@@ -652,7 +676,9 @@ export const secondHeader = (
               ? `DIRECCIÓN :  ${receptor?.direccion.complemento} ${formatAddress(
                   receptor?.direccion.departamento,
                   receptor?.direccion.municipio,
-                  "distrito" in receptor.direccion ? receptor.direccion.distrito : undefined,
+                  "distrito" in receptor.direccion
+                    ? receptor.direccion.distrito
+                    : undefined,
                 )}, El Salvador`
               : "No establecida",
           ],
@@ -670,8 +696,12 @@ export const secondHeader = (
           content: [
             `${dte.identificacion.tipoDte === "03" ? "NIT : " : "NUMERO DOCUMENTO : "} ${
               dte.identificacion.tipoDte === "03"
-                ? (receptor && "nit" in receptor ? receptor.nit : "-")
-                : (receptor && "numDocumento" in receptor ? receptor.numDocumento ?? "-" : "-")
+                ? receptor && "nit" in receptor
+                  ? receptor.nit
+                  : "-"
+                : receptor && "numDocumento" in receptor
+                  ? (receptor.numDocumento ?? "-")
+                  : "-"
             }`,
           ],
         },
@@ -700,7 +730,10 @@ export const secondHeader = (
           content: [
             dte.identificacion.tipoDte !== "04"
               ? `CONDICIÓN DE LA OPERACIÓN : ${
-                  "condicionOperacion" in resumen && resumen.condicionOperacion === 1 ? "Contado" : "Crédito"
+                  "condicionOperacion" in resumen &&
+                  resumen.condicionOperacion === 1
+                    ? "Contado"
+                    : "Crédito"
                 }`
               : "",
           ],
@@ -905,9 +938,7 @@ export const secondHeaderExp = (
       ],
       [
         {
-          content: [
-            `NOMBRE COMERCIAL: ${receptor.nombreComercial ?? '-'}`,
-          ],
+          content: [`NOMBRE COMERCIAL: ${receptor.nombreComercial ?? "-"}`],
         },
         { content: [`CODIGO GENERACION: ${identificacion.codigoGeneracion}`] },
       ],
@@ -935,13 +966,15 @@ export const secondHeaderExp = (
         },
         { content: [""] },
       ],
-       [
-        { content: [`TIPO DE DOCUMENTO: ${returnTypeDocument(receptor.tipoDocumento)}`] },
+      [
+        {
+          content: [
+            `TIPO DE DOCUMENTO: ${returnTypeDocument(receptor.tipoDocumento)}`,
+          ],
+        },
         { content: [`NUMERO DOCUMENTO: ${receptor.numDocumento ?? "-"}`] },
       ],
-       [
-        { content: [`DIRECCION: ${receptor.complemento}`], colSpan: 2 },
-      ],
+      [{ content: [`DIRECCION: ${receptor.complemento}`], colSpan: 2 }],
       selloInvalidacion !== ""
         ? [
             {
@@ -1043,11 +1076,17 @@ export const secondHeaderExp = (
       }
 
       if (raw.startsWith("NUMERO DE CONTROL:")) {
-        drawLabel("NUMERO DE CONTROL: ", raw.replace("NUMERO DE CONTROL:", "").trim());
+        drawLabel(
+          "NUMERO DE CONTROL: ",
+          raw.replace("NUMERO DE CONTROL:", "").trim(),
+        );
       }
 
       if (raw.startsWith("NOMBRE COMERCIAL:")) {
-        drawLabel("NOMBRE COMERCIAL: ", raw.replace("NOMBRE COMERCIAL:", "").trim());
+        drawLabel(
+          "NOMBRE COMERCIAL: ",
+          raw.replace("NOMBRE COMERCIAL:", "").trim(),
+        );
       }
 
       if (raw.startsWith("CODIGO GENERACION:")) {
@@ -1081,13 +1120,13 @@ export const secondHeaderExp = (
         drawLabel("TELEFONO:", raw.replace("TELEFONO:", "").trim());
       }
       if (raw.startsWith("CORREO:")) {
-        drawLabel(
-          "CORREO:",
-          raw.replace("CORREO:", "").trim(),
-        );
+        drawLabel("CORREO:", raw.replace("CORREO:", "").trim());
       }
       if (raw.startsWith("TIPO DE PERSONA:")) {
-        drawLabel("TIPO DE PERSONA:", raw.replace("TIPO DE PERSONA:", "").trim());
+        drawLabel(
+          "TIPO DE PERSONA:",
+          raw.replace("TIPO DE PERSONA:", "").trim(),
+        );
       }
       if (raw.startsWith("TIPO DE DOCUMENTO:")) {
         drawLabel(
@@ -1096,10 +1135,7 @@ export const secondHeaderExp = (
         );
       }
       if (raw.startsWith("DIRECCION:")) {
-        drawLabel(
-          "DIRECCION:",
-          raw.replace("DIRECCION:", "").trim(),
-        );
+        drawLabel("DIRECCION:", raw.replace("DIRECCION:", "").trim());
       }
     },
   });
