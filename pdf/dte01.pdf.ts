@@ -524,7 +524,7 @@ export const footerDocument = (
     svfe01 as DteFe & {
       extension?: { observaciones?: string };
     }
-  ).extension?.observaciones;
+  ).extension?.observaciones || svfe01.resumen.observaciones;
   if (observaciones) {
     const text = doc.splitTextToSize(observaciones, 115);
     doc.text(text, 10, rectMargin + 45);
