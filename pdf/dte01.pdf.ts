@@ -520,11 +520,14 @@ export const footerDocument = (
   returnBoldText(doc, "TELEFONO: _______________________", 80, rectMargin + 35);
 
   returnBoldText(doc, "Observaciones:", 10, rectMargin + 43);
-  if (svfe01.extension) {
-    if (svfe01?.extension?.observaciones) {
-      const text = doc.splitTextToSize(svfe01?.extension?.observaciones, 115);
-      doc.text(text, 10, rectMargin + 45);
+  const observaciones = (
+    svfe01 as DteFe & {
+      extension?: { observaciones?: string };
     }
+  ).extension?.observaciones;
+  if (observaciones) {
+    const text = doc.splitTextToSize(observaciones, 115);
+    doc.text(text, 10, rectMargin + 45);
   }
 
   doc.text("Suma Total de Operaciones:", 127, rectMargin + 10);
