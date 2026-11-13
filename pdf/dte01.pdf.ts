@@ -463,6 +463,9 @@ export const footerDocument = (
   svfe01: DteFe,
 ) => {
   const { resumen } = svfe01 as DteFe;
+  const propina =
+    svfe01.cuerpoDocumento.find((cuerpo) => cuerpo.descripcion === "PROPINA")
+      ?.noGravado ?? 0;
 
   doc.text(resumen.totalLetras ?? "", 10, rectMargin + 4);
   doc.text("SUMA DE VENTAS:", 120, rectMargin + 4);
@@ -488,13 +491,11 @@ export const footerDocument = (
   );
   doc.text("Sub-Total: ", 127, rectMargin + 22);
   doc.text("IVA Retenido: ", 127, rectMargin + 25);
-  doc.text("Monto Total de la Operación: ", 127, rectMargin + 28);
-  doc.text("Total no Gravado: ", 127, rectMargin + 31);
-  doc.text("Total a Pagar: ", 127, rectMargin + 34);
-
-  for (let i = 0; i < 9; i++) {
-    doc.text("$", 185, rectMargin + i * 3 + 10);
-  }
+  doc.text("Retención Renta: ", 127, rectMargin + 28);
+  doc.text("Monto Total de la Operación: ", 127, rectMargin + 31);
+  doc.text("Total no Gravado: ", 127, rectMargin + 34);
+  doc.text("Total Otros montos no afectos: ", 127, rectMargin + 37);
+  doc.text("Total a Pagar: ", 127, rectMargin + 40);
 
   const totals = [
     (resumen.totalNoSuj + resumen.totalExenta + resumen.totalGravada).toFixed(
@@ -505,12 +506,15 @@ export const footerDocument = (
     resumen.descuGravada.toFixed(2),
     resumen.subTotal.toFixed(2),
     resumen.ivaRete.toFixed(2),
+    "0.00",
     resumen.montoTotalOperacion.toFixed(2),
-    resumen.totalNoGravado.toFixed(2),
+    propina.toFixed(2),
+    "0.00",
     resumen.totalPagar.toFixed(2),
   ];
 
   totals.forEach((total, index) => {
+    doc.text("$", 185, rectMargin + index * 3 + 10);
     doc.text(total, 202.5, rectMargin + index * 3 + 10, {
       align: "right",
     });
