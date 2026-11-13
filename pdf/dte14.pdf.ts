@@ -1,8 +1,8 @@
+import { drawDeliveryFooter } from "./footer";
 import jsPDF from "jspdf";
 import { DteFse } from "../interfaces/dte14";
 import autoTable, { RowInput } from "jspdf-autotable";
 import {
-  adjustTextInRect,
   formatAddress,
   formatCurrency,
   headerDoc,
@@ -311,19 +311,6 @@ export const footerDocument = (doc: jsPDF, rectMargin: number, dte: DteFse) => {
   doc.text("SUMA DE VENTAS:", 120, rectMargin + 4);
   doc.text(`$${" "} ${" "} ${resumen.totalCompra}`, 185, rectMargin + 4);
   doc.setFontSize(6);
-  returnBoldText(doc, "Observaciones:", 10, rectMargin + 10);
-  const { lines: linesObservaciones } = adjustTextInRect(
-    doc,
-    dte.resumen.observaciones,
-    50,
-    50,
-    115,
-    5
-  );
-  linesObservaciones.forEach((line, i) => {
-    doc.text(line, 10, rectMargin + 13 + i * 3);
-  });
-
   doc.text("Suma Total de Operaciones:", 127, rectMargin + 10);
   doc.text("Retención renta:", 127, rectMargin + 13);
   doc.text("IVA retenido:", 127, rectMargin + 16);
@@ -347,4 +334,5 @@ export const footerDocument = (doc: jsPDF, rectMargin: number, dte: DteFse) => {
       align: "right",
     });
   });
+  drawDeliveryFooter(doc, rectMargin, { observaciones: resumen.observaciones });
 };

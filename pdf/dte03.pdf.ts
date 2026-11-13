@@ -1,3 +1,4 @@
+import { drawDeliveryFooter } from "./footer";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import {
@@ -380,15 +381,5 @@ export const footerDocument = (doc: jsPDF, rectMargin: number, ccf: DteCcf) => {
     doc.text(total.toFixed(2), 202.5, y, { align: "right" });
   });
 
-  returnBoldText(doc, "Observaciones:", 10, rectMargin + 10);
-  if (resumen.observaciones) {
-    const lines: string[] = doc.splitTextToSize(resumen.observaciones, 110);
-    autoTable(doc, {
-      startY: rectMargin + 12,
-      margin: { left: 10, right: 90, bottom: 8, top: 35 },
-      theme: "plain",
-      styles: { fontSize: 6, cellPadding: 0 },
-      body: lines.map((line) => [line]),
-    });
-  }
+  drawDeliveryFooter(doc, rectMargin, { observaciones: resumen.observaciones });
 };

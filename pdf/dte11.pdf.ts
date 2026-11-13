@@ -1,3 +1,4 @@
+import { drawDeliveryFooter } from "./footer";
 import jsPDF from "jspdf";
 import { DteExp } from "../interfaces/dte11";
 import {
@@ -410,53 +411,7 @@ export const footerDocument = (
   doc.text(`${resumen.totalLetras}`, 10, rectMargin + 4);
   doc.text("SUMA DE VENTAS:", 120, rectMargin + 4);
   doc.text(`$${" "} ${" "} ${resumen.totalGravada}`, 195, rectMargin + 4);
-  doc.setFontSize(5.5);
-  doc.text(
-    "-No se aceptan cambios ni devoluciones despues de 2 dias. Producto Chino no tiene cambio ni devolucion",
-    10,
-    rectMargin + 10,
-  );
-
-  const textBig =
-    "-Revisar bien su mercaderia, una vez recibidos los productos no se admitiran cambios ni devoluciones en producto abierto, usado, manipulado o fuera de su empaque";
-
-  doc.text(doc.splitTextToSize(textBig, 100), 10, rectMargin + 14);
-
   doc.setFontSize(6);
-
-  returnBoldText(doc, "ENTREGADO POR:", 10, rectMargin + 20);
-  returnBoldText(doc, "NOMBRE:  ________________________", 10, rectMargin + 24);
-  returnBoldText(
-    doc,
-    "DUI:  _____________________________",
-    10,
-    rectMargin + 28,
-  );
-  returnBoldText(
-    doc,
-    "FIRMA: ___________________________",
-    10,
-    rectMargin + 32,
-  );
-  returnBoldText(doc, "TELEFONO: _______________________", 10, rectMargin + 36);
-
-  returnBoldText(doc, "RECIBIDO POR:", 80, rectMargin + 20);
-  returnBoldText(doc, "NOMBRE:  ________________________", 80, rectMargin + 26);
-  returnBoldText(
-    doc,
-    "DUI:  _____________________________",
-    80,
-    rectMargin + 29,
-  );
-  returnBoldText(
-    doc,
-    "FIRMA: ___________________________",
-    80,
-    rectMargin + 32,
-  );
-  returnBoldText(doc, "TELEFONO: _______________________", 80, rectMargin + 35);
-
-  returnBoldText(doc, "Observaciones:", 10, rectMargin + 43);
 
   const texts = [
     "Total gravada: ",
@@ -493,4 +448,5 @@ export const footerDocument = (
       align: "right",
     });
   });
+  drawDeliveryFooter(doc, rectMargin, { observaciones: resumen.observaciones });
 };
