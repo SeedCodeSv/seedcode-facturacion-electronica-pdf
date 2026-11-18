@@ -325,7 +325,7 @@ export const headerDoc = async (
           writeBoldLabel(
             doc,
             "TEL: ",
-            dte.emisor.telefono,
+            dte.emisor.telefono ?? "-",
             5,
             22 + telHeight + heightAddress,
             118,
@@ -984,7 +984,7 @@ export const secondHeaderExp = (
       ],
       [
         { content: [`CODIGO PAIS: ${receptor.codPais}`] },
-        { content: [`SELLO RECIBIDO: ${respuestaMH.selloRecibido}`] },
+        { content: [`SELLO RECIBIDO: ${respuestaMH?.selloRecibido ?? "-"}`] },
       ],
       [
         { content: [`NOMBRE PAIS: ${receptor.nombrePais ?? "-"}`] },
@@ -995,7 +995,7 @@ export const secondHeaderExp = (
         },
       ],
       [
-        { content: [`CORREO: ${receptor.correo}`] },
+        { content: [`CORREO: ${receptor.correo ?? "-"}`] },
         { content: [`TELEFONO: ${receptor.telefono ?? "-"}`] },
       ],
       [

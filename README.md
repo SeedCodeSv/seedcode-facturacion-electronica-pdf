@@ -76,6 +76,21 @@ El PDF toma las observaciones de `resumen`, usa los importes renombrados y muest
 
 El PDF usa los nuevos importes del resumen, toma las observaciones de `resumen` y muestra los montos no gravados en su propia columna.
 
+## DTE 11: normativa 2.0, esquema versión 3
+
+`DteExp` y `generateSvfe11` utilizan el esquema adjunto de Factura de Exportación Electrónica:
+
+- `identificacion.version` debe ser `3`, `tipoDte` debe ser `"11"` y `motivoContin` reemplaza a `motivoContigencia`.
+- La dirección del emisor requiere `distrito`; se agrega `tipoRegimen` y se eliminan `tipoEstablecimiento`, `codEstableMH` y `codPuntoVentaMH`.
+- `documentoRelacionado`, `otrosDocumentos` y `apendice` son campos obligatorios de tipo arreglo o `null`. Los documentos asociados incluyen los datos de transporte y conductor.
+- `ventaTercero` incluye `codDomiciliado` y se agrega `compraTercero`. Ambos campos son obligatorios, pero solo uno puede contener un objeto; también pueden ser ambos `null`.
+- Cada ítem requiere `tipoItem`, `numeroDocumento` y `codTributo`.
+- `resumen.descuGravada` reemplaza a `descuento`; se agregan `tributos`, `totalNoOnerosas` y `saldoFavor`.
+- Se respetan los campos que admiten `null`, incluidos `flete`, `totalLetras` y `pagos`; `pagos[].periodo` es numérico o `null`.
+- `respuestaMH` y `firma` son metadatos opcionales de la biblioteca, ajenos al esquema de Hacienda.
+
+La exclusión entre `ventaTercero` y `compraTercero` se comprueba con `strictNullChecks` habilitado. Los tipos no validan en ejecución los formatos, longitudes, límites numéricos ni cantidades de elementos del esquema JSON.
+
 ## Parametros
 
 

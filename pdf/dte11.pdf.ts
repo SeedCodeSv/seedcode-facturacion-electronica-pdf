@@ -408,7 +408,7 @@ export const footerDocument = (
 ) => {
   const { resumen } = svfe01 as DteExp;
 
-  doc.text(`${resumen.totalLetras}`, 10, rectMargin + 4);
+  doc.text(resumen.totalLetras ?? "", 10, rectMargin + 4);
   doc.text("SUMA DE VENTAS:", 120, rectMargin + 4);
   doc.text(`$${" "} ${" "} ${resumen.totalGravada}`, 195, rectMargin + 4);
   doc.setFontSize(6);
@@ -434,12 +434,12 @@ export const footerDocument = (
 
   const totals = [
     resumen.totalGravada.toFixed(2),
-    resumen.descuento.toFixed(2),
+    resumen.descuGravada.toFixed(2),
     resumen.totalDescu.toFixed(2),
     resumen.montoTotalOperacion.toFixed(2),
     resumen.totalNoGravado.toFixed(2),
     resumen.totalPagar.toFixed(2),
-    resumen.flete.toFixed(2),
+    (resumen.flete ?? 0).toFixed(2),
     resumen.seguro.toFixed(2),
   ];
 
