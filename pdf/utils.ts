@@ -657,6 +657,9 @@ export const secondHeader = (
   _contingence: boolean = false,
 ) => {
   const { identificacion, resumen, receptor } = dte;
+  const isCreditNote = identificacion.tipoDte === "05";
+  const creditNoteLines = new WeakMap<object, string[]>();
+  const headerWidth = doc.internal.pageSize.getWidth() - 20;
   const respuestaMH = "respuestaMH" in dte ? dte.respuestaMH : undefined;
 
   autoTable(doc, {
@@ -765,7 +768,10 @@ export const secondHeader = (
           ]
         : [],
     ].filter((row) => row.length > 0),
-    columnStyles: { 0: { cellWidth: 115 }, 1: { cellWidth: 105 } },
+    columnStyles: {
+      0: { cellWidth: 115 },
+      1: { cellWidth: isCreditNote ? headerWidth - 115 : 105 },
+    },
     bodyStyles: {
       fontSize: 6.5,
       cellPadding: 0.3,
@@ -796,14 +802,43 @@ export const secondHeader = (
         raw.startsWith("TIPO DE TRANSMISIÓN :") ||
         raw.startsWith("CONDICIÓN DE LA OPERACIÓN :")
       ) {
-        data.cell.text = [""];
+        if (isCreditNote) {
+          const labelEnd = raw.indexOf(":") + 1;
+          const label = `${raw.slice(0, labelEnd)} `;
+          const value = raw.slice(labelEnd).trim();
+          const availableWidth =
+            Number(data.cell.styles.cellWidth) -
+            data.cell.padding("left") -
+            data.cell.padding("right");
 
-        if (raw.startsWith("DIRECCIÓN :")) {
-          data.cell.styles.minCellHeight = 6;
+          doc.setFont(data.cell.styles.font, "bold");
+          doc.setFontSize(data.cell.styles.fontSize);
+          const labelWidth = doc.getTextWidth(label);
+          doc.setFont(data.cell.styles.font, "normal");
+          const lines: string[] = doc.splitTextToSize(
+            value,
+            availableWidth - labelWidth,
+          );
+
+          // AutoTable debe medir las mismas líneas que se dibujan manualmente.
+          data.cell.text = lines;
+          creditNoteLines.set(data.cell, lines);
+        } else {
+          data.cell.text = [""];
+
+          if (raw.startsWith("DIRECCIÓN :")) {
+            data.cell.styles.minCellHeight = 6;
+          }
         }
       }
     },
 
+    willDrawCell: (data) => {
+      if (creditNoteLines.has(data.cell)) {
+        // La altura ya fue calculada; el texto se dibuja con etiquetas en negrita.
+        data.cell.text = [""];
+      }
+    },
     didDrawCell: (data) => {
       const raw =
         typeof data.cell.raw === "object" &&
@@ -813,7 +848,11 @@ export const secondHeader = (
           : "";
 
       const x = data.cell.x + data.cell.padding("left");
-      const y = data.cell.y + 4;
+      const y = isCreditNote
+        ? data.cell.y +
+          data.cell.padding("top") +
+          (data.cell.styles.fontSize / doc.internal.scaleFactor) * 0.85
+        : data.cell.y + 4;
 
       const drawLabel = (label: string, value: string) => {
         const availableWidth =
@@ -828,10 +867,9 @@ export const secondHeader = (
         doc.setFont(undefined, "normal");
 
         // Dividir el valor en líneas respetando el ancho disponible
-        const valueLines = doc.splitTextToSize(
-          value,
-          availableWidth - labelWidth,
-        );
+        const valueLines =
+          creditNoteLines.get(data.cell) ??
+          doc.splitTextToSize(value, availableWidth - labelWidth);
 
         // Primera línea va junto al label
         doc.text(valueLines[0], x + labelWidth, y);

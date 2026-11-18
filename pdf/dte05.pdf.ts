@@ -27,7 +27,7 @@ export const generateSvfe05 = async (
   let finalY = (doc as unknown as { lastAutoTable: { finalY: number } })
     .lastAutoTable.finalY;
 
-  const startY = 35;
+  const startY = 42;
   const marginX = 5;
   const marginY = 5;
   const tableWidth = doc.internal.pageSize.width - marginX * 2;
