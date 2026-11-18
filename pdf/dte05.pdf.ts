@@ -329,65 +329,28 @@ export const generateSvfe05 = async (
 
 export const footerDocument = (doc: jsPDF, rectMargin: number, ccf: DteNce) => {
   const resumen = ccf.resumen;
-  doc.text(`${resumen.totalLetras}`, 10, rectMargin + 4);
+  doc.text(resumen.totalLetras ?? "", 10, rectMargin + 4);
   doc.text("SUMA DE VENTAS:", 120, rectMargin + 4);
   doc.text(`$${" "} ${" "} ${resumen.totalNoSuj}`, 145, rectMargin + 4);
   doc.text(`$${" "} ${" "} ${resumen.totalExenta}`, 165, rectMargin + 4);
   doc.text(`$${" "} ${" "} ${resumen.totalGravada}`, 185, rectMargin + 4);
- doc.setFontSize(6);
-  doc.text("Suma Total de Operaciones:", 127, rectMargin + 10);
-  doc.text(
-    "Monto global Desc., Rebajas y otros a ventas no sujetas: ",
-    127,
-    rectMargin + 13
-  );
-  doc.text(
-    "Monto global Desc., Rebajas y otros a ventas exentas:",
-    127,
-    rectMargin + 16
-  );
-  doc.text(
-    "Monto global Desc., Rebajas y otros a ventas gravadas:",
-    127,
-    rectMargin + 19
-  );
-  doc.text("IVA 13%: ", 127, rectMargin + 22);
-  doc.text("Sub-Total: ", 127, rectMargin + 25);
-  doc.text("IVA Percibido: ", 127, rectMargin + 28);
-  doc.text("IVA Retenido: ", 127, rectMargin + 31);
-  doc.text("Retención Renta: ", 127, rectMargin + 34);
-  doc.text("Monto Total de la Operación: ", 127, rectMargin + 37);
-  doc.text("Total Otros montos no afectos: ", 127, rectMargin + 40);
-  doc.text("Total a Pagar: ", 127, rectMargin + 43);
-
-  for (let i = 0; i < 12; i++) {
-    doc.text("$", 185, rectMargin + i * 3 + 10);
-  }
-
-  const totals = [
-    resumen.descuGravada.toFixed(2),
-    resumen.descuNoSuj.toFixed(2),
-    resumen.descuExenta.toFixed(2),
-    resumen.descuGravada.toFixed(2),
-    resumen.tributos
-      ? resumen.tributos
-          .map((tr) => Number(tr.valor))
-          .reduce((a, b) => a + b)
-          .toFixed(2)
-      : "0.00",
-    resumen.subTotal.toFixed(2),
-    resumen.ivaPerci1.toFixed(2),
-    resumen.ivaRete1.toFixed(2),
-    resumen.reteRenta.toFixed(2),
-    resumen.montoTotalOperacion.toFixed(2),
-    "0.00",
-    resumen.montoTotalOperacion.toFixed(2),
+  doc.setFontSize(6);
+  const totals: [string, number][] = [
+    ["Suma Total de Operaciones:", resumen.subTotalVentas],
+    ["Total de Descuento:", resumen.totalDescu],
+    ["IVA 13%:", resumen.totalIva],
+    ["IVA Percibido:", resumen.ivaPerci],
+    ["IVA Retenido:", resumen.ivaRete],
+    ["Monto Total de la Operación:", resumen.montoTotalOperacion],
+    ["Total Otros montos no afectos:", resumen.totalNoGravado],
+    ["Total a Pagar:", resumen.totalPagar],
   ];
 
-  totals.forEach((total, index) => {
-    doc.text(total, 202.5, rectMargin + index * 3 + 10, {
-      align: "right",
-    });
+  totals.forEach(([label, total], index) => {
+    const y = rectMargin + index * 3 + 10;
+    doc.text(label, 127, y);
+    doc.text("$", 185, y);
+    doc.text(total.toFixed(2), 202.5, y, { align: "right" });
   });
-  drawDeliveryFooter(doc, rectMargin, ccf.extension ?? {});
+  drawDeliveryFooter(doc, rectMargin, { observaciones: resumen.observaciones });
 };

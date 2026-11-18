@@ -59,7 +59,22 @@ El catálogo instalado aún usa los municipios anteriores: para direcciones con 
 - `ventaTercero` incluye `codDomiciliado`; `pagos[].periodo` es numérico o `null`.
 - `respuestaMH` y `firma` son metadatos opcionales, ajenos al esquema de Hacienda.
 
-El PDF toma las observaciones de `resumen`, usa los importes renombrados y muestra los códigos de distrito y municipio con el catálogo actual. El DTE 05 conserva sus tipos anteriores mediante clases independientes del DTE 03.
+El PDF toma las observaciones de `resumen`, usa los importes renombrados y muestra los códigos de distrito y municipio con el catálogo actual.
+
+## DTE 05: normativa 2.0, esquema versión 4
+
+`DteNce` y `generateSvfe05` utilizan el esquema adjunto de Nota de Crédito Electrónica:
+
+- `identificacion.version` debe ser `4`, `tipoDte` debe ser `"05"` y `fusion` es obligatorio (`string` o `null`).
+- Las direcciones requieren `distrito`; el emisor tiene su propia estructura y su `nrc` admite `null`.
+- El receptor usa `tipoDocumento` y `numDocumento`, con una estructura independiente del emisor.
+- `ventaTercero` incluye `codDomiciliado` y su `nit` admite `null`.
+- Cada ítem requiere `numeroDocumento`, `tributos`, `ivaPerci`, `totalIva` e `ivaRete`; se eliminan `tos` y `psv`.
+- El resumen usa `ivaPerci`, `totalIva` e `ivaRete`, e incluye `observaciones` y `codigoRetencionMH` (ambos admiten `null`).
+- Se eliminan `extension` y los campos de resumen `descuNoSuj`, `descuExenta`, `descuGravada`, `porcentajeDescuento`, `subTotal`, `ivaPerci1`, `ivaRete1`, `reteRenta`, `saldoFavor`, `pagos` y `numPagoElectronico`.
+- `respuestaMH` y `firma` son metadatos opcionales de la biblioteca, ajenos al esquema de Hacienda.
+
+El PDF usa los nuevos importes del resumen, toma las observaciones de `resumen` y muestra los montos no gravados en su propia columna.
 
 ## Parametros
 

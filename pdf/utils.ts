@@ -420,7 +420,7 @@ export const headerDoc = async (
         );
         returnBoldText(
           doc,
-          `NRC No. ${dte.emisor.nrc}`,
+          `NRC No. ${dte.emisor.nrc ?? "-"}`,
           cellX + 65,
           cellY + 24,
           "center",
@@ -500,6 +500,8 @@ export const tableProduct = (
   finalY: number,
 ) => {
   const array_object: (string | number)[][] = [];
+  const separateNoGravado =
+    data.identificacion.tipoDte === "03" || data.identificacion.tipoDte === "05";
   data.cuerpoDocumento
     .filter((cuerpo) => cuerpo.descripcion !== "PROPINA")
     .map((prd) => {
@@ -509,10 +511,10 @@ export const tableProduct = (
         price: formatCurrency(prd.precioUni),
         descu: formatCurrency(prd.montoDescu),
         other: formatCurrency(
-          data.identificacion.tipoDte === "03" ? prd.noGravado : 0,
+          separateNoGravado ? prd.noGravado : 0,
         ),
         vtSuj: formatCurrency(
-          data.identificacion.tipoDte === "03"
+          separateNoGravado
             ? prd.ventaNoSuj
             : Number(prd.ventaNoSuj) + Number(prd.noGravado),
         ),
