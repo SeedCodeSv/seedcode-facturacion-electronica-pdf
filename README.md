@@ -91,6 +91,19 @@ El PDF usa los nuevos importes del resumen, toma las observaciones de `resumen` 
 
 La exclusión entre `ventaTercero` y `compraTercero` se comprueba con `strictNullChecks` habilitado. Los tipos no validan en ejecución los formatos, longitudes, límites numéricos ni cantidades de elementos del esquema JSON.
 
+## DTE 14: normativa 2.0, esquema versión 2
+
+`DteFse` y `generateSvfe14` utilizan el esquema adjunto de Factura de Sujeto Excluido Electrónica:
+
+- `identificacion.version` debe ser `2` y `tipoDte` debe ser `"14"`.
+- `receptor` reemplaza a `sujetoExcluido`. El tipo se exporta como `Receptor14`, con `SujetoExcluido14` como alias.
+- Las direcciones del emisor y receptor requieren `distrito`; `emisor.nrc` admite `null` y se elimina `codPuntoVentaMH`.
+- Se elimina `cuerpoDocumento[].ventaNoSuj` y los campos de resumen `totalNoSuj`, `totalSuj`, `totalExenta` e `ivaRete1`.
+- `resumen.totalLetras` y `resumen.pagos` admiten `null`; `pagos[].codigo` admite `null`, `referencia` es obligatorio y `periodo` es numérico o `null`.
+- `respuestaMH` y `firma` son metadatos opcionales de la biblioteca, ajenos al esquema de Hacienda.
+
+El PDF usa `receptor`, incluye el distrito en la dirección y muestra los descuentos y la retención de renta del nuevo resumen. Los tipos no validan en ejecución los formatos, longitudes, límites numéricos ni cantidades de elementos del esquema JSON.
+
 ## Parametros
 
 

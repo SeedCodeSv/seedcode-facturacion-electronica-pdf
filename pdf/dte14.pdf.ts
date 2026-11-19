@@ -2,18 +2,13 @@ import { drawDeliveryFooter } from "./footer";
 import jsPDF from "jspdf";
 import { DteFse } from "../interfaces/dte14";
 import autoTable, { RowInput } from "jspdf-autotable";
-import {
-  formatAddress,
-  formatCurrency,
-  headerDoc,
-  returnBoldText,
-} from "./utils";
+import { formatAddress, formatCurrency, headerDoc } from "./utils";
 
 export const generateSvfe14 = async (
   dte: DteFse,
   logo: Uint8Array | string = "",
   selloInvalidacion: string = "",
-  contingence = false
+  _contingence = false
 ) => {
   const doc = new jsPDF();
 
@@ -21,7 +16,7 @@ export const generateSvfe14 = async (
 
   let finalYFirtsPage = 0;
 
-  const { sujetoExcluido, identificacion, respuestaMH } = dte;
+  const { receptor, identificacion, respuestaMH } = dte;
   autoTable(doc, {
     margin: {
       left: 10,
@@ -30,30 +25,34 @@ export const generateSvfe14 = async (
     showHead: false,
     startY: 35,
     body: [
-      [`NOMBRE: ${sujetoExcluido.nombre}`, `NRC : ${"-"}`],
+      [`NOMBRE: ${receptor.nombre}`, `NRC : ${"-"}`],
       [
-        `DIRECCIÓN : ${sujetoExcluido.direccion.complemento} ${formatAddress(
-          sujetoExcluido.direccion.departamento,
-          sujetoExcluido.direccion.municipio
+        `DIRECCIÓN : ${receptor.direccion.complemento} ${formatAddress(
+          receptor.direccion.departamento,
+          receptor.direccion.municipio,
+          receptor.direccion.distrito
         )}, El Salvador`,
         `CÓDIGO GENERACIÓN : ${identificacion.codigoGeneracion}`,
       ],
-      [`GIRO : ${"-"}`, `NUMERO DE CONTROL : ${identificacion.numeroControl}`],
       [
-        `NUMERO DOCUMENTO : ${sujetoExcluido.numDocumento ?? "-"}`,
-        `SELLO : ${respuestaMH.selloRecibido}`,
+        `GIRO : ${receptor.descActividad ?? "-"}`,
+        `NUMERO DE CONTROL : ${identificacion.numeroControl}`,
       ],
       [
-        `CORREO : ${sujetoExcluido.correo ?? "-"}`,
+        `NUMERO DOCUMENTO : ${receptor.numDocumento}`,
+        `SELLO : ${respuestaMH?.selloRecibido ?? "-"}`,
+      ],
+      [
+        `CORREO : ${receptor.correo ?? "-"}`,
         `FECHA HORA EMISION : ${identificacion.fecEmi} - ${identificacion.horEmi}`,
       ],
       [
-        `TEL : ${sujetoExcluido.telefono ?? "-"}`,
-        `MODELO DE FACTURACIÓN : ${contingence ? "Diferido" : "Previo"}`,
+        `TEL : ${receptor.telefono ?? "-"}`,
+        `MODELO DE FACTURACIÓN : ${identificacion.tipoModelo === 2 ? "Diferido" : "Previo"}`,
       ],
       [
-        `CONDICIÓN DE LA OPERACIÓN: CONTADO`,
-        `TIPO DE TRANSMISIÓN : ${contingence ? "Por contingencia" : "Normal"}`,
+        `CONDICIÓN DE LA OPERACIÓN: ${dte.resumen.condicionOperacion === 1 ? "Contado" : "Crédito"}`,
+        `TIPO DE TRANSMISIÓN : ${identificacion.tipoOperacion === 2 ? "Por contingencia" : "Normal"}`,
       ],
       ...(selloInvalidacion
         ? [
@@ -307,25 +306,27 @@ export const generateSvfe14 = async (
 
 export const footerDocument = (doc: jsPDF, rectMargin: number, dte: DteFse) => {
   const { resumen } = dte;
-  doc.text(`${resumen.totalLetras}`, 10, rectMargin + 4);
-  doc.text("SUMA DE VENTAS:", 120, rectMargin + 4);
+  doc.text(resumen.totalLetras ?? "", 10, rectMargin + 4);
+  doc.text("SUMA DE COMPRAS:", 120, rectMargin + 4);
   doc.text(`$${" "} ${" "} ${resumen.totalCompra}`, 185, rectMargin + 4);
   doc.setFontSize(6);
   doc.text("Suma Total de Operaciones:", 127, rectMargin + 10);
-  doc.text("Retención renta:", 127, rectMargin + 13);
-  doc.text("IVA retenido:", 127, rectMargin + 16);
+  doc.text("Descuento global:", 127, rectMargin + 13);
+  doc.text("Total de descuentos:", 127, rectMargin + 16);
   doc.text("Sub-Total:", 127, rectMargin + 19);
-  doc.text("Total a Pagar:", 127, rectMargin + 22);
+  doc.text("Retención renta:", 127, rectMargin + 22);
+  doc.text("Total a Pagar:", 127, rectMargin + 25);
 
-  for (let i = 0; i < 5; i++) {
+  for (let i = 0; i < 6; i++) {
     doc.text("$", 185, rectMargin + i * 3 + 10);
   }
 
   const totals = [
+    resumen.totalCompra.toFixed(2),
+    resumen.descu.toFixed(2),
+    resumen.totalDescu.toFixed(2),
     resumen.subTotal.toFixed(2),
     resumen.reteRenta.toFixed(2),
-    resumen.ivaRete1.toFixed(2),
-    resumen.subTotal.toFixed(2),
     resumen.totalPagar.toFixed(2),
   ];
 
