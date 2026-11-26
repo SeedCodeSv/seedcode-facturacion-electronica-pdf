@@ -233,12 +233,17 @@ function section(doc: jsPDF, title: string, headers: string[], body: RowInput[],
   return lastY(doc) + 2.5;
 }
 
+function totalLettersLayout(doc: jsPDF, dte: Dte) {
+  textStyle(doc, 7.3);
+  const lines: string[] = doc.splitTextToSize(dte.resumen.totalLetras, pageWidth(doc) - margin - 117 - 8);
+  return { lines, height: Math.max(6, lines.length * 3.2 + 2) };
+}
+
 function summaryHeight(doc: jsPDF, dte: Dte, rows: SummaryRow[]) {
   textStyle(doc, 6.4);
   const rowHeight = rows.slice(0, -1).reduce((sum, [label]) =>
     sum + Math.max(3.2, doc.splitTextToSize(label, 64).length * 2.5 + 0.7), 0);
-  textStyle(doc, 7.3);
-  const lettersHeight = Math.max(7.5, doc.splitTextToSize(dte.resumen.totalLetras, 128).length * 3.2 + 3);
+  const letters = totalLettersLayout(doc, dte);
   const extension = "extension" in dte ? dte.extension : undefined;
   const observations = extension?.observaciones ?? ("observaciones" in dte.resumen ? dte.resumen.observaciones : "");
   const observationHeight = doc.splitTextToSize(observations || "-", 105).length * 3;
@@ -249,32 +254,30 @@ function summaryHeight(doc: jsPDF, dte: Dte, rows: SummaryRow[]) {
     doc.splitTextToSize(extension?.docuEntrega || "-", 49).length,
     doc.splitTextToSize(extension?.docuRecibe || "-", 49).length,
   ) * 3;
-  return lettersHeight + 4 + Math.max(rowHeight + 12, 27 + responsibilityHeight + observationHeight);
+  return 7.5 + 4 + Math.max(rowHeight + letters.height + 12, 27 + responsibilityHeight + observationHeight);
 }
 
 /** Draw the totals supplied by each document without recalculating its amounts. */
 export function drawDesignSummary(doc: jsPDF, y: number, dte: Dte, rows: SummaryRow[]) {
-  const width = contentWidth(doc);
-  textStyle(doc, 7.3);
-  const letters = doc.splitTextToSize(dte.resumen.totalLetras, 128);
-  const bandHeight = Math.max(7.5, letters.length * 3.2 + 3);
-  gradient(doc, margin, y, width, bandHeight, [227, 242, 255], [213, 230, 247]);
-  doc.text(letters, margin + 3.5, y + 4.7, { lineHeightFactor: 1.2 });
+  const x = 117;
+  const summaryWidth = pageWidth(doc) - margin - x;
+  const letters = totalLettersLayout(doc, dte);
+  const bandHeight = 7.5;
+  gradient(doc, x, y, summaryWidth, bandHeight, [227, 242, 255], [213, 230, 247]);
   const sum = "totalCompra" in dte.resumen ? dte.resumen.totalCompra :
     dte.resumen.totalNoSuj + dte.resumen.totalExenta + dte.resumen.totalGravada;
   textStyle(doc, 9, true, palette.navy);
-  doc.text("Suma de Ventas:", 147, y + 5, { align: "left" });
+  doc.text("Suma de Ventas:", x + 4, y + 5, { align: "left" });
   doc.text(formatCurrency(sum), pageWidth(doc) - margin - 2, y + 5, { align: "right" });
 
   const startY = y + bandHeight + 4;
-  const x = 117;
-  const summaryWidth = pageWidth(doc) - margin - x;
   textStyle(doc, 6.4);
   const amounts = rows.slice(0, -1).map(([label, amount]) => {
     const lines = doc.splitTextToSize(label, 64);
     return { lines, amount, height: Math.max(3.2, lines.length * 2.5 + 0.7) };
   });
-  const height = amounts.reduce((sum, row) => sum + row.height, 0) + 3;
+  const amountsHeight = amounts.reduce((sum, row) => sum + row.height, 0) + 3;
+  const height = amountsHeight + letters.height;
   panel(doc, x, startY, summaryWidth, height + 9);
   let rowY = startY + 1.5;
   amounts.forEach((row, index) => {
@@ -289,6 +292,12 @@ export function drawDesignSummary(doc: jsPDF, y: number, dte: Dte, rows: Summary
       doc.line(x + 3, rowY, x + summaryWidth - 3, rowY);
     }
   });
+  const lettersY = startY + amountsHeight;
+  doc.setDrawColor(...palette.border);
+  doc.setLineWidth(0.1);
+  doc.line(x + 3, lettersY - 0.5, x + summaryWidth - 3, lettersY - 0.5);
+  textStyle(doc, 7.3, false, palette.navy);
+  doc.text(letters.lines, x + 4, lettersY + 3.2, { lineHeightFactor: 1.2 });
   gradient(doc, x, startY + height, summaryWidth, 9, palette.blue, palette.deepBlue);
   textStyle(doc, 11, true, [255, 255, 255]);
   doc.text(rows[rows.length - 1][0], x + 4, startY + height + 5.9);
