@@ -236,14 +236,18 @@ function section(doc: jsPDF, title: string, headers: string[], body: RowInput[],
 function totalLettersLayout(doc: jsPDF, dte: Dte) {
   textStyle(doc, 7.3);
   const lines: string[] = doc.splitTextToSize(dte.resumen.totalLetras, pageWidth(doc) - margin - 117 - 8);
-  return { lines, height: Math.max(6, lines.length * 3.2 + 2) };
+  return { lines, height: Math.max(5.5, lines.length * 3.2 + 1.5) };
 }
 
-function summaryHeight(doc: jsPDF, dte: Dte, rows: SummaryRow[]) {
+function summaryLayout(doc: jsPDF, dte: Dte, rows: SummaryRow[]) {
   textStyle(doc, 6.4);
-  const rowHeight = rows.slice(0, -1).reduce((sum, [label]) =>
-    sum + Math.max(3.2, doc.splitTextToSize(label, 64).length * 2.5 + 0.7), 0);
+  const amounts = rows.slice(0, -1).map(([label, amount]) => {
+    const lines: string[] = doc.splitTextToSize(label, 64);
+    return { lines, amount, height: Math.max(2.9, lines.length * 2.5 + 0.4) };
+  });
+  const amountsHeight = amounts.reduce((sum, row) => sum + row.height, 0) + 2;
   const letters = totalLettersLayout(doc, dte);
+  textStyle(doc, 7.1);
   const extension = "extension" in dte ? dte.extension : undefined;
   const observations = extension?.observaciones ?? ("observaciones" in dte.resumen ? dte.resumen.observaciones : "");
   const observationHeight = doc.splitTextToSize(observations || "-", 105).length * 3;
@@ -254,37 +258,36 @@ function summaryHeight(doc: jsPDF, dte: Dte, rows: SummaryRow[]) {
     doc.splitTextToSize(extension?.docuEntrega || "-", 49).length,
     doc.splitTextToSize(extension?.docuRecibe || "-", 49).length,
   ) * 3;
-  return 7.5 + 4 + Math.max(rowHeight + letters.height + 12, 27 + responsibilityHeight + observationHeight);
+  const bandHeight = 6;
+  const gap = 2;
+  const totalHeight = 8;
+  const panelHeight = amountsHeight + letters.height;
+  const height = bandHeight + gap + Math.max(
+    panelHeight + totalHeight, 27 + responsibilityHeight + observationHeight,
+  );
+  return { amounts, amountsHeight, letters, bandHeight, gap, totalHeight, panelHeight, height };
 }
 
 /** Draw the totals supplied by each document without recalculating its amounts. */
 export function drawDesignSummary(doc: jsPDF, y: number, dte: Dte, rows: SummaryRow[]) {
   const x = 117;
   const summaryWidth = pageWidth(doc) - margin - x;
-  const letters = totalLettersLayout(doc, dte);
-  const bandHeight = 7.5;
+  const { amounts, amountsHeight, letters, bandHeight, gap, totalHeight, panelHeight: height } = summaryLayout(doc, dte, rows);
   gradient(doc, x, y, summaryWidth, bandHeight, [227, 242, 255], [213, 230, 247]);
   const sum = "totalCompra" in dte.resumen ? dte.resumen.totalCompra :
     dte.resumen.totalNoSuj + dte.resumen.totalExenta + dte.resumen.totalGravada;
   textStyle(doc, 9, true, palette.navy);
-  doc.text("Suma de Ventas:", x + 4, y + 5, { align: "left" });
-  doc.text(formatCurrency(sum), pageWidth(doc) - margin - 2, y + 5, { align: "right" });
+  doc.text("Suma de Ventas:", x + 4, y + 4.2, { align: "left" });
+  doc.text(formatCurrency(sum), pageWidth(doc) - margin - 2, y + 4.2, { align: "right" });
 
-  const startY = y + bandHeight + 4;
-  textStyle(doc, 6.4);
-  const amounts = rows.slice(0, -1).map(([label, amount]) => {
-    const lines = doc.splitTextToSize(label, 64);
-    return { lines, amount, height: Math.max(3.2, lines.length * 2.5 + 0.7) };
-  });
-  const amountsHeight = amounts.reduce((sum, row) => sum + row.height, 0) + 3;
-  const height = amountsHeight + letters.height;
-  panel(doc, x, startY, summaryWidth, height + 9);
-  let rowY = startY + 1.5;
+  const startY = y + bandHeight + gap;
+  panel(doc, x, startY, summaryWidth, height + totalHeight);
+  let rowY = startY + 1;
   amounts.forEach((row, index) => {
     textStyle(doc, 6.4);
-    doc.text(row.lines, x + 4, rowY + 2.4, { lineHeightFactor: 1.1 });
+    doc.text(row.lines, x + 4, rowY + 2.2, { lineHeightFactor: 1.1 });
     textStyle(doc, 6.8, true);
-    doc.text(`$${row.amount}`, x + summaryWidth - 3, rowY + 2.4, { align: "right" });
+    doc.text(`$${row.amount}`, x + summaryWidth - 3, rowY + 2.2, { align: "right" });
     rowY += row.height;
     if (index < amounts.length - 1) {
       doc.setDrawColor(...palette.border);
@@ -298,10 +301,10 @@ export function drawDesignSummary(doc: jsPDF, y: number, dte: Dte, rows: Summary
   doc.line(x + 3, lettersY - 0.5, x + summaryWidth - 3, lettersY - 0.5);
   textStyle(doc, 7.3, false, palette.navy);
   doc.text(letters.lines, x + 4, lettersY + 3.2, { lineHeightFactor: 1.2 });
-  gradient(doc, x, startY + height, summaryWidth, 9, palette.blue, palette.deepBlue);
+  gradient(doc, x, startY + height, summaryWidth, totalHeight, palette.blue, palette.deepBlue);
   textStyle(doc, 11, true, [255, 255, 255]);
-  doc.text(rows[rows.length - 1][0], x + 4, startY + height + 5.9);
-  doc.text(`$${rows[rows.length - 1][1]}`, x + summaryWidth - 3, startY + height + 5.9, { align: "right" });
+  doc.text(rows[rows.length - 1][0], x + 4, startY + height + 5.4);
+  doc.text(`$${rows[rows.length - 1][1]}`, x + summaryWidth - 3, startY + height + 5.4, { align: "right" });
 
   const extension = "extension" in dte ? dte.extension : undefined;
   let observationY = startY + 5;
@@ -363,31 +366,21 @@ export async function generateDesignPdf(
     : ["Cantidad", "Descripción", "Precio Unitario", "Descuento", "Otros Montos\nNo Afectos", "Ventas No\nSujetas", "Ventas\nExentas", "Ventas\nGravadas"];
   const widths = excluded ? [18, 90, 30, 28, contentWidth(doc) - 166]
     : [18, 57, 25, 19.5, 22, 18.5, 18, contentWidth(doc) - 178];
-  const summarySize = summaryHeight(doc, dte, rows);
+  const summarySize = summaryLayout(doc, dte, rows).height;
   const tableBottom = bottom - summarySize - 5;
   const pageTables = new Map<number, { top: number; end: number }>();
-  let summaryPage = 0;
-  let summaryBodyEnd = 0;
-  if (y + 16 > tableBottom) {
+  if (y + 16 > bottom) {
     doc.addPage();
     y = continuationTop - 2.5;
   }
   autoTable(doc, {
     startY: y + 2.5, head: [headers], body: products, theme: "plain",
-    // Reserve the summary only after the last product, freeing earlier pages.
-    foot: [[{ content: "", colSpan: headers.length, styles: { minCellHeight: summarySize + 5, cellPadding: 0 } }]],
-    showFoot: "lastPage",
     margin: { left: margin, right: margin, top: continuationTop, bottom: doc.internal.pageSize.getHeight() - bottom },
-    styles: { font: "helvetica", fontSize: 7.5, cellPadding: { top: 0.9, bottom: 0.9, left: 1.4, right: 1.4 }, textColor: palette.ink, lineColor: palette.border, lineWidth: { left: 0.12, right: 0.12 }, overflow: "linebreak", minCellHeight: 5.2 },
+    styles: { font: "helvetica", fontSize: 7.5, cellPadding: { top: 0.9, bottom: 0.9, left: 1.4, right: 1.4 }, textColor: palette.ink, lineColor: palette.border, lineWidth: { left: 0.12, right: 0.12 }, overflow: "linebreak", minCellHeight: 5 },
     headStyles: { fillColor: false, textColor: [255, 255, 255], fontStyle: "bold", fontSize: 7.2, halign: "center", minCellHeight: 7.5, valign: "middle" },
     columnStyles: Object.fromEntries(widths.map((width, index) => [index, { cellWidth: width, halign: index === 0 ? "center" : index === 1 ? "left" : "right" }])),
     rowPageBreak: "avoid",
     willDrawCell: data => {
-      if (data.section === "foot") {
-        summaryPage = doc.getCurrentPageInfo().pageNumber;
-        summaryBodyEnd = data.cell.y;
-        return false;
-      }
       if (data.section === "head" && data.column.index === 0) {
         doc.saveGraphicsState();
         doc.rect(margin, data.cell.y, contentWidth(doc), data.cell.height, null);
@@ -401,14 +394,17 @@ export async function generateDesignPdf(
       const page = doc.getCurrentPageInfo().pageNumber;
       pageTables.set(page, {
         top: data.pageNumber === 1 ? y + 2.5 : continuationTop,
-        end: page === summaryPage ? summaryBodyEnd : data.cursor?.y ?? bottom,
+        end: data.cursor?.y ?? bottom,
       });
     },
   });
-  const lastPage = doc.getNumberOfPages();
+  const lastProductPage = doc.getNumberOfPages();
+  const productsEnd = lastY(doc);
+  // Decide from the actual rendered rows, without grouping the last product with the totals.
+  const summaryFits = productsEnd + 3 + summarySize <= bottom + 0.01;
   for (const [page, table] of pageTables) {
     doc.setPage(page);
-    const end = page === summaryPage ? Math.max(tableBottom, table.end) : bottom;
+    const end = page === lastProductPage && summaryFits ? Math.max(tableBottom, table.end) : bottom;
     doc.setDrawColor(...palette.border);
     doc.setLineWidth(0.2);
     doc.roundedRect(margin, table.top, contentWidth(doc), end - table.top, 2, 2, "S");
@@ -418,8 +414,9 @@ export async function generateDesignPdf(
       doc.line(x, table.end, x, end);
     });
   }
-  doc.setPage(lastPage);
-  const summaryY = Math.max(tableBottom, summaryBodyEnd) + 3;
+  doc.setPage(lastProductPage);
+  if (!summaryFits) doc.addPage();
+  const summaryY = summaryFits ? Math.max(tableBottom, productsEnd) + 3 : continuationTop;
   drawDesignSummary(doc, summaryY, dte, rows);
 
   for (let page = 1; page <= doc.getNumberOfPages(); page++) {
