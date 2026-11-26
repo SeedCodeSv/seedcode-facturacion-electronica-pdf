@@ -353,11 +353,33 @@ export async function generateDesignPdf(
     y += lines.length * 3.5 + 5;
   }
   if (dte.identificacion.tipoDte !== "14") {
-    y = section(doc, "OTROS DOCUMENTOS ASOCIADOS", ["Identificación del documento", "Descripción"], [["-", "-"]], y, continuationTop);
-    y = section(doc, "VENTA A CUENTA DE TERCEROS", ["NIT", "Nombre, denominación o razón social"], [["-", "-"]], y, continuationTop);
+    const otherDocuments = "otrosDocumentos" in dte ? dte.otrosDocumentos : null;
+    const documents = (Array.isArray(otherDocuments)
+      ? otherDocuments
+      : otherDocuments ? [otherDocuments] : []
+    ).filter(item => item && (
+      item.codDocAsociado != null || item.descDocumento || item.detalleDocumento || item.medico?.nombre
+    ));
+    if (documents.length) {
+      y = section(doc, "OTROS DOCUMENTOS ASOCIADOS", ["Identificación del documento", "Descripción"],
+        documents.map(item => [
+          item.descDocumento || String(item.codDocAsociado ?? "-"),
+          item.detalleDocumento || item.medico?.nombre || "-",
+        ]), y, continuationTop);
+    }
+    const thirdParty = "ventaTercero" in dte ? dte.ventaTercero : null;
+    if (thirdParty?.nit || thirdParty?.nombre) {
+      y = section(doc, "VENTA A CUENTA DE TERCEROS", ["NIT", "Nombre, denominación o razón social"],
+        [[thirdParty.nit || "-", thirdParty.nombre || "-"]], y, continuationTop);
+    }
     const related = "documentoRelacionado" in dte ? dte.documentoRelacionado : null;
-    y = section(doc, "DOCUMENTOS RELACIONADOS", ["Tipo de Documento", "N° de Documento", "Fecha de Documento"],
-      related?.length ? related.map(item => [item.tipoDocumento, item.numeroDocumento, item.fechaEmision]) : [["-", "-", "-"]], y, continuationTop);
+    const relatedDocuments = Array.isArray(related)
+      ? related.filter(item => item && (item.tipoDocumento || item.numeroDocumento || item.fechaEmision))
+      : [];
+    if (relatedDocuments.length) {
+      y = section(doc, "DOCUMENTOS RELACIONADOS", ["Tipo de Documento", "N° de Documento", "Fecha de Documento"],
+        relatedDocuments.map(item => [item.tipoDocumento || "-", item.numeroDocumento || "-", item.fechaEmision || "-"]), y, continuationTop);
+    }
   }
 
   const excluded = dte.identificacion.tipoDte === "14";
