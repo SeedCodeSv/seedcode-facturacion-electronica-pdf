@@ -95,47 +95,47 @@ function issuerName(dte: Dte, options: DesignOptions) {
 
 async function prepareHeader(doc: jsPDF, dte: Dte, options: DesignOptions) {
   const [logo, qr] = await Promise.all([
-    adjustImage(options.logo, 23, 25), generateQR(dte),
+    adjustImage(options.logo, 22, 23), generateQR(dte),
   ]);
   const name = issuerName(dte, options);
-  textStyle(doc, 11, true);
+  textStyle(doc, 10.5, true);
   const nameLines: string[] = doc.splitTextToSize(name, 81);
-  textStyle(doc, 7.7);
+  textStyle(doc, 7.2);
   const details: string[] = [
     `Actividad económica: ${dte.emisor.descActividad}`,
     `Dirección: ${address(dte.emisor.direccion)}`,
     `Tel: ${dte.emisor.telefono}`,
   ].flatMap(line => doc.splitTextToSize(line, 81));
-  const height = Math.max(32, nameLines.length * 4.3 + details.length * 3.3 + 3);
-  const endY = 9 + height + 4;
+  const height = Math.max(29, nameLines.length * 4 + details.length * 2.9 + 2);
+  const endY = 7 + height + 2;
   return {
     endY,
     draw() {
-      doc.addImage(logo.imageBase64, "PNG", margin, 11, logo.width, logo.height, "issuer-logo");
+      doc.addImage(logo.imageBase64, "PNG", margin, 9, logo.width, logo.height, "issuer-logo");
       doc.setFillColor(0, 151, 245);
-      doc.roundedRect(30, 9, 1.3, height, 0.6, 0.6, "F");
-      textStyle(doc, 11, true, palette.navy);
-      doc.text(nameLines, 34.5, 13, { lineHeightFactor: 1.1 });
-      textStyle(doc, 7.7);
-      doc.text(details, 34.5, 13 + nameLines.length * 4.3 + 1, { lineHeightFactor: 1.2 });
-      if (qr) doc.addImage(qr, "PNG", 118, 17, 21, 21, "dte-qr");
+      doc.roundedRect(30, 7, 1.3, height, 0.6, 0.6, "F");
+      textStyle(doc, 10.5, true, palette.navy);
+      doc.text(nameLines, 34.5, 11, { lineHeightFactor: 1.08 });
+      textStyle(doc, 7.2);
+      doc.text(details, 34.5, 11 + nameLines.length * 4 + 0.5, { lineHeightFactor: 1.14 });
+      if (qr) doc.addImage(qr, "PNG", 118, 13, 21, 21, "dte-qr");
 
       const x = 142;
       const width = pageWidth(doc) - margin - x;
-      panel(doc, x, 11, width, 29);
-      gradient(doc, x, 11, width, 6.4, palette.blue, palette.deepBlue);
+      panel(doc, x, 8, width, 27);
+      gradient(doc, x, 8, width, 5.6, palette.blue, palette.deepBlue);
       textStyle(doc, 7.7, true, [255, 255, 255]);
-      doc.text("DOCUMENTO TRIBUTARIO ELECTRÓNICO", x + width / 2, 15.3, { align: "center" });
-      textStyle(doc, 9, true);
+      doc.text("DOCUMENTO TRIBUTARIO ELECTRÓNICO", x + width / 2, 11.8, { align: "center" });
+      textStyle(doc, 8.3, true);
       const title = doc.splitTextToSize(
         formatNameByTypeDte(dte.identificacion.tipoDte, options.shortName ?? false), width - 6,
       );
-      doc.text(title, x + width / 2, 22, { align: "center", lineHeightFactor: 1.08 });
+      doc.text(title, x + width / 2, 18, { align: "center", lineHeightFactor: 1.08 });
       doc.setDrawColor(...palette.border);
-      doc.line(x + 6, 29, x + width - 6, 29);
-      textStyle(doc, 8.6, true);
-      doc.text(`N.I.T. ${dte.emisor.nit}`, x + width / 2, 33.6, { align: "center" });
-      doc.text(`NRC No. ${dte.emisor.nrc}`, x + width / 2, 37.5, { align: "center" });
+      doc.line(x + 6, 24, x + width - 6, 24);
+      textStyle(doc, 8.2, true);
+      doc.text(`N.I.T. ${dte.emisor.nit}`, x + width / 2, 28.3, { align: "center" });
+      doc.text(`NRC No. ${dte.emisor.nrc}`, x + width / 2, 32.1, { align: "center" });
       doc.setDrawColor(...palette.border);
       doc.line(margin, endY, pageWidth(doc) - margin, endY);
     },
@@ -143,14 +143,14 @@ async function prepareHeader(doc: jsPDF, dte: Dte, options: DesignOptions) {
 }
 
 function fieldLines(doc: jsPDF, fields: Field[], width: number, labelWidth: number) {
-  textStyle(doc, 7.4);
+  textStyle(doc, 7.1);
   return fields.map(([label, value]) => {
     // Long labels receive their own measured width, keeping their values aligned.
-    textStyle(doc, 7.4, true);
-    const offset = Math.max(labelWidth, doc.getTextWidth(label) + 2);
-    textStyle(doc, 7.4);
-    const lines: string[] = doc.splitTextToSize(value || "-", width - offset - 8);
-    return { label, offset, lines, height: Math.max(4.4, lines.length * 3.2 + 0.7) };
+    textStyle(doc, 7.1, true);
+    const offset = Math.max(labelWidth, doc.getTextWidth(label) + 1.5);
+    textStyle(doc, 7.1);
+    const lines: string[] = doc.splitTextToSize(value || "-", width - offset - 6);
+    return { label, offset, lines, height: Math.max(3.5, lines.length * 2.9 + 0.4) };
   });
 }
 
@@ -187,50 +187,50 @@ function recipientCards(doc: jsPDF, dte: Dte, y: number, options: DesignOptions)
     ["Tipo de Transmisión:", (excludedType ? options.contingence : id.tipoOperacion === 2) ? "Por contingencia" : "Normal"],
   ];
   const width = (contentWidth(doc) - 3.5) / 2;
-  const columns = [fieldLines(doc, left, width, 16), fieldLines(doc, right, width, 32)];
-  const height = Math.max(...columns.map(rows => rows.reduce((sum, row) => sum + row.height, 0))) + 6;
+  const columns = [fieldLines(doc, left, width, 15), fieldLines(doc, right, width, 30)];
+  const height = Math.max(...columns.map(rows => rows.reduce((sum, row) => sum + row.height, 0))) + 4.5;
   columns.forEach((rows, column) => {
     const x = margin + column * (width + 3.5);
     panel(doc, x, y, width, height);
-    let baseline = y + 4.6;
+    let baseline = y + 3.5;
     rows.forEach(row => {
-      textStyle(doc, 7.4, true);
-      doc.text(row.label, x + 4, baseline);
-      textStyle(doc, 7.4);
-      doc.text(row.lines, x + 4 + row.offset, baseline, { lineHeightFactor: 1.22 });
+      textStyle(doc, 7.1, true);
+      doc.text(row.label, x + 3, baseline);
+      textStyle(doc, 7.1);
+      doc.text(row.lines, x + 3 + row.offset, baseline, { lineHeightFactor: 1.15 });
       baseline += row.height;
     });
   });
-  return y + height + 4;
+  return y + height + 2.5;
 }
 
 function section(doc: jsPDF, title: string, headers: string[], body: RowInput[], y: number, continuationTop: number) {
   const width = contentWidth(doc);
-  if (y + 22 > bottom) {
+  if (y + 16 > bottom) {
     doc.addPage();
     y = continuationTop;
   }
   autoTable(doc, {
-    startY: y + 7, theme: "plain", head: [headers], body,
-    margin: { left: margin + 2.5, right: margin + 2.5, top: continuationTop + 7, bottom: 20 },
-    styles: { font: "helvetica", fontSize: 7.2, cellPadding: 1.5, textColor: palette.ink },
+    startY: y + 5, theme: "plain", head: [headers], body,
+    margin: { left: margin + 2, right: margin + 2, top: continuationTop + 5, bottom: 20 },
+    styles: { font: "helvetica", fontSize: 7, cellPadding: { top: 0.65, bottom: 0.65, left: 1, right: 1 }, textColor: palette.ink },
     headStyles: { fillColor: palette.pale, fontStyle: "bold", lineWidth: { bottom: 0.15 }, lineColor: palette.border },
     columnStyles: { 0: { cellWidth: headers.length === 3 ? 64 : 65 } },
     rowPageBreak: "avoid",
     willDrawPage: data => {
       const top = data.pageNumber === 1 ? y : continuationTop;
-      gradient(doc, margin, top, width, 7, [218, 237, 255], [155, 203, 250]);
-      textStyle(doc, 9.5, true, palette.deepBlue);
-      doc.text(title, margin + 4.5, top + 4.8);
+      gradient(doc, margin, top, width, 5, [218, 237, 255], [155, 203, 250]);
+      textStyle(doc, 8.2, true, palette.deepBlue);
+      doc.text(title, margin + 3.5, top + 3.5);
     },
     didDrawPage: data => {
       const top = data.pageNumber === 1 ? y : continuationTop;
       doc.setDrawColor(...palette.border);
       doc.setLineWidth(0.18);
-      doc.roundedRect(margin, top, width, (data.cursor?.y ?? top + 7) - top + 1, 2, 2, "S");
+      doc.roundedRect(margin, top, width, (data.cursor?.y ?? top + 5) - top + 0.7, 2, 2, "S");
     },
   });
-  return lastY(doc) + 4.5;
+  return lastY(doc) + 2.5;
 }
 
 function summaryHeight(doc: jsPDF, dte: Dte, rows: SummaryRow[]) {
@@ -331,9 +331,9 @@ export async function generateDesignPdf(
 ) {
   const doc = new jsPDF({ compress: true });
   const header = await prepareHeader(doc, dte, options);
-  const continuationTop = header.endY + 6;
+  const continuationTop = header.endY + 3.5;
   header.draw();
-  let y = recipientCards(doc, dte, header.endY + 4.5, options);
+  let y = recipientCards(doc, dte, header.endY + 3, options);
   if (options.selloInvalidacion) {
     textStyle(doc, 8, true, [185, 28, 28]);
     const lines = doc.splitTextToSize(`DTE INVALIDO CORRECTAMENTE — SELLO DE ANULACIÓN: ${options.selloInvalidacion}`, contentWidth(doc) - 6);
@@ -355,21 +355,30 @@ export async function generateDesignPdf(
   const widths = excluded ? [18, 90, 30, 28, contentWidth(doc) - 166]
     : [18, 57, 25, 19.5, 22, 18.5, 18, contentWidth(doc) - 178];
   const summarySize = summaryHeight(doc, dte, rows);
-  // Leave the complete summary together; long descriptions continue on a fresh page.
   const tableBottom = bottom - summarySize - 5;
   const pageTables = new Map<number, { top: number; end: number }>();
-  if (y + 23 > tableBottom) {
+  let summaryPage = 0;
+  let summaryBodyEnd = 0;
+  if (y + 16 > tableBottom) {
     doc.addPage();
     y = continuationTop - 2.5;
   }
   autoTable(doc, {
     startY: y + 2.5, head: [headers], body: products, theme: "plain",
-    margin: { left: margin, right: margin, top: continuationTop, bottom: doc.internal.pageSize.getHeight() - tableBottom },
-    styles: { font: "helvetica", fontSize: 8, cellPadding: 2.2, textColor: palette.ink, lineColor: palette.border, lineWidth: { left: 0.12, right: 0.12 }, overflow: "linebreak", minCellHeight: 7.8 },
-    headStyles: { fillColor: false, textColor: [255, 255, 255], fontStyle: "bold", fontSize: 7.4, halign: "center", minCellHeight: 9.2, valign: "middle" },
+    // Reserve the summary only after the last product, freeing earlier pages.
+    foot: [[{ content: "", colSpan: headers.length, styles: { minCellHeight: summarySize + 5, cellPadding: 0 } }]],
+    showFoot: "lastPage",
+    margin: { left: margin, right: margin, top: continuationTop, bottom: doc.internal.pageSize.getHeight() - bottom },
+    styles: { font: "helvetica", fontSize: 7.5, cellPadding: { top: 0.9, bottom: 0.9, left: 1.4, right: 1.4 }, textColor: palette.ink, lineColor: palette.border, lineWidth: { left: 0.12, right: 0.12 }, overflow: "linebreak", minCellHeight: 5.2 },
+    headStyles: { fillColor: false, textColor: [255, 255, 255], fontStyle: "bold", fontSize: 7.2, halign: "center", minCellHeight: 7.5, valign: "middle" },
     columnStyles: Object.fromEntries(widths.map((width, index) => [index, { cellWidth: width, halign: index === 0 ? "center" : index === 1 ? "left" : "right" }])),
     rowPageBreak: "avoid",
     willDrawCell: data => {
+      if (data.section === "foot") {
+        summaryPage = doc.getCurrentPageInfo().pageNumber;
+        summaryBodyEnd = data.cell.y;
+        return false;
+      }
       if (data.section === "head" && data.column.index === 0) {
         doc.saveGraphicsState();
         doc.rect(margin, data.cell.y, contentWidth(doc), data.cell.height, null);
@@ -380,16 +389,17 @@ export async function generateDesignPdf(
       }
     },
     didDrawPage: data => {
-      pageTables.set(doc.getCurrentPageInfo().pageNumber, {
+      const page = doc.getCurrentPageInfo().pageNumber;
+      pageTables.set(page, {
         top: data.pageNumber === 1 ? y + 2.5 : continuationTop,
-        end: data.cursor?.y ?? tableBottom,
+        end: page === summaryPage ? summaryBodyEnd : data.cursor?.y ?? bottom,
       });
     },
   });
   const lastPage = doc.getNumberOfPages();
   for (const [page, table] of pageTables) {
     doc.setPage(page);
-    const end = Math.max(tableBottom, table.end);
+    const end = page === summaryPage ? Math.max(tableBottom, table.end) : bottom;
     doc.setDrawColor(...palette.border);
     doc.setLineWidth(0.2);
     doc.roundedRect(margin, table.top, contentWidth(doc), end - table.top, 2, 2, "S");
@@ -400,7 +410,7 @@ export async function generateDesignPdf(
     });
   }
   doc.setPage(lastPage);
-  const summaryY = Math.max(tableBottom, lastY(doc)) + 3;
+  const summaryY = Math.max(tableBottom, summaryBodyEnd) + 3;
   drawDesignSummary(doc, summaryY, dte, rows);
 
   for (let page = 1; page <= doc.getNumberOfPages(); page++) {
