@@ -135,7 +135,7 @@ async function prepareHeader(doc: jsPDF, dte: Dte, options: DesignOptions) {
       doc.line(x + 6, 24, x + width - 6, 24);
       textStyle(doc, 8.2, true);
       doc.text(`N.I.T. ${dte.emisor.nit}`, x + width / 2, 28.3, { align: "center" });
-      doc.text(`NRC No. ${dte.emisor.nrc}`, x + width / 2, 32.1, { align: "center" });
+      doc.text(`NRC No. ${dte.emisor.nrc ?? "-"}`, x + width / 2, 32.1, { align: "center" });
       doc.setDrawColor(...palette.border);
       doc.line(margin, endY, pageWidth(doc) - margin, endY);
     },
@@ -235,7 +235,7 @@ function section(doc: jsPDF, title: string, headers: string[], body: RowInput[],
 
 function totalLettersLayout(doc: jsPDF, dte: Dte) {
   textStyle(doc, 7.3);
-  const lines: string[] = doc.splitTextToSize(dte.resumen.totalLetras, pageWidth(doc) - margin - 117 - 8);
+  const lines: string[] = doc.splitTextToSize(dte.resumen.totalLetras ?? "", pageWidth(doc) - margin - 117 - 8);
   return { lines, height: Math.max(5.5, lines.length * 3.2 + 1.5) };
 }
 

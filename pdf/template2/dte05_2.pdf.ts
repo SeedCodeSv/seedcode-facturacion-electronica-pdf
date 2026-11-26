@@ -206,7 +206,7 @@ export const generateSvfe05_2 = async ({
   const TIKTOK = await icons.returnBase64Icon("TIKTOK");
   const WHATSAPP = await icons.returnBase64Icon("WHATSAPP");
 
-  const { resumen, extension } = svfe05;
+  const { resumen } = svfe05;
 
   autoTable(doc, {
     head: [["", ""]],
@@ -222,7 +222,7 @@ export const generateSvfe05_2 = async ({
           doc.setFont("Nunito", "normal");
           doc.setTextColor(darkTextColor);
           const observations = doc.splitTextToSize(
-            `Notas: ${extension ? extension.observaciones : ""}`,
+            `Notas: ${resumen.observaciones ?? ""}`,
             225
           );
           doc.text(observations, data.cell.x + 10, data.cell.y + 20);
@@ -239,30 +239,29 @@ export const generateSvfe05_2 = async ({
             "S"
           );
 
-          doc.text(resumen.totalLetras, data.cell.x + 110, data.cell.y + 127);
+          doc.text(resumen.totalLetras ?? "", data.cell.x + 110, data.cell.y + 127);
 
           doc.roundedRect(data.cell.x, data.cell.y + 160, 760, 50, 15, 15, "S");
 
           doc.setFontSize(9);
 
           doc.text(
-            `Nombre entrega: ${extension ? extension.nombEntrega ?? "-" : ""}`,
+            "Nombre entrega: -",
             data.cell.x + 10,
             data.cell.y + 179
           );
           doc.text(
-            `Documento entrega: ${extension ? extension.docuEntrega ?? "-" : ""
-            }`,
+            "Documento entrega: -",
             data.cell.x + 10,
             data.cell.y + 195
           );
           doc.text(
-            `Nombre recibe: ${extension ? extension.nombRecibe ?? "-" : ""}`,
+            "Nombre recibe: -",
             data.cell.x + 450,
             data.cell.y + 179
           );
           doc.text(
-            `Documento recibe: ${extension ? extension.docuRecibe ?? "-" : ""}`,
+            "Documento recibe: -",
             data.cell.x + 450,
             data.cell.y + 195
           );
@@ -314,455 +313,38 @@ export const generateSvfe05_2 = async ({
           doc.setFontSize(8);
           doc.setTextColor(darkTextColor);
 
-          if (
-            custom.typeResume === "detailed"
-          ) {
-            doc.text(
-              "Suma total de operación:",
-              data.cell.x + 215,
-              data.cell.y + 2,
-              {
-                align: "right",
-              }
-            );
+          const totals: [string, number][] = [
+            ["Suma total de operaciones:", resumen.subTotalVentas],
+            ["Total de descuentos:", resumen.totalDescu],
+            ["Impuesto al Valor Agregado 13%:", resumen.totalIva],
+            ["IVA percibido:", resumen.ivaPerci],
+            ["IVA retenido:", resumen.ivaRete],
+            ["Monto total de la operación:", resumen.montoTotalOperacion],
+            ["Total otros montos no afectos:", resumen.totalNoGravado],
+            ["Total a pagar (USD):", resumen.totalPagar],
+          ];
 
-            let textY = data.cell.y + 15;
-
-            doc.text("Turismo 5%:", data.cell.x + 215, textY, {
-              align: "right",
-            });
-            textY += 12;
-            doc.text(
-              "Impuesto al Valor Agregado 13%:",
-              data.cell.x + 215,
-              textY,
-              {
-                align: "right",
-              }
+          if (custom.typeResume === "detailed") {
+            const tourism = resumen.tributos?.find(tributo => tributo.codigo === "59")?.valor ?? 0;
+            const tip = svfe05.cuerpoDocumento.find(item => item.descripcion === "PROPINA")?.noGravado ?? 0;
+            const extraTip = svfe05.cuerpoDocumento.find(item => item.descripcion === "PROPINA EXTRA")?.noGravado ?? 0;
+            totals.splice(2, 0, ["Turismo 5%:", tourism]);
+            totals.splice(totals.length - 2, 0, ["Servicio 10%:", tip], ["Propina extra:", extraTip]);
+          } else if (custom.typeResume === "custom") {
+            totals.unshift(
+              ["Total de operaciones no sujetas:", resumen.totalNoSuj],
+              ["Total de operaciones exentas:", resumen.totalExenta],
+              ["Total de operaciones gravadas:", resumen.totalGravada],
             );
-            textY += 12;
-            doc.text("Sub-total:", data.cell.x + 215, textY, {
-              align: "right",
-            });
-            textY += 12;
-            doc.text("(+) IVA Percepción 1%:", data.cell.x + 215, textY, {
-              align: "right",
-            });
-            textY += 12;
-            doc.text("(-) IVA Retención 1%:", data.cell.x + 215, textY, {
-              align: "right",
-            });
-            textY += 12;
-            doc.text("Retención renta:", data.cell.x + 215, textY, {
-              align: "right",
-            });
-            textY += 12;
-            doc.text("Total operación:", data.cell.x + 215, textY, {
-              align: "right",
-            });
-            textY += 12;
-            doc.text("Servicio 10%:", data.cell.x + 215, textY, {
-              align: "right",
-            });
-            textY += 12;
-            doc.text("Propina Extra:", data.cell.x + 215, textY, {
-              align: "right",
-            });
-            textY += 12;
-            doc.text(
-              "Total otros montos no afectos:",
-              data.cell.x + 215,
-              textY,
-              {
-                align: "right",
-              }
-            );
-            textY += 12;
-            doc.text("TOTAL A PAGAR:", data.cell.x + 215, textY, {
-              align: "right",
-            });
           }
-
-          if (
-            custom.typeResume === "simple"
-          ) {
-            doc.text(
-              "Suma total de operación:",
-              data.cell.x + 215,
-              data.cell.y + 10,
-              {
-                align: "right",
-              }
-            );
-
-            let textY = data.cell.y + 22;
-            doc.text(
-              "Impuesto al Valor Agregado 13%:",
-              data.cell.x + 215,
-              textY,
-              {
-                align: "right",
-              }
-            );
-            textY += 12;
-            doc.text("Sub-total:", data.cell.x + 215, textY, {
-              align: "right",
-            });
-            textY += 12;
-            doc.text("(+) IVA Percepción 1%:", data.cell.x + 215, textY, {
-              align: "right",
-            });
-            textY += 12;
-            doc.text("(-) IVA Retención 1%:", data.cell.x + 215, textY, {
-              align: "right",
-            });
-            textY += 12;
-            doc.text("Retención renta:", data.cell.x + 215, textY, {
-              align: "right",
-            });
-            textY += 12;
-            doc.text("Total operación:", data.cell.x + 215, textY, {
-              align: "right",
-            });
-            textY += 12;
-            doc.text("Servicio 10%:", data.cell.x + 215, textY, {
-              align: "right",
-            });
-            textY += 12;
-            doc.text("Propina Extra:", data.cell.x + 215, textY, {
-              align: "right",
-            });
-            textY += 12;
-            doc.text(
-              "Total otros montos no afectos:",
-              data.cell.x + 215,
-              textY,
-              {
-                align: "right",
-              }
-            );
-            textY += 12;
-            doc.text("TOTAL A PAGAR:", data.cell.x + 215, textY, {
-              align: "right",
-            });
-          }
-
-          if (custom.typeResume === "custom") {
-            doc.text(
-              "Suma total de operación:",
-              data.cell.x + 215,
-              data.cell.y + 10,
-              {
-                align: "right",
-              }
-            );
-
-            let textY = data.cell.y + 22;
-
-            doc.text(
-              "Monto global desc., rebajas otros a Ventas No Sujetas:",
-              data.cell.x + 215,
-              textY,
-              {
-                align: "right",
-              }
-            );
-            textY += 12;
-            doc.text(
-              "Monto global desc,. rebajas y otros a V. Ex.:",
-              data.cell.x + 215,
-              textY,
-              {
-                align: "right",
-              }
-            );
-            textY += 12;
-            doc.text(
-              "Monto global desc., rebajas y otros V. Gr.:",
-              data.cell.x + 215,
-              textY,
-              {
-                align: "right",
-              }
-            );
-            textY += 12;
-            doc.text(
-              "Impuesto al Valor Agregado 13%.:",
-              data.cell.x + 215,
-              textY,
-              {
-                align: "right",
-              }
-            );
-            textY += 12;
-            doc.text("Sub-total:", data.cell.x + 215, textY, {
-              align: "right",
-            });
-            textY += 12;
-            doc.text("IVA percibido:", data.cell.x + 215, textY, {
-              align: "right",
-            });
-            textY += 12;
-            doc.text("IVA retenido:", data.cell.x + 215, textY, {
-              align: "right",
-            });
-            textY += 12;
-            doc.text("Retención renta:", data.cell.x + 215, textY, {
-              align: "right",
-            });
-            textY += 12;
-            doc.text("Monto total de la operación:", data.cell.x + 215, textY, {
-              align: "right",
-            });
-            textY += 12;
-            doc.text(
-              "Total otros montos no afectos:",
-              data.cell.x + 215,
-              textY,
-              {
-                align: "right",
-              }
-            );
-            textY += 12;
-            doc.text("Total a pagar (USD):", data.cell.x + 215, textY, {
-              align: "right",
-            });
-          }
-
-          const heightRect = custom.typeResume === "custom" ? 150 : custom.typeResume === "detailed" ? 160 : 150;
-          const startY = custom.typeResume === 'detailed' ? data.cell.y - 7 : data.cell.y
 
           doc.setFillColor(fillColor);
-          doc.rect(data.cell.x + 220, startY, 150, heightRect, "F");
-
-          if (
-            custom.typeResume === "detailed"
-          ) {
-            let tourism = 0;
-
-            if (resumen.tributos && resumen.tributos.length > 0) {
-              tourism =
-                resumen.tributos.find((tributo) => tributo.codigo === "59")
-                  ?.valor || 0;
-            }
-            let propina =
-              svfe05.cuerpoDocumento.find(
-                (cuerpo) => cuerpo.descripcion === "PROPINA"
-              )?.noGravado ?? 0;
-
-            let extraPropina =
-              svfe05.cuerpoDocumento.find(
-                (cuerpo) => cuerpo.descripcion === "PROPINA EXTRA"
-              )?.noGravado ?? 0;
-
-            const totalIva =
-              resumen.tributos && resumen.tributos.length > 0
-                ? resumen.tributos.find((tributo) => tributo.codigo === "20")
-                  ?.valor || 0
-                : 0;
-
-            const noAfectos = resumen.totalExenta + resumen.totalNoSuj;
-            doc.text(
-              formatCurrency(resumen.subTotal),
-              data.cell.x + 230,
-              data.cell.y + 3
-            );
-            let textYTotals = data.cell.y + 15;
-            doc.text(formatCurrency(tourism), data.cell.x + 230, textYTotals);
-            textYTotals += 12;
-            doc.text(formatCurrency(totalIva), data.cell.x + 230, textYTotals);
-            textYTotals += 12;
-            doc.text(
-              formatCurrency(resumen.subTotalVentas),
-              data.cell.x + 230,
-              textYTotals
-            );
-            textYTotals += 12;
-            doc.text(
-              formatCurrency(resumen.ivaPerci1 ?? 0),
-              data.cell.x + 230,
-              textYTotals
-            );
-            textYTotals += 12;
-            doc.text(
-              formatCurrency(resumen.ivaRete1 ?? 0),
-              data.cell.x + 230,
-              textYTotals
-            );
-            textYTotals += 12;
-            doc.text(
-              formatCurrency(resumen.reteRenta ?? 0),
-              data.cell.x + 230,
-              textYTotals
-            );
-            textYTotals += 12;
-            doc.text(
-              formatCurrency(resumen.montoTotalOperacion),
-              data.cell.x + 230,
-              textYTotals
-            );
-            textYTotals += 12;
-            doc.text(formatCurrency(propina), data.cell.x + 230, textYTotals);
-            textYTotals += 12;
-            doc.text(formatCurrency(extraPropina), data.cell.x + 230, textYTotals);
-            textYTotals += 12;
-            doc.text(formatCurrency(noAfectos), data.cell.x + 230, textYTotals);
-            textYTotals += 12;
-            doc.text(
-              formatCurrency(resumen.totalPagar),
-              data.cell.x + 230,
-              textYTotals
-            );
-          }
-
-          if (
-            custom.typeResume === "simple"
-          ) {
-            let propina =
-              svfe05.cuerpoDocumento.find(
-                (cuerpo) => cuerpo.descripcion === "PROPINA"
-              )?.noGravado ?? 0;
-
-            let extraPropina =
-              svfe05.cuerpoDocumento.find(
-                (cuerpo) => cuerpo.descripcion === "PROPINA EXTRA"
-              )?.noGravado ?? 0;
-
-            const totalIva =
-              resumen.tributos && resumen.tributos.length > 0
-                ? resumen.tributos.find((tributo) => tributo.codigo === "20")
-                  ?.valor || 0
-                : 0;
-
-            const noAfectos = resumen.totalExenta + resumen.totalNoSuj;
-            doc.text(
-              formatCurrency(resumen.subTotal),
-              data.cell.x + 230,
-              data.cell.y + 10
-            );
-            let textYTotals = data.cell.y + 22;
-            doc.text(formatCurrency(totalIva), data.cell.x + 230, textYTotals);
-            textYTotals += 12;
-            doc.text(
-              formatCurrency(resumen.subTotalVentas),
-              data.cell.x + 230,
-              textYTotals
-            );
-            textYTotals += 12;
-            doc.text(
-              formatCurrency(resumen.ivaPerci1 ?? 0),
-              data.cell.x + 230,
-              textYTotals
-            );
-            textYTotals += 12;
-            doc.text(
-              formatCurrency(resumen.ivaRete1 ?? 0),
-              data.cell.x + 230,
-              textYTotals
-            );
-            textYTotals += 12;
-            doc.text(
-              formatCurrency(resumen.reteRenta ?? 0),
-              data.cell.x + 230,
-              textYTotals
-            );
-            textYTotals += 12;
-            doc.text(
-              formatCurrency(resumen.montoTotalOperacion),
-              data.cell.x + 230,
-              textYTotals
-            );
-            textYTotals += 12;
-            doc.text(formatCurrency(propina), data.cell.x + 230, textYTotals);
-            textYTotals += 12;
-            doc.text(formatCurrency(extraPropina), data.cell.x + 230, textYTotals);
-            textYTotals += 12;
-            doc.text(formatCurrency(noAfectos), data.cell.x + 230, textYTotals);
-            textYTotals += 12;
-            doc.text(
-              formatCurrency(resumen.totalPagar),
-              data.cell.x + 230,
-              textYTotals
-            );
-          }
-
-          if (custom.typeResume === "custom") {
-            const noAfectos = resumen.totalExenta + resumen.totalNoSuj;
-
-            const totalIva =
-              resumen.tributos && resumen.tributos.length > 0
-                ? resumen.tributos.find((tributo) => tributo.codigo === "20")
-                  ?.valor || 0
-                : 0;
-
-            doc.text(
-              formatCurrency(resumen.subTotalVentas),
-              data.cell.x + 230,
-              data.cell.y + 10
-            );
-            let textYTotals = data.cell.y + 22;
-            doc.text(
-              formatCurrency(resumen.descuNoSuj),
-              data.cell.x + 230,
-              textYTotals
-            );
-            textYTotals += 12;
-            doc.text(
-              formatCurrency(resumen.descuExenta),
-              data.cell.x + 230,
-              textYTotals
-            );
-            textYTotals += 12;
-            doc.text(
-              formatCurrency(resumen.descuGravada),
-              data.cell.x + 230,
-              textYTotals
-            );
-            textYTotals += 12;
-            doc.text(
-              formatCurrency(totalIva ?? 0),
-              data.cell.x + 230,
-              textYTotals
-            );
-            textYTotals += 12;
-            doc.text(
-              formatCurrency(resumen.subTotal),
-              data.cell.x + 230,
-              textYTotals
-            );
-            textYTotals += 12;
-            doc.text(
-              formatCurrency(resumen.reteRenta ?? 0),
-              data.cell.x + 230,
-              textYTotals
-            );
-            textYTotals += 12;
-            doc.text(
-              formatCurrency(resumen.ivaPerci1 ?? 0),
-              data.cell.x + 230,
-              textYTotals
-            );
-            textYTotals += 12;
-            doc.text(
-              formatCurrency(resumen.ivaRete1 ?? 0),
-              data.cell.x + 230,
-              textYTotals
-            );
-            textYTotals += 12;
-            doc.text(
-              formatCurrency(resumen.reteRenta ?? 0),
-              data.cell.x + 230,
-              textYTotals
-            );
-            textYTotals += 12;
-            doc.text(formatCurrency(noAfectos), data.cell.x + 230, textYTotals);
-            textYTotals += 12;
-            doc.text(
-              formatCurrency(resumen.totalPagar),
-              data.cell.x + 230,
-              textYTotals
-            );
-          }
+          doc.rect(data.cell.x + 220, data.cell.y, 150, totals.length * 12 + 6, "F");
+          totals.forEach(([label, amount], index) => {
+            const y = data.cell.y + 10 + index * 12;
+            doc.text(label, data.cell.x + 215, y, { align: "right" });
+            doc.text(formatCurrency(amount), data.cell.x + 230, y);
+          });
         }
       }
     },
@@ -1021,7 +603,7 @@ export const generateSvfe05_2 = async ({
             doc.setFont("Nunito", "bold");
             doc.text("N.R.C: ", data.cell.x + 150, lastY);
             doc.setFont("Nunito", "normal");
-            doc.text(svfe05.emisor.nrc, data.cell.x + 180, lastY);
+            doc.text(svfe05.emisor.nrc ?? "-", data.cell.x + 180, lastY);
             doc.setTextColor(darkTextColor);
             doc.setFont("Nunito", "bold");
             lastY += 15;
@@ -1121,7 +703,7 @@ export const generateSvfe05_2 = async ({
             doc.rect(data.cell.x + 167, lastY - 8, 203, 13, "F");
             doc.setFontSize(7.5);
             doc.text(
-              svfe05.respuestaMH.selloRecibido ?? "",
+              svfe05.respuestaMH?.selloRecibido ?? "",
               data.cell.x + 170,
               lastY + 1
             );
@@ -1175,8 +757,6 @@ export const generateSvfe05_2 = async ({
           lastAutoTable: { finalY: number };
         }
       ).lastAutoTable.finalY;
-
-      const payCondition = resumen.pagos?.[0]?.codigo ?? "01";
 
       autoTable(doc, {
         head: [[""]],
@@ -1237,18 +817,18 @@ export const generateSvfe05_2 = async ({
               );
               doc.text(address, paddingX + 100, lastY);
               lastY += 40;
-              doc.text("NIT: ", paddingX, lastY);
-              doc.text(svfe05.receptor.nit, paddingX + 100, lastY);
+              doc.text("Documento: ", paddingX, lastY);
+              doc.text(svfe05.receptor.numDocumento, paddingX + 100, lastY);
               lastY += 25;
               doc.text("NRC: ", paddingX, lastY);
-              doc.text(svfe05.receptor.nrc, paddingX + 100, lastY);
+              doc.text(svfe05.receptor.nrc ?? "-", paddingX + 100, lastY);
               lastY += 25;
               doc.text("Correo: ", paddingX, lastY);
-              doc.text(svfe05.receptor.correo, paddingX + 100, lastY);
+              doc.text(svfe05.receptor.correo ?? "-", paddingX + 100, lastY);
               lastY += 25;
               const nomCom = doc.splitTextToSize("Nombre comercial: ", 80);
               doc.text(nomCom, paddingX, lastY);
-              doc.text(svfe05.receptor.nombreComercial, paddingX + 100, lastY);
+              doc.text(svfe05.receptor.nombreComercial ?? "-", paddingX + 100, lastY);
 
               doc.setFillColor(fillColor2);
               doc.rect(data.cell.x + 60, data.cell.y + 243, 130, 17, "F");
@@ -1260,7 +840,7 @@ export const generateSvfe05_2 = async ({
               );
               doc.setTextColor(darkTextColor);
               doc.text(
-                payCondition === "01" ? "Contado" : "Credito",
+                resumen.condicionOperacion === 1 ? "Contado" : "Credito",
                 data.cell.x + 200,
                 data.cell.y + 255
               );

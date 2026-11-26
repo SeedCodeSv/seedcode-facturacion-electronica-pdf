@@ -12,7 +12,7 @@ import {
   adjustImageWatermark,
 } from "../utils";
 import { formatDocumentType } from "./utils";
-import { DteNce } from "../../main";
+import { DteCcf } from "../../interfaces/dte03";
 
 interface Props {
   borderColor: string;
@@ -21,7 +21,8 @@ interface Props {
   darkTextColor: string;
   lightTextColor: string;
   tertiaryColor: string;
-  svfe06: DteNce;
+  // La nota de débito conserva su estructura anterior a la NC versión 4.
+  svfe06: Omit<DteCcf, "otrosDocumentos">;
   logoWidth: number;
   logoHeight: number;
   logo: Uint8Array | string;

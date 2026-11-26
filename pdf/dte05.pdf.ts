@@ -7,34 +7,21 @@ import { drawDesignSummary, generateDesignPdf, SummaryRow } from "./design";
 const summaryRows = (dte: DteNce): SummaryRow[] => {
   const { resumen } = dte;
   const totals = [
-    resumen.descuGravada.toFixed(2),
-    resumen.descuNoSuj.toFixed(2),
-    resumen.descuExenta.toFixed(2),
-    resumen.descuGravada.toFixed(2),
-    resumen.tributos
-      ? resumen.tributos
-          .map((tr) => Number(tr.valor))
-          .reduce((a, b) => a + b)
-          .toFixed(2)
-      : "0.00",
-    resumen.subTotal.toFixed(2),
-    (resumen.ivaPerci1 ?? 0).toFixed(2),
-    (resumen.ivaRete1 ?? 0).toFixed(2),
-    (resumen.reteRenta ?? 0).toFixed(2),
+    resumen.subTotalVentas.toFixed(2),
+    resumen.totalDescu.toFixed(2),
+    resumen.totalIva.toFixed(2),
+    resumen.ivaPerci.toFixed(2),
+    resumen.ivaRete.toFixed(2),
     resumen.montoTotalOperacion.toFixed(2),
-    "0.00",
-    resumen.montoTotalOperacion.toFixed(2),
+    resumen.totalNoGravado.toFixed(2),
+    resumen.totalPagar.toFixed(2),
   ];
   const labels = [
     "Suma Total de Operaciones:",
-    "Monto global Desc., Rebajas y otros a ventas no sujetas:",
-    "Monto global Desc., Rebajas y otros a ventas exentas:",
-    "Monto global Desc., Rebajas y otros a ventas gravadas:",
+    "Total de Descuentos:",
     "IVA 13%:",
-    "Sub-Total:",
     "IVA Percibido:",
     "IVA Retenido:",
-    "Retención Renta:",
     "Monto Total de la Operación:",
     "Total Otros montos no afectos:",
     "Total a Pagar:",
@@ -56,8 +43,8 @@ export const generateSvfe05 = async (
       item.descripcion,
       formatCurrency(item.precioUni),
       formatCurrency(item.montoDescu),
-      formatCurrency(0),
-      formatCurrency(Number(item.ventaNoSuj) + Number(item.noGravado)),
+      formatCurrency(item.noGravado),
+      formatCurrency(item.ventaNoSuj),
       formatCurrency(item.ventaExenta),
       formatCurrency(item.ventaGravada),
     ]);

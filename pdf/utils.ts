@@ -550,7 +550,7 @@ export const adjustTextInRect = (
 };
 
 export const generateQR = async (
-  dte: DteFe | DteCcf | DteFse | DteNce | DteNre,
+  dte: Pick<DteFe, "identificacion">,
 ) => {
   try {
     const dataUrl = await QRCode.toBuffer(generateUrl(dte));
@@ -560,7 +560,7 @@ export const generateQR = async (
   }
 };
 
-export const generateUrl = (dte: DteFe | DteCcf | DteFse | DteNce | DteNre) => {
+export const generateUrl = (dte: Pick<DteFe, "identificacion">) => {
   return (
     $MH_QUERY +
     "?ambiente=" +
@@ -573,7 +573,7 @@ export const generateUrl = (dte: DteFe | DteCcf | DteFse | DteNce | DteNre) => {
 };
 
 export const generateQRWithColor = async (
-  dte: DteFe | DteCcf | DteFse | DteNce | DteNre,
+  dte: Pick<DteFe, "identificacion">,
   color: string,
 ) => {
   try {
