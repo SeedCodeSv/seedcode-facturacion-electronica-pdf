@@ -55,6 +55,8 @@ export class Resumen01 {
   totalDescu!: number;
   tributos!: Tributo[] | null;
   subTotal!: number;
+  ivaRete?: number;
+  ivaPerci?: number;
   ivaRete1?: number;
   ivaPerci1?: number;
   reteRenta?: number;

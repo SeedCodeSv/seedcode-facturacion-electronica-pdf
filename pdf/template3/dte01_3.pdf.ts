@@ -347,7 +347,7 @@ function drawBottomSection(
   );
 
   const totalsWidth = 240;
-  const totalsHeight = 230;
+  const totalsHeight = 250;
   const totalsX = dimensions.pageWidth - layout.margin - totalsWidth;
   const totalsY = qrY;
 
@@ -368,6 +368,7 @@ function drawBottomSection(
           ["Total descuento", formatCurrency(resumen.totalDescu)],
           ["Sub total", formatCurrency(resumen.subTotal)],
           ["Total IVA", formatCurrency(resumen.totalIva ?? 0)],
+          ["IVA Retenido", formatCurrency(resumen.ivaRete ?? resumen.ivaRete1 ?? 0)],
           [
             "Monto total operacion",
             formatCurrency(resumen.montoTotalOperacion),
@@ -383,8 +384,8 @@ function drawBottomSection(
           ["Descu. gravada", formatCurrency(resumen.descuGravada)],
           ["Total descuento", formatCurrency(resumen.totalDescu)],
           ["Sub total", formatCurrency(resumen.subTotal)],
-          ["IVA Retenido", formatCurrency(resumen.ivaRete1 ?? 0)],
-          ["IVA Percibido", formatCurrency(resumen.ivaPerci1 ?? 0)],
+          ["IVA Retenido", formatCurrency(resumen.ivaRete ?? resumen.ivaRete1 ?? 0)],
+          ["IVA Percibido", formatCurrency(resumen.ivaPerci ?? resumen.ivaPerci1 ?? 0)],
           [
             "Monto total operacion",
             formatCurrency(resumen.montoTotalOperacion),
@@ -629,7 +630,7 @@ export const generateSvfe01_3 = async ({
   };
 
   const bottomGap = 30;
-  const bottomSectionHeight = 240;
+  const bottomSectionHeight = 260;
   const requiredBottomSpace = bottomSectionHeight + bottomGap;
 
   const colXPositions: number[] = [];

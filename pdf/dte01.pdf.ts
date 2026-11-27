@@ -802,7 +802,7 @@ const summaryRows = (dte: DteFe): SummaryRow[] => {
     resumen.descuExenta.toFixed(2),
     resumen.descuGravada.toFixed(2),
     resumen.subTotal.toFixed(2),
-    (resumen.ivaRete1 ?? 0).toFixed(2),
+    (resumen.ivaRete ?? resumen.ivaRete1 ?? 0).toFixed(2),
     (resumen.reteRenta ?? 0).toFixed(2),
     resumen.montoTotalOperacion.toFixed(2),
     propina.toFixed(2),

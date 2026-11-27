@@ -579,13 +579,13 @@ export const generateSvfe03_2 = async ({
             );
             textYTotals += 12;
             doc.text(
-              formatCurrency(resumen.ivaPerci1 ?? 0),
+              formatCurrency(resumen.ivaPerci ?? resumen.ivaPerci1 ?? 0),
               data.cell.x + 230,
               textYTotals
             );
             textYTotals += 12;
             doc.text(
-              formatCurrency(resumen.ivaRete1 ?? 0),
+              formatCurrency(resumen.ivaRete ?? resumen.ivaRete1 ?? 0),
               data.cell.x + 230,
               textYTotals
             );
@@ -650,13 +650,13 @@ export const generateSvfe03_2 = async ({
             );
             textYTotals += 12;
             doc.text(
-              formatCurrency(resumen.ivaPerci1 ?? 0),
+              formatCurrency(resumen.ivaPerci ?? resumen.ivaPerci1 ?? 0),
               data.cell.x + 230,
               textYTotals
             );
             textYTotals += 12;
             doc.text(
-              formatCurrency(resumen.ivaRete1 ?? 0),
+              formatCurrency(resumen.ivaRete ?? resumen.ivaRete1 ?? 0),
               data.cell.x + 230,
               textYTotals
             );
@@ -732,25 +732,25 @@ export const generateSvfe03_2 = async ({
             );
             textYTotals += 12;
             doc.text(
-              formatCurrency(resumen.reteRenta ?? 0),
+              formatCurrency(resumen.ivaPerci ?? resumen.ivaPerci1 ?? 0),
               data.cell.x + 230,
               textYTotals
             );
             textYTotals += 12;
             doc.text(
-              formatCurrency(resumen.ivaPerci1 ?? 0),
-              data.cell.x + 230,
-              textYTotals
-            );
-            textYTotals += 12;
-            doc.text(
-              formatCurrency(resumen.ivaRete1 ?? 0),
+              formatCurrency(resumen.ivaRete ?? resumen.ivaRete1 ?? 0),
               data.cell.x + 230,
               textYTotals
             );
             textYTotals += 12;
             doc.text(
               formatCurrency(resumen.reteRenta ?? 0),
+              data.cell.x + 230,
+              textYTotals
+            );
+            textYTotals += 12;
+            doc.text(
+              formatCurrency(resumen.montoTotalOperacion),
               data.cell.x + 230,
               textYTotals
             );
