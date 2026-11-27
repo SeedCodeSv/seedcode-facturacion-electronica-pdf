@@ -30,6 +30,17 @@ Para documentos DTE factura sujeto excluido
 import { generateSvfe14 } from "seedcode-facturacion-electronica-pdf"
 ```
 
+## Compatibilidad con documentos anteriores
+
+Los generadores de factura y crédito fiscal aceptan ambos formatos sin modificar el JSON original:
+
+- `generateSvfe01`: `DteFe` (versión 2) o `DteFeV1` (versión 1).
+- `generateSvfe03`: `DteCcf` (versión 4) o `DteCcfV3` (versión 3).
+
+Con `distrito`, la dirección muestra distrito, municipio y departamento. Sin `distrito`, muestra municipio y departamento, admitiendo tanto los códigos municipales anteriores como los actuales.
+
+Para documentos anteriores se leen `ivaRete1`, `ivaPerci1` (crédito fiscal), `reteRenta` y `extension.observaciones`. Los documentos actuales mantienen `ivaRete`, `ivaPerci` y `resumen.observaciones`. Los tipos del esquema actual siguen requiriendo `distrito`; los tipos `DteFeV1` y `DteCcfV3` permiten las direcciones anteriores.
+
 ## DTE 01: esquema versión 2
 
 `DteFe` y `generateSvfe01` utilizan la versión 2 del esquema de Factura Electrónica:
@@ -44,7 +55,7 @@ import { generateSvfe14 } from "seedcode-facturacion-electronica-pdf"
 
 `respuestaMH` y `firma` son metadatos opcionales de la biblioteca, ajenos al esquema de Hacienda. Los tipos se mantienen independientes de los demás DTE.
 
-El catálogo instalado aún usa los municipios anteriores: para direcciones con distrito se muestran los códigos de municipio y distrito junto al nombre del departamento.
+Las direcciones con distrito se muestran con sus nombres de distrito, municipio y departamento.
 
 ## DTE 03: esquema versión 4
 
@@ -59,7 +70,7 @@ El catálogo instalado aún usa los municipios anteriores: para direcciones con 
 - `ventaTercero` incluye `codDomiciliado`; `pagos[].periodo` es numérico o `null`.
 - `respuestaMH` y `firma` son metadatos opcionales, ajenos al esquema de Hacienda.
 
-El PDF toma las observaciones de `resumen`, usa los importes renombrados y muestra los códigos de distrito y municipio con el catálogo actual.
+El PDF toma las observaciones de `resumen`, usa los importes renombrados y muestra los nombres de distrito, municipio y departamento.
 
 ## DTE 05: normativa 2.0, esquema versión 4
 

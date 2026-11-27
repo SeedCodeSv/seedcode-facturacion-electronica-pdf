@@ -1,4 +1,12 @@
-import { Apendice, RespuestaMh, Tributo } from "./common";
+import {
+  Apendice,
+  Direccion,
+  Extension,
+  Pago,
+  RespuestaMh,
+  Tributo,
+  VentaTercero,
+} from "./common";
 
 /** Comprobante de crédito fiscal DTE 03, versión 4 del esquema adjunto. */
 export class Identificacion03 {
@@ -141,4 +149,33 @@ export class DteCcf {
   /** Metadatos de procesamiento; no forman parte del esquema del DTE. */
   respuestaMH?: RespuestaMh;
   firmaElectronica?: string;
+}
+
+/** DteCcf: formato anterior, esquema versión 3, sin distrito. */
+export interface DteCcfV3 extends Omit<
+  DteCcf,
+  "identificacion" | "emisor" | "receptor" | "ventaTercero" | "resumen" | "cuerpoDocumento"
+> {
+  identificacion: Omit<Identificacion03, "version"> & { version: 3 };
+  emisor: Omit<Emisor03, "direccion"> & {
+    direccion: Direccion;
+    tipoEstablecimiento: string;
+    codEstableMH: string | null;
+    codPuntoVentaMH: string | null;
+  };
+  receptor: Omit<Receptor03, "direccion"> & { direccion: Direccion };
+  ventaTercero: VentaTercero | null;
+  resumen: Omit<Resumen03, "ivaPerci" | "ivaRete" | "observaciones" | "pagos"> & {
+    ivaPerci1: number;
+    ivaRete1: number;
+    reteRenta: number;
+    pagos: (Omit<Pago, "periodo"> & { periodo: string | number | null })[] | null;
+  };
+  extension: Extension | null;
+  firma?: string;
+  cuerpoDocumento: (Omit<CuerpoDocumento03, "tributos"> & {
+    tributos?: string[] | null;
+    /** Nombre admitido por versiones anteriores de la biblioteca. */
+    tos?: string[] | null;
+  })[];
 }

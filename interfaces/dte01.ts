@@ -1,4 +1,12 @@
-import { Apendice, RespuestaMh, Tributo } from "./common";
+import {
+  Apendice,
+  Direccion,
+  Extension,
+  Pago,
+  RespuestaMh,
+  Tributo,
+  VentaTercero,
+} from "./common";
 
 /** Factura electrónica DTE 01, versión 2 del esquema adjunto. */
 export interface Identificacion01 {
@@ -142,4 +150,28 @@ export interface DteFe {
   /** Metadatos de procesamiento; no forman parte del esquema del DTE. */
   respuestaMH?: RespuestaMh;
   firmaElectronica?: string;
+}
+
+/** DteFe: formato anterior, esquema versión 1, sin distrito. */
+export interface DteFeV1 extends Omit<
+  DteFe,
+  "identificacion" | "emisor" | "receptor" | "ventaTercero" | "resumen"
+> {
+  identificacion: Omit<Identificacion01, "version"> & { version: 1 };
+  emisor: Omit<Emisor01, "direccion"> & {
+    direccion: Direccion;
+    tipoEstablecimiento: string;
+    codEstableMH: string | null;
+    codPuntoVentaMH: string | null;
+  };
+  receptor: (Omit<Receptor01, "direccion"> & { direccion: Direccion | null }) | null;
+  ventaTercero: VentaTercero | null;
+  resumen: Omit<Resumen01, "ivaRete" | "observaciones" | "pagos"> & {
+    ivaPerci1?: number;
+    ivaRete1: number;
+    reteRenta: number;
+    pagos: (Omit<Pago, "periodo"> & { periodo: string | number | null })[] | null;
+  };
+  extension: Extension | null;
+  firma?: string;
 }

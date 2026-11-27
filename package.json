@@ -6,7 +6,7 @@
   "declaration": true,
   "types": "dist/main.d.ts",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "npm run build && node --test tests/*.test.js",
     "build": "tsc && copyfiles -u 1 logos/* dist/pdf/logos",
     "prepublishOnly": "npm run build",
     "prepare": "npm run build"

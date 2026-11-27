@@ -8,10 +8,10 @@ import {
   tableHeaders,
   tableProduct,
 } from "./utils";
-import { DteCcf } from "../interfaces/dte03";
+import { DteCcf, DteCcfV3 } from "../interfaces/dte03";
 
 export const generateSvfe03 = async (
-  svfe03: DteCcf,
+  svfe03: DteCcf | DteCcfV3,
   logo: Uint8Array | string = "",
   selloInvalidacion: string = "",
   contingence: boolean = false,
@@ -46,8 +46,7 @@ export const generateSvfe03 = async (
     "S",
   );
 
-  const { documentoRelacionado, ventaTercero, otrosDocumentos } =
-    svfe03 as DteCcf;
+  const { documentoRelacionado, ventaTercero, otrosDocumentos } = svfe03;
 
   finalY = (
     doc as unknown as {
@@ -351,7 +350,7 @@ export const generateSvfe03 = async (
   return doc.output("arraybuffer");
 };
 
-export const footerDocument = (doc: jsPDF, rectMargin: number, ccf: DteCcf) => {
+export const footerDocument = (doc: jsPDF, rectMargin: number, ccf: DteCcf | DteCcfV3) => {
   const resumen = ccf.resumen;
   doc.text(resumen.totalLetras ?? "", 10, rectMargin + 4);
   doc.text("SUMA DE VENTAS:", 120, rectMargin + 4);
@@ -367,8 +366,9 @@ export const footerDocument = (doc: jsPDF, rectMargin: number, ccf: DteCcf) => {
     ["IVA 13%:", (resumen.tributos ?? []).filter((tributo) => tributo.codigo === "20")
       .reduce((total, tributo) => total + tributo.valor, 0)],
     ["Sub-Total:", resumen.subTotal],
-    ["IVA Percibido:", resumen.ivaPerci],
-    ["IVA Retenido:", resumen.ivaRete],
+    ["IVA Percibido:", "ivaPerci" in resumen ? resumen.ivaPerci : resumen.ivaPerci1],
+    ["IVA Retenido:", "ivaRete" in resumen ? resumen.ivaRete : resumen.ivaRete1],
+    ...("reteRenta" in resumen ? [["Retención Renta:", resumen.reteRenta] as [string, number]] : []),
     ["Monto Total de la Operación:", resumen.montoTotalOperacion],
     ["Total no gravado:", resumen.totalNoGravado],
     ["Total a Pagar:", resumen.totalPagar],
@@ -381,5 +381,8 @@ export const footerDocument = (doc: jsPDF, rectMargin: number, ccf: DteCcf) => {
     doc.text(total.toFixed(2), 202.5, y, { align: "right" });
   });
 
-  drawDeliveryFooter(doc, rectMargin, { observaciones: resumen.observaciones });
+  const observaciones = "observaciones" in resumen
+    ? resumen.observaciones
+    : ("extension" in ccf ? ccf.extension?.observaciones : undefined);
+  drawDeliveryFooter(doc, rectMargin, { observaciones });
 };

@@ -8,10 +8,10 @@ import {
   secondHeader,
   tableHeaders,
 } from "./utils";
-import { DteFe } from "../interfaces/dte01";
+import { DteFe, DteFeV1 } from "../interfaces/dte01";
 
 export const generateSvfe01 = async (
-  svfe01: DteFe,
+  svfe01: DteFe | DteFeV1,
   logo: Uint8Array | string = "",
   selloInvalidacion: string = "",
   contingence: boolean = false,
@@ -25,7 +25,7 @@ export const generateSvfe01 = async (
   });
   let finalYFirstPage = 0;
 
-  const { cuerpoDocumento } = svfe01 as DteFe;
+  const { cuerpoDocumento } = svfe01;
 
   doc.setFontSize(6);
   secondHeader(doc, svfe01, selloInvalidacion, contingence);
@@ -57,8 +57,7 @@ export const generateSvfe01 = async (
     }
   ).lastAutoTable.finalY;
 
-  const { documentoRelacionado, otrosDocumentos, ventaTercero } =
-    svfe01 as DteFe;
+  const { documentoRelacionado, otrosDocumentos, ventaTercero } = svfe01;
 
   if (otrosDocumentos !== null && otrosDocumentos) {
     returnBoldText(
@@ -460,13 +459,13 @@ export const generateSvfe01 = async (
 export const footerDocument = (
   doc: jsPDF,
   rectMargin: number,
-  svfe01: DteFe,
+  svfe01: DteFe | DteFeV1,
 ) => {
   let propina =
     svfe01.cuerpoDocumento.find((cuerpo) => cuerpo.descripcion === "PROPINA")
       ?.noGravado ?? 0;
 
-  const { resumen } = svfe01 as DteFe;
+  const { resumen } = svfe01;
 
   doc.text(`${resumen.totalLetras}`, 10, rectMargin + 4);
   doc.text("SUMA DE VENTAS:", 120, rectMargin + 4);
@@ -520,11 +519,9 @@ export const footerDocument = (
   returnBoldText(doc, "TELEFONO: _______________________", 80, rectMargin + 35);
 
   returnBoldText(doc, "Observaciones:", 10, rectMargin + 43);
-  const observaciones = (
-    svfe01 as DteFe & {
-      extension?: { observaciones?: string };
-    }
-  ).extension?.observaciones || svfe01.resumen.observaciones;
+  const observaciones = "observaciones" in resumen
+    ? resumen.observaciones
+    : ("extension" in svfe01 ? svfe01.extension?.observaciones : undefined);
   if (observaciones) {
     const text = doc.splitTextToSize(observaciones, 115);
     doc.text(text, 10, rectMargin + 45);
@@ -570,8 +567,8 @@ export const footerDocument = (
     // resumen.tributos ? resumen.tributos.map((tr) => Number(tr.valor)).reduce((a, b) => a + b).toFixed(2) : "0.00",
     resumen.subTotal.toFixed(2),
     // resumen.ivaPerci1.toFixed(2),
-    resumen.ivaRete.toFixed(2),
-    "0.00",
+    ("ivaRete" in resumen ? resumen.ivaRete : resumen.ivaRete1).toFixed(2),
+    ("reteRenta" in resumen ? resumen.reteRenta : 0).toFixed(2),
     resumen.montoTotalOperacion.toFixed(2),
     propina?.toFixed(2),
     "0.00",

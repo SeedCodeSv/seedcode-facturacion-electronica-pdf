@@ -6,8 +6,8 @@ import { SeedcodeCatalogosMhService } from "seedcode-catalogos-mh";
 import sharp from "sharp";
 import * as QRCode from "qrcode";
 import { $MH_QUERY } from "../utils/constants";
-import { DteFe } from "../interfaces/dte01";
-import { DteCcf } from "../interfaces/dte03";
+import { DteFe, DteFeV1 } from "../interfaces/dte01";
+import { DteCcf, DteCcfV3 } from "../interfaces/dte03";
 import { DteFse } from "../interfaces/dte14";
 import { DteNce } from "../interfaces/dte05";
 import { DteNre } from "../interfaces/dte04";
@@ -28,7 +28,7 @@ export const formatAddress = (
     // Quitar padding de ceros (MH envía "02", distritos-sv usa "2")
     const cleanDistritoCode = distrito_code.replace(/^0+/, "") || "0";
     const distritos = listDistritos(dep_code, mun_code);
-    const distrito = distritos.find((d) => d.codigo === cleanDistritoCode);
+    const distrito = distritos.find((d) => d.codigo.trim() === cleanDistritoCode);
     const dep = listaDepartamentos().find((d) => d.codigo === dep_code);
     const mun = listaMunicipios(dep_code).find((m) => m.codigo === mun_code);
     if (distrito && dep && mun) {
@@ -36,24 +36,25 @@ export const formatAddress = (
     }
   }
 
-  // v1/v3: fallback sin distrito, solo departamento + municipio
-  const service = new SeedcodeCatalogosMhService();
-  const deparment = service
-    .get012Departamento()
-    .find((dep) => dep.codigo === dep_code);
+  const dep = listaDepartamentos().find((d) => d.codigo === dep_code);
+  if (!dep) return "";
 
-  if (deparment) {
-    const municipio = service.get013Municipio(dep_code);
-    if (municipio) {
-      const munici = municipio.find((mun) => mun.codigo === mun_code);
-      if (munici) {
-        return `${munici.valores}, ${deparment.valores}`;
-      }
-      return `${deparment.valores}`;
+  const municipios = listaMunicipios(dep_code);
+  const mun = municipios.find((m) => m.codigo === mun_code);
+  if (mun) return `${mun.valores}, ${dep.valores}`;
+
+  // Sin distrito, los códigos municipales anteriores corresponden a los
+  // códigos de distrito actuales, independientemente del municipio nuevo.
+  if (!distrito_code) {
+    const oldMunicipioCode = mun_code.replace(/^0+/, "") || "0";
+    for (const municipio of municipios) {
+      const distrito = listDistritos(dep_code, municipio.codigo)
+        .find((d) => d.codigo.trim() === oldMunicipioCode);
+      if (distrito) return `${distrito.valores}, ${dep.valores}`;
     }
-    return `${deparment.valores}`;
   }
-  return "";
+
+  return dep.valores;
 };
 
 export const returnWidthImgFromBuffer = async (
@@ -256,7 +257,7 @@ export const writeBoldLabel = (
 
 export const headerDoc = async (
   doc: jsPDF,
-  dte: DteFe | DteCcf | DteFse | DteNce | DteNre | DteExp,
+  dte: DteFe | DteFeV1 | DteCcf | DteCcfV3 | DteFse | DteNce | DteNre | DteExp,
   logo: Uint8Array | string = "",
   canInvertName: boolean = false,
   splitNameInTwoLines: boolean = false,
@@ -496,7 +497,7 @@ export const tableHeaders = [
 
 export const tableProduct = (
   doc: jsPDF,
-  data: DteFe | DteCcf | DteNce,
+  data: DteFe | DteFeV1 | DteCcf | DteCcfV3 | DteNce,
   finalY: number,
 ) => {
   const array_object: (string | number)[][] = [];
@@ -609,7 +610,7 @@ export const adjustTextInRect = (
 };
 
 export const generateQR = async (
-  dte: DteFe | DteCcf | DteFse | DteNce | DteNre | DteExp,
+  dte: DteFe | DteFeV1 | DteCcf | DteCcfV3 | DteFse | DteNce | DteNre | DteExp,
 ) => {
   try {
     const dataUrl = await QRCode.toBuffer(generateUrl(dte));
@@ -620,7 +621,7 @@ export const generateQR = async (
 };
 
 export const generateUrl = (
-  dte: DteFe | DteCcf | DteFse | DteNce | DteNre | DteExp,
+  dte: DteFe | DteFeV1 | DteCcf | DteCcfV3 | DteFse | DteNce | DteNre | DteExp,
 ) => {
   return (
     $MH_QUERY +
@@ -634,7 +635,7 @@ export const generateUrl = (
 };
 
 export const generateQRWithColor = async (
-  dte: DteFe | DteCcf | DteFse | DteNce | DteNre,
+  dte: DteFe | DteFeV1 | DteCcf | DteCcfV3 | DteFse | DteNce | DteNre,
   color: string,
 ) => {
   try {
@@ -652,7 +653,7 @@ export const generateQRWithColor = async (
 
 export const secondHeader = (
   doc: jsPDF,
-  dte: DteFe | DteCcf | DteNce | DteNre,
+  dte: DteFe | DteFeV1 | DteCcf | DteCcfV3 | DteNce | DteNre,
   selloInvalidacion = "",
   _contingence: boolean = false,
 ) => {
@@ -958,7 +959,7 @@ export const secondHeader = (
 
 export const secondHeaderExp = (
   doc: jsPDF,
-  dte: DteFe | DteCcf | DteNce | DteNre | DteExp,
+  dte: DteFe | DteFeV1 | DteCcf | DteCcfV3 | DteNce | DteNre | DteExp,
   selloInvalidacion = "",
   _contingence: boolean = false,
 ) => {
