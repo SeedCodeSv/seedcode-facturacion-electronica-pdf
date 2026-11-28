@@ -6,6 +6,7 @@ import { DteNre } from "../interfaces/dte04";
 import { DteNce } from "../interfaces/dte05";
 import { DteFse } from "../interfaces/dte14";
 import { Direccion } from "../interfaces/common";
+import { addInvalidationWatermark } from "./watermark";
 import {
   adjustImage,
   formatAddress,
@@ -464,5 +465,6 @@ export async function generateDesignPdf(
       doc.text(`${page} / ${doc.getNumberOfPages()}`, pageWidth(doc) - margin, 292, { align: "right" });
     }
   }
+  addInvalidationWatermark(doc, options.selloInvalidacion);
   return doc.output("arraybuffer");
 }
